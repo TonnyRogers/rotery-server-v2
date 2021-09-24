@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { comparePassword } from 'utils/password';
 import { User } from '../users/entities/user.entity';
@@ -7,26 +7,29 @@ import { UsersService } from '../users/users.service';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(JwtService)
     private jwtService: JwtService,
-    @Inject(forwardRef(() => UsersService))
+    @Inject(UsersService)
     private usersService: UsersService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne({ email });
+    const user = await this.usersService.findOne({ email }, true);
 
     if (
       user &&
       'username' in user &&
       (await comparePassword(pass, user.password))
     ) {
-      const { password, deviceToken, ...result } = user;
-      return result;
+      delete user.password;
+      delete user.deviceToken;
+      return user;
     }
     return null;
   }
 
   async login(user: Omit<User, 'password'>) {
+    // insert things to jwt encrypt
     const payload = { username: user.username, sub: user.id };
 
     return {

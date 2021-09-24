@@ -1,4 +1,5 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Enum, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Profile } from '../../profiles/entities/profile.entity';
 
 export enum UserRole {
   MASTER = 'master',
@@ -25,13 +26,13 @@ export class User {
   @Property({ unique: true })
   username!: string;
 
-  @Property({ unique: true })
+  @Property({ unique: true, lazy: true })
   email!: string;
 
-  @Property()
+  @Property({ lazy: true })
   password!: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, lazy: true })
   deviceToken?: string;
 
   @Enum({ items: () => UserRole, default: UserRole.USER })

@@ -1,11 +1,14 @@
 import {
   Entity,
   Enum,
+  IdentifiedReference,
   JsonType,
   OneToOne,
   PrimaryKey,
   Property,
+  Reference,
 } from '@mikro-orm/core';
+import { User } from '../../users/entities/user.entity';
 import { File } from '../../files/entities/file.entity';
 
 @Entity()
@@ -40,11 +43,21 @@ export class Profile {
   @OneToOne({ nullable: true, onDelete: 'set null' })
   file?: File;
 
+  @OneToOne({
+    nullable: false,
+    onDelete: 'cascade',
+  })
+  user!: User;
+
   @Property()
   createdAt: Date = new Date();
 
   @Property()
   updatedAt: Date = new Date();
+
+  constructor(user: User) {
+    this.user = user;
+  }
 }
 
 export enum Gender {

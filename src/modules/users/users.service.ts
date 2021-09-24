@@ -1,10 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hashPassword } from 'utils/password';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ProfileService } from '../profiles/profile.service';
 
 interface FindAllAttrs {
   id?: number;
@@ -16,6 +17,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: EntityRepository<User>,
+    @Inject(ProfileService)
+    private profileService: ProfileService,
   ) {}
 
   private async validateEmail(createUserDto: CreateUserDto) {
@@ -46,7 +49,10 @@ export class UsersService {
     }
   }
 
-  async findOne(options: FindAllAttrs): Promise<User | HttpException> {
+  async findOne(
+    options: FindAllAttrs,
+    passPwd = false,
+  ): Promise<User | HttpException> {
     try {
       const findOptions = {};
 
@@ -55,7 +61,10 @@ export class UsersService {
           findOptions[key] = value;
         }
       });
-      return await this.usersRepository.findOneOrFail(findOptions);
+      return await this.usersRepository.findOneOrFail(
+        findOptions,
+        passPwd ? ['password'] : undefined,
+      );
     } catch (error) {
       return new HttpException('user not found', 404);
     }
@@ -69,8 +78,12 @@ export class UsersService {
       createUserDto.password = await hashPassword(createUserDto.password);
       const newUser = new User(createUserDto);
       await this.usersRepository.persistAndFlush(newUser);
+      await this.profileService.create(newUser);
 
-      return newUser;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...sanizedUser } = newUser;
+
+      return sanizedUser;
     } catch (error) {
       return error;
     }
@@ -78,9 +91,17 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
-      return await this.usersRepository.findOneOrFail({ id }, updateUserDto);
+      return await this.usersRepository.nativeUpdate({ id }, updateUserDto);
     } catch (error) {
       return new HttpException("can't update user", 404);
+    }
+  }
+
+  async delete(id: number) {
+    try {
+      await this.usersRepository.nativeDelete({ id });
+    } catch (error) {
+      return new HttpException(error.message, 500);
     }
   }
 }
