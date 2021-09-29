@@ -3,7 +3,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hashPassword } from 'utils/password';
+import { hashPassword } from '../../../utils/password';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ProfileService } from '../profiles/profile.service';
 

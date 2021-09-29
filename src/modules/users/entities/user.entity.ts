@@ -1,5 +1,4 @@
-import { Entity, Enum, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Profile } from '../../profiles/entities/profile.entity';
+import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 
 export enum UserRole {
   MASTER = 'master',

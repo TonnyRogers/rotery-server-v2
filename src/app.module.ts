@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import mikroormconfig from './mikro-orm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profiles/profile.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProfileModule } from './modules/profiles/profile.module';
     UsersModule,
     AuthModule,
     ProfileModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

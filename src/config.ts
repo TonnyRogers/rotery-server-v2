@@ -40,3 +40,10 @@ export const jwtOptions = {
   secret: process.env.API_SECRET,
   expireTime: process.env.API_TOKEN_EXPIRES,
 };
+
+export const digitalSpaces = {
+  key: process.env.SPACES_KEY,
+  secret: process.env.SPACES_SECRET,
+  endpoint: process.env.SPACES_ENDPOINT,
+  bucket: process.env.SPACES_BUCKET,
+};
