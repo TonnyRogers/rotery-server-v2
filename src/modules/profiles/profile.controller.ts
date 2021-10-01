@@ -5,9 +5,9 @@ import {
   Param,
   Put,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
+import { RequestUser } from 'utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ProfileService } from './profile.service';
@@ -24,14 +24,14 @@ export class ProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async userProfile(@Req() request: any) {
+  async userProfile(@Req() request: RequestUser) {
     return this.profileService.show(request.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put()
   async updateUserProfile(
-    @Req() request: any,
+    @Req() request: RequestUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.profileService.update(request.user.userId, updateProfileDto);

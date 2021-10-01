@@ -15,6 +15,7 @@ describe('UsersController', () => {
     username: 'Bea Marques',
     email: 'beaklch@outlook.com',
     password: '112233',
+    isHost: false,
   };
 
   beforeEach(async () => {

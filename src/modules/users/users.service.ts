@@ -45,7 +45,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findAll();
     } catch (error) {
-      return new HttpException('users not found', 404);
+      throw new HttpException('users not found', 404);
     }
   }
 
@@ -66,7 +66,7 @@ export class UsersService {
         passPwd ? ['password'] : undefined,
       );
     } catch (error) {
-      return new HttpException('user not found', 404);
+      throw new HttpException('user not found', 404);
     }
   }
 
@@ -85,7 +85,7 @@ export class UsersService {
 
       return sanizedUser;
     } catch (error) {
-      return error;
+      throw new HttpException("can't create user", 404);
     }
   }
 
@@ -93,7 +93,7 @@ export class UsersService {
     try {
       return await this.usersRepository.nativeUpdate({ id }, updateUserDto);
     } catch (error) {
-      return new HttpException("can't update user", 404);
+      throw new HttpException("can't update user", 404);
     }
   }
 
@@ -101,7 +101,15 @@ export class UsersService {
     try {
       await this.usersRepository.nativeDelete({ id });
     } catch (error) {
-      return new HttpException(error.message, 500);
+      throw new HttpException(error.message, 400);
+    }
+  }
+
+  async findAndPopulate(id: number, populate: string[]) {
+    try {
+      return await this.usersRepository.findOneOrFail({ id }, populate);
+    } catch (error) {
+      throw new HttpException('user not found', 404);
     }
   }
 }

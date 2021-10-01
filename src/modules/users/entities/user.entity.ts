@@ -1,4 +1,15 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Enum,
+  OneToMany,
+  OneToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { UserConnection } from '../../user-connections/entities/user-connection.entity';
+import { DirectMessage } from '../../direct-messages/entities/direct-message.entity';
+import { Profile } from '../../profiles/entities/profile.entity';
 
 export enum UserRole {
   MASTER = 'master',
@@ -39,6 +50,18 @@ export class User {
 
   @Property({ type: 'boolean', default: false })
   isActive: boolean;
+
+  @Property({ type: 'boolean', default: false })
+  isHost: boolean;
+
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile!: Profile;
+
+  @OneToMany(() => DirectMessage, (directMessage) => directMessage.receiver)
+  directs = new Collection<DirectMessage>(this);
+
+  @OneToMany(() => UserConnection, (userConnection) => userConnection.owner)
+  connections = new Collection<User>(this);
 
   @Property()
   createdAt: Date = new Date();

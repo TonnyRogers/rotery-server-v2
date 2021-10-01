@@ -48,12 +48,12 @@ export class ProfileService {
     }
   }
 
-  async show(id: number) {
+  async show(authUserId: number) {
     try {
-      return await this.profileRepository.findOneOrFail({ user: { id } }, [
-        'user',
-        'file',
-      ]);
+      return await this.profileRepository.findOneOrFail(
+        { user: { id: authUserId } },
+        ['user', 'file', 'locationJson', 'document', 'phone'],
+      );
     } catch (error) {
       throw new NotFoundException(error);
     }

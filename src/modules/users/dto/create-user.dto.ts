@@ -15,4 +15,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   @Length(6)
   password: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  isHost: boolean;
 }

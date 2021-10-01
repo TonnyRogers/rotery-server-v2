@@ -1,12 +1,10 @@
 import {
   Entity,
   Enum,
-  IdentifiedReference,
   JsonType,
   OneToOne,
   PrimaryKey,
   Property,
-  Reference,
 } from '@mikro-orm/core';
 import { User } from '../../users/entities/user.entity';
 import { File } from '../../files/entities/file.entity';
@@ -22,13 +20,13 @@ export class Profile {
   @Property({ nullable: true })
   birth?: Date;
 
-  @Property({ unique: true, nullable: true })
+  @Property({ unique: true, nullable: true, lazy: true })
   document?: string;
 
   @Property({ nullable: true })
   profission?: string;
 
-  @Property({ nullable: true })
+  @Property({ nullable: true, lazy: true })
   phone?: string;
 
   @Enum({ items: () => Gender, nullable: true })
@@ -37,13 +35,14 @@ export class Profile {
   @Property({ nullable: true })
   location?: string;
 
-  @Property({ type: JsonType, nullable: true })
+  @Property({ type: JsonType, nullable: true, lazy: true })
   locationJson?: Record<string, unknown>;
 
   @OneToOne({ nullable: true, onDelete: 'set null' })
   file?: File;
 
-  @OneToOne({
+  @OneToOne(() => User, (user) => user.profile, {
+    owner: true,
     nullable: false,
     onDelete: 'cascade',
   })
