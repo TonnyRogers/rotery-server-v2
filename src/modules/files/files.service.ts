@@ -5,7 +5,7 @@ import { S3 } from 'aws-sdk';
 import fs from 'fs';
 import { digitalSpaces } from 'src/config';
 import { s3 } from '../../providers/spaces';
-import { File } from './entities/file.entity';
+import { File } from '../../entities/file.entity';
 
 @Injectable()
 export class FilesService {
@@ -20,7 +20,7 @@ export class FilesService {
       return file.url;
     } catch (error) {
       console.log(error);
-      throw new HttpException('file not found', 404);
+      throw new HttpException('File not found.', 404);
     }
   }
 
@@ -50,7 +50,7 @@ export class FilesService {
           if (err) {
             console.log(err);
 
-            throw new HttpException('error on upload file', 400);
+            throw new HttpException('Error on upload file.', 400);
           }
 
           return data;
@@ -67,7 +67,7 @@ export class FilesService {
       } else {
         fs.writeFile(`./tmp/${fileName}`, file.buffer, (err) => {
           if (err) {
-            throw new HttpException('error on write local file', 400);
+            throw new HttpException('Error on write local file.', 400);
           }
         });
 
@@ -80,7 +80,7 @@ export class FilesService {
 
       return newFile;
     } catch (error) {
-      throw new HttpException('error on upload file', 400);
+      throw new HttpException('Error on upload file.', 400);
     }
   }
 }

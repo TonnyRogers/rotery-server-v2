@@ -6,8 +6,8 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { User } from '../../users/entities/user.entity';
-import { File } from '../../files/entities/file.entity';
+import { User } from './user.entity';
+import { File } from './file.entity';
 
 @Entity()
 export class Profile {

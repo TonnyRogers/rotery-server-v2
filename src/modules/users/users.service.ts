@@ -1,7 +1,7 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { User } from './entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hashPassword } from '../../../utils/password';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,7 +27,7 @@ export class UsersService {
     });
 
     if (foundedUser) {
-      throw new HttpException('this email is already in use', 403);
+      throw new HttpException("Can't use this e-mail.", 403);
     }
   }
 
@@ -37,7 +37,7 @@ export class UsersService {
     });
 
     if (foundedUser) {
-      throw new HttpException('this username is already in use', 403);
+      throw new HttpException('This username is already in use.', 403);
     }
   }
 
@@ -45,7 +45,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findAll();
     } catch (error) {
-      throw new HttpException('users not found', 404);
+      throw new HttpException('Users not found.', 404);
     }
   }
 
@@ -66,7 +66,7 @@ export class UsersService {
         passPwd ? ['password'] : undefined,
       );
     } catch (error) {
-      throw new HttpException('user not found', 404);
+      throw new HttpException('User not found.', 404);
     }
   }
 
@@ -85,7 +85,7 @@ export class UsersService {
 
       return sanizedUser;
     } catch (error) {
-      throw new HttpException("can't create user", 404);
+      throw new HttpException("Can't create user.", 404);
     }
   }
 
@@ -93,7 +93,7 @@ export class UsersService {
     try {
       return await this.usersRepository.nativeUpdate({ id }, updateUserDto);
     } catch (error) {
-      throw new HttpException("can't update user", 404);
+      throw new HttpException("Can't update user.", 404);
     }
   }
 
@@ -109,7 +109,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findOneOrFail({ id }, populate);
     } catch (error) {
-      throw new HttpException('user not found', 404);
+      throw new HttpException('User not found.', 404);
     }
   }
 }

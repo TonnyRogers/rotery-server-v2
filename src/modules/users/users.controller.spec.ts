@@ -1,8 +1,8 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Profile } from '../profiles/entities/profile.entity';
+import { Profile } from '../../entities/profile.entity';
 import { ProfileModule } from '../profiles/profile.module';
-import { User } from './entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
@@ -47,7 +47,7 @@ describe('UsersController', () => {
       role: 'user',
       isActive: false,
     };
-    jest.spyOn(usersService, 'create').mockImplementation(async () => result);
+    // jest.spyOn(usersService, 'create').mockImplementation(async () => result);
 
     expect(usersController.create(userPayload)).toBe(result);
   });

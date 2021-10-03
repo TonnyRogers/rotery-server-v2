@@ -2,7 +2,7 @@ import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { postgresql } from './config';
 import mikroormentities from './mikro-orm-entities';
 
-const { database, host, password, username, port, logging } = postgresql;
+const { database, host, password, username, port } = postgresql;
 
 export default {
   ...mikroormentities,

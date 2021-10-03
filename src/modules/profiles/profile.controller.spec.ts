@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { File } from '../files/entities/file.entity';
+import { File } from '../../entities/file.entity';
 import { ProfileController } from './profile.controller';
 
 describe('ProfileController', () => {

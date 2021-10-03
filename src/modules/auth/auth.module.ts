@@ -8,7 +8,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersService } from '../users/users.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { User } from '../users/entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { ProfileModule } from '../profiles/profile.module';
 
 @Module({

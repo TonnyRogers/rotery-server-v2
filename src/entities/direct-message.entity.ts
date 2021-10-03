@@ -8,8 +8,8 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { BooleanKey } from 'aws-sdk/clients/iot';
-import { File } from '../../files/entities/file.entity';
-import { User } from '../../users/entities/user.entity';
+import { File } from './file.entity';
+import { User } from './user.entity';
 
 export enum MessageType {
   MESSAGE = 'message',

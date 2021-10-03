@@ -3,7 +3,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateDirectMessageDto } from './dto/create-message.dto';
-import { DirectMessage } from './entities/direct-message.entity';
+import { DirectMessage } from '../../entities/direct-message.entity';
 
 @Injectable()
 export class DirectMessagesService {
@@ -25,7 +25,7 @@ export class DirectMessagesService {
         last,
       );
     } catch (error) {
-      throw new HttpException("can't find messages", 404);
+      throw new HttpException("Can't find messages.", 404);
     }
   }
 
@@ -47,7 +47,7 @@ export class DirectMessagesService {
 
       return newMessage;
     } catch (error) {
-      throw new HttpException('error on send message', 400);
+      throw new HttpException('Error on send message.', 400);
     }
   }
 
@@ -58,7 +58,7 @@ export class DirectMessagesService {
         'file',
       ]);
     } catch (error) {
-      throw new HttpException("can't find this message", 404);
+      throw new HttpException("Can't find this message.", 404);
     }
   }
 
@@ -87,7 +87,7 @@ export class DirectMessagesService {
 
       return directMessages;
     } catch (error) {
-      throw new HttpException("can't find this message", 404);
+      throw new HttpException("Can't find this message.", 404);
     }
   }
 }

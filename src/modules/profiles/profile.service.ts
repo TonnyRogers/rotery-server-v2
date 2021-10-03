@@ -1,4 +1,4 @@
-import { EntityRepository, MikroORM } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   BadRequestException,
@@ -7,10 +7,9 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { User } from '../users/entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { Profile } from './entities/profile.entity';
+import { Profile } from '../../entities/profile.entity';
 
 @Injectable()
 export class ProfileService {
@@ -44,7 +43,7 @@ export class ProfileService {
 
       return profilePayload;
     } catch (error) {
-      throw new HttpException("can't find this user", 404);
+      throw new HttpException("Can't find this user.", 404);
     }
   }
 

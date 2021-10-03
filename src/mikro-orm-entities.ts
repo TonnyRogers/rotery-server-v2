@@ -1,11 +1,23 @@
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
-import { File } from './modules/files/entities/file.entity';
-import { Profile } from './modules/profiles/entities/profile.entity';
-import { User } from './modules/users/entities/user.entity';
-import { DirectMessage } from './modules/direct-messages/entities/direct-message.entity';
-import { UserConnection } from './modules/user-connections/entities/user-connection.entity';
+import { File } from './entities/file.entity';
+import { Profile } from './entities/profile.entity';
+import { User } from './entities/user.entity';
+import { DirectMessage } from './entities/direct-message.entity';
+import { UserConnection } from './entities/user-connection.entity';
+import { Activity } from './entities/activity.entity';
+import { Lodging } from './entities/lodging.entity';
+import { Transport } from './entities/transport.entity';
 
 export default {
-  entities: [User, File, Profile, DirectMessage, UserConnection],
-  entitiesTs: [User, File, Profile, DirectMessage, UserConnection],
+  entities: ['./dist/src/entities'],
+  entitiesTs: [
+    User,
+    File,
+    Profile,
+    DirectMessage,
+    UserConnection,
+    Activity,
+    Transport,
+    Lodging,
+  ],
 } as MikroOrmModuleOptions;

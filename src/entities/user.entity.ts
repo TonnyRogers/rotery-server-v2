@@ -7,9 +7,9 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { UserConnection } from '../../user-connections/entities/user-connection.entity';
-import { DirectMessage } from '../../direct-messages/entities/direct-message.entity';
-import { Profile } from '../../profiles/entities/profile.entity';
+import { UserConnection } from './user-connection.entity';
+import { DirectMessage } from './direct-message.entity';
+import { Profile } from './profile.entity';
 
 export enum UserRole {
   MASTER = 'master',

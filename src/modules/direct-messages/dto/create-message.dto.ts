@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { User } from '../../users/entities/user.entity';
-import { MessageType } from '../entities/direct-message.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { User } from '../../../entities/user.entity';
+import { MessageType } from '../../../entities/direct-message.entity';
 
 export class CreateDirectMessageDto {
   @ApiProperty()

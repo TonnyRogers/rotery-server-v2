@@ -9,6 +9,9 @@ import { ProfileModule } from './modules/profiles/profile.module';
 import { FilesModule } from './modules/files/files.module';
 import { DirectMessagesModule } from './modules/direct-messages/direct-messages.module';
 import { UserConnectionModule } from './modules/user-connections/user-connections.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
+import { LodgingsModule } from './modules/lodgings/lodgings.module';
+import { TransportsModule } from './modules/transports/transports.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { UserConnectionModule } from './modules/user-connections/user-connection
     FilesModule,
     DirectMessagesModule,
     UserConnectionModule,
+    ActivitiesModule,
+    LodgingsModule,
+    TransportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
