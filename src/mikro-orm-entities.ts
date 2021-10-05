@@ -7,6 +7,11 @@ import { UserConnection } from './entities/user-connection.entity';
 import { Activity } from './entities/activity.entity';
 import { Lodging } from './entities/lodging.entity';
 import { Transport } from './entities/transport.entity';
+import { Itinerary } from './entities/itinerary.entity';
+import { ItineraryActivity } from './entities/itinerary-activity.entity';
+import { ItineraryLodging } from './entities/itinerary-lodging.entity';
+import { ItineraryTransport } from './entities/itinerary-transport.entity';
+import { ItineraryPhoto } from './entities/itinerary-photo.entity';
 
 export default {
   entities: ['./dist/src/entities'],
@@ -19,5 +24,10 @@ export default {
     Activity,
     Transport,
     Lodging,
+    Itinerary,
+    ItineraryActivity,
+    ItineraryLodging,
+    ItineraryTransport,
+    ItineraryPhoto,
   ],
 } as MikroOrmModuleOptions;

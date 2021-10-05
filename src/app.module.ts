@@ -12,6 +12,7 @@ import { UserConnectionModule } from './modules/user-connections/user-connection
 import { ActivitiesModule } from './modules/activities/activities.module';
 import { LodgingsModule } from './modules/lodgings/lodgings.module';
 import { TransportsModule } from './modules/transports/transports.module';
+import { ItinerariesModule } from './modules/itineraries/itineraries.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TransportsModule } from './modules/transports/transports.module';
     ActivitiesModule,
     LodgingsModule,
     TransportsModule,
+    ItinerariesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

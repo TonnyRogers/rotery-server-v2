@@ -13,7 +13,6 @@ export class Migration20210922005525 extends Migration {
   }
 
   async down(): Promise<void> {
-    this.addSql('alter table "profile" drop column "user_id";');
     this.addSql(
       'alter table "profile" drop constraint "profile_user_id_unique";',
     );
@@ -21,5 +20,6 @@ export class Migration20210922005525 extends Migration {
     this.addSql(
       'alter table "profile" drop constraint "profile_user_id_foreign";',
     );
+    this.addSql('alter table "profile" drop column "user_id";');
   }
 }

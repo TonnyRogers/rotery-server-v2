@@ -13,4 +13,8 @@ export class Migration20211001020422 extends Migration {
       'alter table "user_connection" add constraint "user_connection_target_id_foreign" foreign key ("target_id") references "user" ("id") on update cascade;',
     );
   }
+
+  async down(): Promise<void> {
+    this.addSql('drop table "user_connection";');
+  }
 }

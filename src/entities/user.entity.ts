@@ -10,6 +10,7 @@ import {
 import { UserConnection } from './user-connection.entity';
 import { DirectMessage } from './direct-message.entity';
 import { Profile } from './profile.entity';
+import { Itinerary } from './itinerary.entity';
 
 export enum UserRole {
   MASTER = 'master',
@@ -62,6 +63,9 @@ export class User {
 
   @OneToMany(() => UserConnection, (userConnection) => userConnection.owner)
   connections = new Collection<User>(this);
+
+  @OneToMany(() => Itinerary, (itinerary) => itinerary.owner)
+  itineraries = new Collection<Itinerary>(this);
 
   @Property()
   createdAt: Date = new Date();
