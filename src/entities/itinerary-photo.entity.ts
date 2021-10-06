@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
+import { BigIntType, Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 import { File } from './file.entity';
 import { Itinerary } from './itinerary.entity';
 
@@ -9,8 +9,8 @@ export class ItineraryPhoto {
     this.file = file;
   }
 
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: BigIntType })
+  id!: string;
 
   @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
   itinerary!: Itinerary;

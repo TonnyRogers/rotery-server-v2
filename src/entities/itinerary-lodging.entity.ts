@@ -1,4 +1,10 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  BigIntType,
+  Entity,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { Itinerary } from './itinerary.entity';
 import { Lodging } from './lodging.entity';
 
@@ -20,8 +26,8 @@ export class ItineraryLodging {
     this.isFree = isFree;
   }
 
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: BigIntType })
+  id!: string;
 
   @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
   itinerary!: Itinerary;

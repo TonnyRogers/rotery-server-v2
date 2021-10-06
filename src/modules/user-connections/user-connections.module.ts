@@ -9,5 +9,6 @@ import { UserConnectionService } from './user-connections.service';
   controllers: [UserConnectionController],
   providers: [UserConnectionService],
   imports: [MikroOrmModule.forFeature([UserConnection]), UsersModule],
+  exports: [UserConnectionService],
 })
 export class UserConnectionModule {}

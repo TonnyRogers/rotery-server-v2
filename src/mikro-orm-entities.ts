@@ -12,6 +12,8 @@ import { ItineraryActivity } from './entities/itinerary-activity.entity';
 import { ItineraryLodging } from './entities/itinerary-lodging.entity';
 import { ItineraryTransport } from './entities/itinerary-transport.entity';
 import { ItineraryPhoto } from './entities/itinerary-photo.entity';
+import { ItineraryQuestion } from './entities/itinerary-question.entity';
+import { ItineraryMember } from './entities/itinerary-member.entity';
 
 export default {
   entities: ['./dist/src/entities'],
@@ -29,5 +31,7 @@ export default {
     ItineraryLodging,
     ItineraryTransport,
     ItineraryPhoto,
+    ItineraryQuestion,
+    ItineraryMember,
   ],
 } as MikroOrmModuleOptions;

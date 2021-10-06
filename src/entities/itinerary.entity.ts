@@ -3,18 +3,18 @@ import {
   Entity,
   Enum,
   JsonType,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { User } from './user.entity';
-import { File } from './file.entity';
 import { ItineraryActivity } from './itinerary-activity.entity';
 import { ItineraryLodging } from './itinerary-lodging.entity';
 import { ItineraryTransport } from './itinerary-transport.entity';
 import { ItineraryPhoto } from './itinerary-photo.entity';
+import { ItineraryQuestion } from './itinerary-question.entity';
+import { ItineraryMember } from './itinerary-member.entity';
 
 export enum ItineraryStatus {
   ACTIVE = 'active',
@@ -46,6 +46,8 @@ export class Itinerary {
     | 'lodgings'
     | 'photos'
     | 'transports'
+    | 'questions'
+    | 'members'
   >) {
     this.begin = begin;
     this.capacity = capacity;
@@ -115,6 +117,18 @@ export class Itinerary {
     (itineraryTransport) => itineraryTransport.itinerary,
   )
   transports = new Collection<ItineraryTransport>(this);
+
+  @OneToMany(
+    () => ItineraryQuestion,
+    (itineraryQuestion) => itineraryQuestion.itinerary,
+  )
+  questions = new Collection<ItineraryQuestion>(this);
+
+  @OneToMany(
+    () => ItineraryMember,
+    (itineraryMember) => itineraryMember.itinerary,
+  )
+  members = new Collection<ItineraryMember>(this);
 
   @Property()
   createdAt: Date = new Date();

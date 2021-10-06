@@ -13,6 +13,8 @@ import { ActivitiesModule } from './modules/activities/activities.module';
 import { LodgingsModule } from './modules/lodgings/lodgings.module';
 import { TransportsModule } from './modules/transports/transports.module';
 import { ItinerariesModule } from './modules/itineraries/itineraries.module';
+import { ItineraryQuestionsModule } from './modules/itinerary-questions/itinerary-question.module';
+import { ItineraryMembersModule } from './modules/itinerary-members/itinerary-members.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ItinerariesModule } from './modules/itineraries/itineraries.module';
     LodgingsModule,
     TransportsModule,
     ItinerariesModule,
+    ItineraryQuestionsModule,
+    ItineraryMembersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

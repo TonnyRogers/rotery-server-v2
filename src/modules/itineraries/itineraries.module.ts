@@ -22,5 +22,6 @@ import { ItinerariesService } from './itineraries.service';
     ]),
     UsersModule,
   ],
+  exports: [ItinerariesService],
 })
 export class ItinerariesModule {}

@@ -1,9 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20211005012410 extends Migration {
+export class Migration20211005232446 extends Migration {
   async up(): Promise<void> {
     this.addSql(
-      'create table "itinerary_photo" ("id" serial primary key, "itinerary_id" int4 not null, "file_id" int4 not null);',
+      'create table "itinerary_photo" ("id" bigserial primary key, "itinerary_id" int4 not null, "file_id" int4 not null);',
     );
 
     this.addSql(
@@ -13,7 +13,6 @@ export class Migration20211005012410 extends Migration {
       'alter table "itinerary_photo" add constraint "itinerary_photo_file_id_foreign" foreign key ("file_id") references "file" ("id") on update cascade on delete cascade;',
     );
   }
-
   async down(): Promise<void> {
     this.addSql('drop table "itinerary_photo";');
   }

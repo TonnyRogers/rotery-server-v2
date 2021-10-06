@@ -20,7 +20,8 @@ export default {
     emit: 'ts',
     allOrNothing: true,
   },
-  debug: process.env.NODE_ENV === 'development' && true,
+  debug: !!(process.env.NODE_ENV === 'development'),
   forceUtcTimezone: true,
   tsNode: true,
+  timezone: 'UTC',
 } as MikroOrmModuleOptions;

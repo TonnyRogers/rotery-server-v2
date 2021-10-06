@@ -27,6 +27,15 @@ export class ItinerariesService {
     private readonly usersService: UsersService,
   ) {}
 
+  private relations = [
+    'photos.file',
+    'activities.activity',
+    'lodgings.lodging',
+    'transports.transport',
+    'members.user.profile.file',
+    'questions.owner.profile.file',
+  ];
+
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
     try {
       const authUser = await this.usersService.findOne({ id: authUserId });
@@ -46,9 +55,9 @@ export class ItinerariesService {
       const newItinerary = new Itinerary({
         owner: 'id' in authUser && authUser,
         name,
-        begin,
-        end,
-        deadlineForJoin,
+        begin: new Date(Date.parse(begin)),
+        end: new Date(Date.parse(end)),
+        deadlineForJoin: new Date(Date.parse(deadlineForJoin)),
         description,
         capacity,
         location,
@@ -106,12 +115,10 @@ export class ItinerariesService {
 
   async findAll(authUserId: number) {
     try {
-      return await this.itineraryRepository.find({ owner: authUserId }, [
-        'photos.file',
-        'activities.activity',
-        'lodgings.lodging',
-        'transports.transport',
-      ]);
+      return await this.itineraryRepository.find(
+        { owner: authUserId },
+        this.relations,
+      );
     } catch (error) {
       throw new HttpException("Can't find your itineraries.", 400);
     }
@@ -119,12 +126,7 @@ export class ItinerariesService {
 
   async show(id: number) {
     try {
-      return await this.itineraryRepository.find({ id }, [
-        'photos.file',
-        'activities.activity',
-        'lodgings.lodging',
-        'transports.transport',
-      ]);
+      return await this.itineraryRepository.findOne({ id }, this.relations);
     } catch (error) {
       throw new HttpException("Can't find this itinerary.", 400);
     }
@@ -158,9 +160,9 @@ export class ItinerariesService {
       } = updateUserDto;
 
       itinerary.name = name;
-      itinerary.begin = begin;
-      itinerary.end = end;
-      itinerary.deadlineForJoin = deadlineForJoin;
+      itinerary.begin = new Date(Date.parse(begin));
+      itinerary.end = new Date(Date.parse(end));
+      itinerary.deadlineForJoin = new Date(Date.parse(deadlineForJoin));
       itinerary.description = description;
       itinerary.capacity = capacity;
       itinerary.location = location;

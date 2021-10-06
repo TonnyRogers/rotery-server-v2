@@ -8,5 +8,6 @@ import { FilesService } from './files.service';
   imports: [MikroOrmModule.forFeature([File])],
   controllers: [FilesController],
   providers: [FilesService],
+  exports: [FilesService],
 })
 export class FilesModule {}
