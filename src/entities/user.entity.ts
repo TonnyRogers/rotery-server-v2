@@ -2,6 +2,7 @@ import {
   Collection,
   Entity,
   Enum,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryKey,
@@ -66,6 +67,9 @@ export class User {
 
   @OneToMany(() => Itinerary, (itinerary) => itinerary.owner)
   itineraries = new Collection<Itinerary>(this);
+
+  @ManyToMany({ entity: () => Itinerary, owner: true })
+  favoriteItineraries = new Collection<Itinerary>(this);
 
   @Property()
   createdAt: Date = new Date();

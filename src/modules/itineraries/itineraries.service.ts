@@ -9,6 +9,7 @@ import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UsersService } from '../users/users.service';
 import { ItineraryPhoto } from 'src/entities/itinerary-photo.entity';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
+import { itineraryRelations } from 'utils/constants';
 
 @Injectable()
 export class ItinerariesService {
@@ -26,15 +27,6 @@ export class ItinerariesService {
     @Inject(UsersService)
     private readonly usersService: UsersService,
   ) {}
-
-  private relations = [
-    'photos.file',
-    'activities.activity',
-    'lodgings.lodging',
-    'transports.transport',
-    'members.user.profile.file',
-    'questions.owner.profile.file',
-  ];
 
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
     try {
@@ -117,7 +109,7 @@ export class ItinerariesService {
     try {
       return await this.itineraryRepository.find(
         { owner: authUserId },
-        this.relations,
+        itineraryRelations,
       );
     } catch (error) {
       throw new HttpException("Can't find your itineraries.", 400);
@@ -126,7 +118,7 @@ export class ItinerariesService {
 
   async show(id: number) {
     try {
-      return await this.itineraryRepository.findOne({ id }, this.relations);
+      return await this.itineraryRepository.findOne({ id }, itineraryRelations);
     } catch (error) {
       throw new HttpException("Can't find this itinerary.", 400);
     }

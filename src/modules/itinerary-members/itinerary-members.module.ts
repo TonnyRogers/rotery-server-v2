@@ -1,5 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+import { Itinerary } from 'src/entities/itinerary.entity';
 import { ItineraryMember } from '../../entities/itinerary-member.entity';
 import { ItinerariesModule } from '../itineraries/itineraries.module';
 import { UsersModule } from '../users/users.module';
@@ -10,7 +11,7 @@ import { ItineraryMembersService } from './itinerary-members.service';
   controllers: [ItineraryMembersController],
   providers: [ItineraryMembersService],
   imports: [
-    MikroOrmModule.forFeature([ItineraryMember]),
+    MikroOrmModule.forFeature([ItineraryMember, Itinerary]),
     ItinerariesModule,
     UsersModule,
   ],

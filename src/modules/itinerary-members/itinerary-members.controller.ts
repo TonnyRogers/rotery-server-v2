@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Inject,
   Param,
   Post,
@@ -33,6 +34,11 @@ export class ItineraryMembersController {
       params.id,
       createMemberDto,
     );
+  }
+
+  @Get('/member')
+  async getMemberItineraries(@Req() request: RequestUser) {
+    return this.itinerarymembersService.itineraries(request.user.userId);
   }
 
   @Post('/:id/approve')

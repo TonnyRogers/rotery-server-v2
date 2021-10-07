@@ -1,6 +1,7 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { Itinerary } from '../../entities/itinerary.entity';
 import { ItineraryMember } from '../../entities/itinerary-member.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
 import { UsersService } from '../users/users.service';
@@ -9,12 +10,15 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { DemoteMemberDto } from './dto/demote-member.dto';
 import { PromoteMemberDto } from './dto/promote-member.dto';
 import { RefuseMemberDto } from './dto/refuse-member.dto';
+import { itineraryRelations } from 'utils/constants';
 
 @Injectable()
 export class ItineraryMembersService {
   constructor(
     @InjectRepository(ItineraryMember)
     private itineraryMemberRepository: EntityRepository<ItineraryMember>,
+    @InjectRepository(Itinerary)
+    private itineraryRepository: EntityRepository<Itinerary>,
     @Inject(ItinerariesService)
     private itinerariesService: ItinerariesService,
     @Inject(UsersService)
@@ -59,6 +63,17 @@ export class ItineraryMembersService {
       return newMember;
     } catch (error) {
       throw new HttpException('Error on join in itinerary', 400);
+    }
+  }
+
+  async itineraries(authUserId: number) {
+    try {
+      return this.itineraryRepository.find(
+        { members: { user: authUserId } },
+        itineraryRelations,
+      );
+    } catch (error) {
+      throw new HttpException("Can't find member itineraries", 400);
     }
   }
 

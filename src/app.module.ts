@@ -15,6 +15,8 @@ import { TransportsModule } from './modules/transports/transports.module';
 import { ItinerariesModule } from './modules/itineraries/itineraries.module';
 import { ItineraryQuestionsModule } from './modules/itinerary-questions/itinerary-question.module';
 import { ItineraryMembersModule } from './modules/itinerary-members/itinerary-members.module';
+import { FeedItinerariesModule } from './modules/feed-itineraries/feed-itineraries.module';
+import { FavoriteItinerariesModule } from './modules/favorite-itineraries/favorite-itineraries.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ItineraryMembersModule } from './modules/itinerary-members/itinerary-me
     ItinerariesModule,
     ItineraryQuestionsModule,
     ItineraryMembersModule,
+    FeedItinerariesModule,
+    FavoriteItinerariesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
