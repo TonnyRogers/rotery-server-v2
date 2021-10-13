@@ -1,0 +1,14 @@
+Ola <%= it.name %>,
+
+Ficamos muito felizes com a sua participação na Rotery.
+Hoje você faz parte de uma comunidade de aventureiros que vai mudar o MUNDO! 🥳🍾
+É sério, vamos mesmo.
+Aproveite ao máximo nosso aplicativo, ele foi feito para você, compartilhe seus
+roteiros com amigos e conheça outras pessoas.
+
+Se achar válido, considere nos apoiar no Apoia-se, só clicar no botão abaixo.
+
+https://apoia.se/rotery Nos apoie
+
+
+Grande abraço. 🤙

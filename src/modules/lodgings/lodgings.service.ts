@@ -24,8 +24,6 @@ export class LodgingsService {
 
       return newLodging;
     } catch (error) {
-      console.log(error);
-
       throw new HttpException('Fail on create new lodging.', 400);
     }
   }

@@ -1,8 +1,11 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationSubject } from 'utils/types';
 import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { ReplyQuestionDto } from './dto/reply-question.dto';
@@ -14,6 +17,8 @@ export class ItineraryQuestionsService {
     private itinerariesService: ItinerariesService,
     @Inject(UsersService)
     private usersService: UsersService,
+    @Inject(NotificationsService)
+    private notificationsService: NotificationsService,
     @InjectRepository(ItineraryQuestion)
     private itineraryQuestionRepository: EntityRepository<ItineraryQuestion>,
   ) {}
@@ -45,11 +50,16 @@ export class ItineraryQuestionsService {
 
       await this.itineraryQuestionRepository.persistAndFlush(newQuestion);
 
+      await this.notificationsService.create(itinerary.owner.id, {
+        alias: NotificationAlias.ITINERARY_QUESTION,
+        subject: NotificationSubject.itineraryQuestion,
+        content: `em ${itinerary.name}`,
+        jsonData: { ...itinerary },
+      });
+
       return newQuestion;
     } catch (error) {
-      console.log(error);
-
-      throw new HttpException("Can't create this question.", 400);
+      throw new HttpException('Error on create this question.', 400);
     }
   }
 
@@ -73,10 +83,15 @@ export class ItineraryQuestionsService {
 
       await this.itineraryQuestionRepository.flush();
 
+      await this.notificationsService.create(itineraryQuestion.owner.id, {
+        alias: NotificationAlias.ITINERARY_ANSWER,
+        subject: NotificationSubject.itineraryAnswer,
+        content: `em ${itinerary.name}`,
+        jsonData: { ...itinerary },
+      });
+
       return itineraryQuestion;
     } catch (error) {
-      console.log(error);
-
       throw new HttpException("Can't create this question.", 400);
     }
   }

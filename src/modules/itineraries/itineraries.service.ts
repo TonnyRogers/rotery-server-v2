@@ -10,6 +10,10 @@ import { UsersService } from '../users/users.service';
 import { ItineraryPhoto } from 'src/entities/itinerary-photo.entity';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
 import { itineraryRelations } from 'utils/constants';
+import { NotificationsService } from '../notifications/notifications.service';
+import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
+import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationSubject } from 'utils/types';
 
 @Injectable()
 export class ItinerariesService {
@@ -26,6 +30,8 @@ export class ItinerariesService {
     private itineraryPhotoRepository: EntityRepository<ItineraryPhoto>,
     @Inject(UsersService)
     private readonly usersService: UsersService,
+    @Inject(NotificationsService)
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
@@ -112,7 +118,7 @@ export class ItinerariesService {
         itineraryRelations,
       );
     } catch (error) {
-      throw new HttpException("Can't find your itineraries.", 400);
+      throw new HttpException('Error find your itineraries.', 400);
     }
   }
 
@@ -120,7 +126,7 @@ export class ItinerariesService {
     try {
       return await this.itineraryRepository.findOne({ id }, itineraryRelations);
     } catch (error) {
-      throw new HttpException("Can't find this itinerary.", 400);
+      throw new HttpException('Error find this itinerary.', 400);
     }
   }
 
@@ -130,10 +136,13 @@ export class ItinerariesService {
     updateUserDto: UpdateItineraryDto,
   ) {
     try {
-      const itinerary = await this.itineraryRepository.findOne({
-        owner: authUserId,
-        id: itineraryId,
-      });
+      const itinerary = await this.itineraryRepository.findOne(
+        {
+          owner: authUserId,
+          id: itineraryId,
+        },
+        ['members.user'],
+      );
 
       if (!itinerary) {
         return new HttpException('Cant find this itinerary.', 404);
@@ -223,23 +232,60 @@ export class ItinerariesService {
       await this.itineraryTransportRepository.flush();
       await this.itineraryPhotoRepository.flush();
 
+      itinerary.members.getItems().forEach(async (member) => {
+        if (member.isAccepted === true) {
+          const notificationPayload: CreateNotificationPayload = {
+            alias: NotificationAlias.ITINERARY_UPDATED,
+            subject: NotificationSubject.itineraryUpdated,
+            content: `${itinerary.name}`,
+            jsonData: { ...itinerary },
+          };
+
+          await this.notificationsService.create(
+            member.user.id,
+            notificationPayload,
+          );
+        }
+      });
+
       return this.show(itineraryId);
     } catch (error) {
-      throw new HttpException("Can't update this itinerary.", 400);
+      throw new HttpException('Error update this itinerary.', 400);
     }
   }
 
   async delete(authUserId: number, itineraryId: number) {
     try {
-      await this.itineraryRepository.findOneOrFail({
-        owner: authUserId,
-        id: itineraryId,
-      });
+      const itinerary = await this.itineraryRepository.findOne(
+        {
+          owner: { id: authUserId },
+          id: itineraryId,
+        },
+        ['members.user'],
+      );
 
       await this.itineraryRepository.nativeDelete({
         id: itineraryId,
         owner: authUserId,
       });
+
+      itinerary.members.getItems().forEach(async (member) => {
+        if (member.isAccepted === true) {
+          const notificationPayload: CreateNotificationPayload = {
+            alias: NotificationAlias.ITINERARY_DELETED,
+            subject: NotificationSubject.itineraryDeleted,
+            content: `${itinerary.name}`,
+            jsonData: { id: itinerary.id },
+          };
+
+          await this.notificationsService.create(
+            member.user.id,
+            notificationPayload,
+          );
+        }
+      });
+
+      return;
     } catch (error) {
       throw new HttpException('Error on delete your itinerary.', 400);
     }

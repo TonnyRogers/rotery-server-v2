@@ -11,6 +11,9 @@ import { DemoteMemberDto } from './dto/demote-member.dto';
 import { PromoteMemberDto } from './dto/promote-member.dto';
 import { RefuseMemberDto } from './dto/refuse-member.dto';
 import { itineraryRelations } from 'utils/constants';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationSubject } from 'utils/types';
 
 @Injectable()
 export class ItineraryMembersService {
@@ -23,6 +26,8 @@ export class ItineraryMembersService {
     private itinerariesService: ItinerariesService,
     @Inject(UsersService)
     private usersService: UsersService,
+    @Inject(NotificationsService)
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -39,12 +44,6 @@ export class ItineraryMembersService {
 
       const userDate = new Date(Date.parse(createMemberDto.currentDate));
 
-      console.log('diff', {
-        limit: itinerary.deadlineForJoin.getTime(),
-        date: userDate.getTime(),
-        iso: userDate.toISOString(),
-      });
-
       if (itinerary.deadlineForJoin.getTime() < userDate.getTime()) {
         return new HttpException(
           "You can't join to this itinerary anymore.",
@@ -59,6 +58,13 @@ export class ItineraryMembersService {
       });
 
       await this.itineraryMemberRepository.persistAndFlush(newMember);
+
+      await this.notificationsService.create(itinerary.owner.id, {
+        alias: NotificationAlias.ITINERARY_MEMBER_REQUEST,
+        subject: NotificationSubject.memberRequest,
+        content: `em ${itinerary.name}`,
+        jsonData: { ...itinerary },
+      });
 
       return newMember;
     } catch (error) {
@@ -95,6 +101,13 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      await this.notificationsService.create(member.user.id, {
+        alias: NotificationAlias.ITINERARY_MEMBER_ACCEPTED,
+        subject: NotificationSubject.memberAccept,
+        content: `em ${member.itinerary.name}`,
+        jsonData: { ...member.itinerary },
+      });
+
       return member;
     } catch (error) {
       throw new HttpException('Error on accept member', 401);
@@ -118,6 +131,13 @@ export class ItineraryMembersService {
       member.deletedAt = new Date(Date.now());
 
       await this.itineraryMemberRepository.flush();
+
+      await this.notificationsService.create(member.user.id, {
+        alias: NotificationAlias.ITINERARY_MEMBER_REJECTED,
+        subject: NotificationSubject.memberReject,
+        content: `em ${member.itinerary.name}`,
+        jsonData: { ...member.itinerary },
+      });
 
       return member;
     } catch (error) {
@@ -143,6 +163,13 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      await this.notificationsService.create(member.user.id, {
+        alias: NotificationAlias.ITINERARY_MEMBER_PROMOTED,
+        subject: NotificationSubject.memberPromoted,
+        content: `em ${member.itinerary.name}`,
+        jsonData: { ...member.itinerary },
+      });
+
       return member;
     } catch (error) {
       throw new HttpException('Error on promote member', 401);
@@ -166,6 +193,13 @@ export class ItineraryMembersService {
       member.isAdmin = false;
 
       await this.itineraryMemberRepository.flush();
+
+      await this.notificationsService.create(member.user.id, {
+        alias: NotificationAlias.ITINERARY_MEMBER_DEMOTED,
+        subject: NotificationSubject.memberDemoted,
+        content: `em ${member.itinerary.name}`,
+        jsonData: { ...member.itinerary },
+      });
 
       return member;
     } catch (error) {

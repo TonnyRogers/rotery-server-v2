@@ -17,6 +17,8 @@ const REQUIRED_ENV_VARS = [
   'ORM_LOG_ENABLED',
   'API_SECRET',
   'API_TOKEN_EXPIRES',
+  'REDIS_HOST',
+  'REDIS_PASSWORD',
 ];
 
 REQUIRED_ENV_VARS.forEach((envVar) => {
@@ -46,4 +48,22 @@ export const digitalSpaces = {
   secret: process.env.SPACES_SECRET,
   endpoint: process.env.SPACES_ENDPOINT,
   bucket: process.env.SPACES_BUCKET,
+};
+
+export const smtp = {
+  connection: process.env.MAIL_CONNECTION,
+  port: process.env.SMTP_PORT,
+  host: process.env.SMTP_HOST,
+  mailUsername: process.env.MAIL_USERNAME,
+  mailPassword: process.env.MAIL_PASSWORD,
+};
+
+export const redisConfig = {
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD,
+};
+
+export const rabbitmqConfig = {
+  host: `amqp://${process.env.RABBITMQ_HOST}:5672`,
+  sendMailQueue: process.env.SEND_MAIL_QUEUE,
 };

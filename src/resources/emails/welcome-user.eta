@@ -1,0 +1,29 @@
+<% layout('../template/default-email.eta') %>
+
+<mj-text font-weight="bold" font-size="18px" color="#000" font-family="roboto">
+  Ola <%= it.name %>,
+</mj-text>
+
+<mj-text letter-spacing="1px" line-height="28px" font-size="18px" color="#000" font-family="roboto">
+  Ficamos muito felizes com a sua participação na Rotery.
+  Hoje você faz parte de uma comunidade de aventureiros que vai mudar o MUNDO! 🥳🍾
+
+  <br />
+  É sério, vamos mesmo.
+</mj-text>
+<mj-text letter-spacing="1px" line-height="28px" font-size="18px" color="#000" font-family="roboto">
+  Aproveite ao máximo nosso aplicativo, ele foi feito para você, compartilhe seus
+  roteiros com amigos e conheça outras pessoas.
+</mj-text>
+
+<mj-text letter-spacing="1px" line-height="28px" font-size="18px" color="#000" font-family="roboto">
+  Se achar válido, considere nos apoiar no Apoia-se, só clicar no botão abaixo.
+</mj-text>
+
+<mj-button href="https://apoia.se/rotery" background-color="#4885FD" font-family="roboto" color="#FFF" font-size="18px" align="left">
+  Nos apoie
+</mj-button>
+
+<mj-text letter-spacing="1px" line-height="28px" font-size="18px" color="#000" font-family="roboto">
+  Grande abraço. 🤙
+</mj-text>

@@ -4,6 +4,9 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateDirectMessageDto } from './dto/create-message.dto';
 import { DirectMessage } from '../../entities/direct-message.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationSubject } from 'utils/types';
 
 @Injectable()
 export class DirectMessagesService {
@@ -12,6 +15,8 @@ export class DirectMessagesService {
     private directMessageRepository: EntityRepository<DirectMessage>,
     @Inject(UsersService)
     private usersService: UsersService,
+    @Inject(NotificationsService)
+    private notificationsService: NotificationsService,
   ) {}
 
   async findReceived(authUser: number, offset = 1, limit = 10) {
@@ -44,6 +49,13 @@ export class DirectMessagesService {
       });
 
       await this.directMessageRepository.persistAndFlush(newMessage);
+
+      await this.notificationsService.create(newMessage.receiver.id, {
+        alias: NotificationAlias.NEW_MESSAGE,
+        subject: NotificationSubject.newMessage,
+        content: `de ${newMessage.sender.username}`,
+        jsonData: { ...newMessage },
+      });
 
       return newMessage;
     } catch (error) {

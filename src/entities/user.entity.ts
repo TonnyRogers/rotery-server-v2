@@ -1,4 +1,5 @@
 import {
+  AfterCreate,
   Collection,
   Entity,
   Enum,
@@ -12,6 +13,9 @@ import { UserConnection } from './user-connection.entity';
 import { DirectMessage } from './direct-message.entity';
 import { Profile } from './profile.entity';
 import { Itinerary } from './itinerary.entity';
+import { Notification } from './notification.entity';
+import { UserRating } from './user-rating';
+import { publish } from '../providers/email.redis';
 
 export enum UserRole {
   MASTER = 'master',
@@ -68,6 +72,12 @@ export class User {
   @OneToMany(() => Itinerary, (itinerary) => itinerary.owner)
   itineraries = new Collection<Itinerary>(this);
 
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications = new Collection<Notification>(this);
+
+  @OneToMany(() => UserRating, (userRating) => userRating.user)
+  ratings = new Collection<UserRating>(this);
+
   @ManyToMany({ entity: () => Itinerary, owner: true })
   favoriteItineraries = new Collection<Itinerary>(this);
 
@@ -76,4 +86,19 @@ export class User {
 
   @Property()
   updatedAt: Date = new Date();
+
+  @AfterCreate()
+  async afterCreate() {
+    const { email, username } = this;
+
+    const payload = {
+      name: username,
+      email,
+    };
+
+    await publish({
+      type: 'welcome-user',
+      payload,
+    });
+  }
 }

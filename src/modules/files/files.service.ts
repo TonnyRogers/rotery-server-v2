@@ -19,7 +19,6 @@ export class FilesService {
       const file = await this.filesRepository.findOneOrFail({ id });
       return file.url;
     } catch (error) {
-      console.log(error);
       throw new HttpException('File not found.', 404);
     }
   }
@@ -48,8 +47,6 @@ export class FilesService {
 
         const uploadResponse = s3.putObject(options, (err, data) => {
           if (err) {
-            console.log(err);
-
             throw new HttpException('Error on upload file.', 400);
           }
 

@@ -5,6 +5,9 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
 import { UserConnection } from '../../entities/user-connection.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationSubject } from 'utils/types';
 
 export interface ConnectionReponse {
   connections: UserConnection[];
@@ -17,6 +20,8 @@ export class UserConnectionService {
     private userConnectionRepository: EntityRepository<UserConnection>,
     @Inject(UsersService)
     private userService: UsersService,
+    @Inject(NotificationsService)
+    private notificationsService: NotificationsService,
   ) {}
 
   async connect(authUserId: number, targetId: number) {
@@ -35,6 +40,11 @@ export class UserConnectionService {
         owner: authUserId,
       });
 
+      const inversedConnection = await this.userConnectionRepository.findOne({
+        target: authUserId,
+        owner: targetId,
+      });
+
       if (connectionExists) {
         throw new HttpException(
           'You already have an connection with this user',
@@ -47,6 +57,22 @@ export class UserConnectionService {
       });
 
       await this.userConnectionRepository.persistAndFlush(newConnection);
+
+      if (inversedConnection) {
+        await this.notificationsService.create(inversedConnection.owner.id, {
+          alias: NotificationAlias.NEW_CONNECTION_ACCEPTED,
+          subject: NotificationSubject.newConnectionAccepted,
+          content: `com ${newConnection.owner.username}`,
+          jsonData: { ...newConnection },
+        });
+      } else {
+        await this.notificationsService.create(newConnection.target.id, {
+          alias: NotificationAlias.NEW_CONNECTION,
+          subject: NotificationSubject.newConnection,
+          content: `com ${newConnection.owner.username}`,
+          jsonData: { ...newConnection },
+        });
+      }
 
       return newConnection;
     } catch (error) {
@@ -99,7 +125,7 @@ export class UserConnectionService {
 
       return connection;
     } catch (error) {
-      throw new HttpException("Can't updade this connection.", 400);
+      throw new HttpException('Error on updade this connection.', 400);
     }
   }
 
@@ -112,7 +138,7 @@ export class UserConnectionService {
 
       await this.userConnectionRepository.removeAndFlush(connection);
     } catch (error) {
-      throw new HttpException("Can't delete this connection.", 400);
+      throw new HttpException('Error delete this connection.', 400);
     }
   }
 }

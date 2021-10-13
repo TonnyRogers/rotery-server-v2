@@ -17,6 +17,12 @@ import { ItineraryQuestionsModule } from './modules/itinerary-questions/itinerar
 import { ItineraryMembersModule } from './modules/itinerary-members/itinerary-members.module';
 import { FeedItinerariesModule } from './modules/feed-itineraries/feed-itineraries.module';
 import { FavoriteItinerariesModule } from './modules/favorite-itineraries/favorite-itineraries.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UserRatingsModule } from './modules/user-ratings/user-ratings.module';
+import { ItinerariesRatingsModule } from './modules/itinerary-ratings/itinerary-ratings.module';
+import { EmailsModule } from './modules/emails/emails.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { rabbitmqConfig, redisConfig } from './config';
 
 @Module({
   imports: [
@@ -35,6 +41,30 @@ import { FavoriteItinerariesModule } from './modules/favorite-itineraries/favori
     ItineraryMembersModule,
     FeedItinerariesModule,
     FavoriteItinerariesModule,
+    NotificationsModule,
+    UserRatingsModule,
+    ItinerariesRatingsModule,
+    EmailsModule,
+    // ClientsModule.register([
+    // {
+    //   name: 'send_email',
+    //   transport: Transport.REDIS,
+    //   options: {
+    //     password: redisConfig.password,
+    //     host: redisConfig.host,
+    //   },
+    // },
+    //   {
+    //     transport: Transport.RMQ,
+    //     name: 'RMQ_MAIL',
+    //     options: {
+    //       urls: [rabbitmqConfig.host],
+    //       queue: rabbitmqConfig.sendMailQueue,
+    //       noAck: false,
+    //       persistent: true,
+    //     },
+    //   },
+    // ]),
   ],
   controllers: [AppController],
   providers: [AppService],
