@@ -77,6 +77,9 @@ export class UsersService {
 
       createUserDto.password = await hashPassword(createUserDto.password);
       const newUser = new User(createUserDto);
+      newUser.activationCode = String(
+        Date.now() + Math.floor(100000 + Math.random() * 900000),
+      );
       await this.usersRepository.persistAndFlush(newUser);
       await this.profileService.create(newUser);
 
@@ -110,6 +113,36 @@ export class UsersService {
       return await this.usersRepository.findOneOrFail({ id }, populate);
     } catch (error) {
       throw new HttpException('User not found.', 404);
+    }
+  }
+
+  async setNewPassword(id: number, password: string) {
+    try {
+      const user = await this.usersRepository.findOne({ id });
+      user.password = await hashPassword(password);
+      this.usersRepository.flush();
+
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async activate(code: string) {
+    try {
+      const user = await this.usersRepository.findOne({ activationCode: code });
+
+      if (!user) {
+        throw new HttpException('Invalid Activation Code', 404);
+      }
+
+      user.activationCode = null;
+      user.isActive = true;
+      this.usersRepository.flush();
+
+      return { message: 'User activated.', statusCode: 200 };
+    } catch (error) {
+      throw error;
     }
   }
 }

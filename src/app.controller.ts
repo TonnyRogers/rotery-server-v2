@@ -48,6 +48,7 @@ export class AppController {
         name: data.payload.name,
         mailHeader: '',
         sectionTitle: '',
+        ...data.payload,
       },
     });
   }

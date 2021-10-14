@@ -3,7 +3,7 @@ import mjml2html from 'mjml';
 import * as Eta from 'eta';
 import path from 'path';
 import { mailerOptions, mailerTransporter } from '../../providers/mail';
-import { EmailSectionTitle, EmailSubject } from 'utils/types';
+import { EmailSectionTitle, EmailSubject } from 'utils/constants';
 
 export type EmailType =
   | 'welcome-user'
@@ -15,6 +15,7 @@ export interface EmailParams {
   sectionTitle: string;
   name: string;
   resetcode?: number;
+  activationCode?: number;
 }
 
 export interface SendEmailParams {
@@ -79,7 +80,6 @@ export class EmailsService {
 
       return true;
     } catch (error) {
-      console.log(error);
       return error;
     }
   }

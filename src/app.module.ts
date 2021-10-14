@@ -21,12 +21,14 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { UserRatingsModule } from './modules/user-ratings/user-ratings.module';
 import { ItinerariesRatingsModule } from './modules/itinerary-ratings/itinerary-ratings.module';
 import { EmailsModule } from './modules/emails/emails.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { rabbitmqConfig, redisConfig } from './config';
+import { ResetPasswordsModule } from './modules/reset-passwords/reset-passwords.module';
+import { ResetPasswordSubscriber } from './subscribers/reset-password';
 
 @Module({
   imports: [
-    MikroOrmModule.forRoot(mikroormconfig),
+    MikroOrmModule.forRoot({
+      ...mikroormconfig,
+    }),
     UsersModule,
     AuthModule,
     ProfileModule,
@@ -45,6 +47,7 @@ import { rabbitmqConfig, redisConfig } from './config';
     UserRatingsModule,
     ItinerariesRatingsModule,
     EmailsModule,
+    ResetPasswordsModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',
@@ -54,16 +57,6 @@ import { rabbitmqConfig, redisConfig } from './config';
     //     host: redisConfig.host,
     //   },
     // },
-    //   {
-    //     transport: Transport.RMQ,
-    //     name: 'RMQ_MAIL',
-    //     options: {
-    //       urls: [rabbitmqConfig.host],
-    //       queue: rabbitmqConfig.sendMailQueue,
-    //       noAck: false,
-    //       persistent: true,
-    //     },
-    //   },
     // ]),
   ],
   controllers: [AppController],

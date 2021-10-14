@@ -17,6 +17,7 @@ import { ItineraryMember } from './entities/itinerary-member.entity';
 import { Notification } from './entities/notification.entity';
 import { UserRating } from './entities/user-rating';
 import { ItineraryRating } from './entities/itinerary-rating';
+import { ResetPassword } from './entities/reset-password.entity';
 
 export default {
   entities: ['./dist/src/entities'],
@@ -39,6 +40,7 @@ export default {
     Notification,
     UserRating,
     ItineraryRating,
+    ResetPassword,
   ],
   subscribers: [],
 } as MikroOrmModuleOptions;

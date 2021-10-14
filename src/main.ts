@@ -1,13 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions } from '@nestjs/microservices';
 import { json } from 'express';
 import { AppModule } from './app.module';
-import { rabbitmqConfig, redisConfig } from './config';
 import { RabbitMQMailPubSubServer } from './transporter/rabbit-send-email.strategy';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({ transform: true, forbidNonWhitelisted: true }),
+  );
+  app.use(json({ limit: '50mb' }));
   // app.connectMicroservice<MicroserviceOptions>({
   //   transport: Transport.REDIS,
   //   options: {
@@ -28,8 +31,7 @@ async function bootstrap() {
   });
 
   app.startAllMicroservices();
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(json({ limit: '50mb' }));
+
   await app.listen(3333);
 }
 bootstrap();

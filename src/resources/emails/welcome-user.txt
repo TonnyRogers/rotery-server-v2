@@ -6,9 +6,9 @@ Hoje você faz parte de uma comunidade de aventureiros que vai mudar o MUNDO! �
 Aproveite ao máximo nosso aplicativo, ele foi feito para você, compartilhe seus
 roteiros com amigos e conheça outras pessoas.
 
-Se achar válido, considere nos apoiar no Apoia-se, só clicar no botão abaixo.
+Para ativar sua conta só clicar no link abaixo.
 
-https://apoia.se/rotery Nos apoie
+https://rotery.com.br/activation/<%= it.activationCode %> Nos apoie
 
 
 Grande abraço. 🤙

@@ -7,6 +7,8 @@ export interface RedisPlublishPayload {
   payload: {
     name: string;
     email: string;
+    resetcode?: number;
+    activationCode?: number;
   };
 }
 

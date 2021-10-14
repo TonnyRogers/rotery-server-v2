@@ -35,15 +35,3 @@ export enum NotificationSubject {
   newConnectionAccepted = 'Nova Conexão',
   itineraryRate = 'Avaliar Roteiro',
 }
-
-export const EmailSubject = {
-  'welcome-user': 'Bem vindo a Rotery',
-  'user-recover-password': 'Recuperação de senha',
-  'user-new-password': 'Senha atualizada',
-};
-
-export const EmailSectionTitle = {
-  'welcome-user': 'Bem-vindo(a) a mais nova comunidade de viajantes!',
-  'user-recover-password': 'Seu código é " *code* "',
-  'user-new-password': 'Sua senha foi alterada',
-};

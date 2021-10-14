@@ -15,7 +15,8 @@ import { Profile } from './profile.entity';
 import { Itinerary } from './itinerary.entity';
 import { Notification } from './notification.entity';
 import { UserRating } from './user-rating';
-import { publish } from '../providers/email.redis';
+import { RabbitMQPublisher } from '../providers/rabbit-publisher';
+import { EmailTypes } from '../../utils/constants';
 
 export enum UserRole {
   MASTER = 'master',
@@ -42,13 +43,13 @@ export class User {
   @Property({ unique: true })
   username!: string;
 
-  @Property({ unique: true, lazy: true })
+  @Property({ unique: true, hidden: true })
   email!: string;
 
-  @Property({ lazy: true })
+  @Property({ hidden: true })
   password!: string;
 
-  @Property({ nullable: true, lazy: true })
+  @Property({ nullable: true, hidden: true })
   deviceToken?: string;
 
   @Enum({ items: () => UserRole, default: UserRole.USER })
@@ -59,6 +60,9 @@ export class User {
 
   @Property({ type: 'boolean', default: false })
   isHost: boolean;
+
+  @Property({ type: 'string', nullable: true, hidden: true })
+  activationCode: string;
 
   @OneToOne(() => Profile, (profile) => profile.user)
   profile!: Profile;
@@ -87,18 +91,28 @@ export class User {
   @Property()
   updatedAt: Date = new Date();
 
+  // @Property({ name: 'getEmail' })
+  // getEmail() {
+  //   return `${this.email}`;
+  // }
+
   @AfterCreate()
   async afterCreate() {
     const { email, username } = this;
 
     const payload = {
-      name: username,
-      email,
+      data: {
+        type: EmailTypes.welcome,
+        payload: {
+          name: username,
+          email,
+          activationCode: this.activationCode,
+        },
+      },
     };
 
-    await publish({
-      type: 'welcome-user',
-      payload,
-    });
+    const rmqPublish = new RabbitMQPublisher();
+
+    await rmqPublish.toQueue(payload);
   }
 }

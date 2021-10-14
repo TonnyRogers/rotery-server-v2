@@ -61,7 +61,7 @@ export class RabbitMQMailPubSubServer
             messageTtl: 50 * ONE_SEC,
           }),
           // bind queues and exchangers
-          channel.bindQueue(serviceQueue, dlExchange, ''),
+          channel.bindQueue(serviceQueue, dlExchange, 'send'),
           channel.bindQueue(time10sQueue, tlExchange, time10bindPattern),
           channel.bindQueue(time30sQueue, tlExchange, time30bindPattern),
           channel.bindQueue(time50sQueue, tlExchange, time50bindPattern),
