@@ -53,7 +53,7 @@ export class UsersController {
     return this.userService.delete(request.user.userId);
   }
 
-  @Put('activate/:code')
+  @Get('activate/:code')
   async activateUser(@Param() params: { code: string }) {
     return this.userService.activate(params.code);
   }

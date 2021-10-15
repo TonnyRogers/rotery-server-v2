@@ -14,6 +14,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { NotificationAlias } from 'src/entities/notification.entity';
 import { NotificationSubject } from 'utils/types';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class ItinerariesService {
@@ -32,6 +33,8 @@ export class ItinerariesService {
     private readonly usersService: UsersService,
     @Inject(NotificationsService)
     private readonly notificationsService: NotificationsService,
+    @Inject(NotificationsGateway)
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
@@ -107,7 +110,7 @@ export class ItinerariesService {
 
       return this.show(newItinerary.id);
     } catch (error) {
-      throw new HttpException('Error on create itinerary.', 400);
+      throw error;
     }
   }
 
@@ -118,7 +121,7 @@ export class ItinerariesService {
         itineraryRelations,
       );
     } catch (error) {
-      throw new HttpException('Error find your itineraries.', 400);
+      throw error;
     }
   }
 
@@ -126,7 +129,7 @@ export class ItinerariesService {
     try {
       return await this.itineraryRepository.findOne({ id }, itineraryRelations);
     } catch (error) {
-      throw new HttpException('Error find this itinerary.', 400);
+      throw error;
     }
   }
 
@@ -141,7 +144,7 @@ export class ItinerariesService {
           owner: authUserId,
           id: itineraryId,
         },
-        ['members.user'],
+        itineraryRelations,
       );
 
       if (!itinerary) {
@@ -170,6 +173,11 @@ export class ItinerariesService {
       itinerary.locationJson = locationJson;
       itinerary.isPrivate = isPrivate;
 
+      const newActivityList = [];
+      const newTransportList = [];
+      const newLodgingList = [];
+      const newPhotoList = [];
+
       if (updateUserDto.activities) {
         await this.itineraryActivityRepository.nativeDelete({
           itinerary: itinerary.id,
@@ -180,7 +188,7 @@ export class ItinerariesService {
             itinerary: itinerary.id,
             ...activity,
           });
-          this.itineraryActivityRepository.persist(newActivity);
+          newActivityList.push(newActivity);
         });
       }
 
@@ -194,7 +202,7 @@ export class ItinerariesService {
             itinerary: itinerary.id,
             ...transport,
           });
-          this.itineraryTransportRepository.persist(newTransport);
+          newTransportList.push(newTransport);
         });
       }
 
@@ -208,7 +216,7 @@ export class ItinerariesService {
             itinerary: itinerary.id,
             ...lodging,
           });
-          this.itineraryLodgingRepository.persist(newLodging);
+          newLodgingList.push(newLodging);
         });
       }
 
@@ -222,15 +230,23 @@ export class ItinerariesService {
             itinerary: itinerary.id,
             ...photo,
           });
-          this.itineraryPhotoRepository.persist(newPhoto);
+          newPhotoList.push(newPhoto);
         });
       }
 
       await this.itineraryRepository.flush();
-      await this.itineraryActivityRepository.flush();
-      await this.itineraryLodgingRepository.flush();
-      await this.itineraryTransportRepository.flush();
-      await this.itineraryPhotoRepository.flush();
+      newActivityList.length > 0 &&
+        (await this.itineraryActivityRepository.persistAndFlush(
+          newActivityList,
+        ));
+      newLodgingList.length > 0 &&
+        (await this.itineraryLodgingRepository.persistAndFlush(newLodgingList));
+      newTransportList.length > 0 &&
+        (await this.itineraryTransportRepository.persistAndFlush(
+          newTransportList,
+        ));
+      newPhotoList.length > 0 &&
+        (await this.itineraryPhotoRepository.persistAndFlush(newPhotoList));
 
       itinerary.members.getItems().forEach(async (member) => {
         if (member.isAccepted === true) {
@@ -241,16 +257,20 @@ export class ItinerariesService {
             jsonData: { ...itinerary },
           };
 
-          await this.notificationsService.create(
+          const notification = await this.notificationsService.create(
             member.user.id,
             notificationPayload,
           );
+
+          this.notificationsGateway.send(member.user.id, notification);
         }
       });
 
-      return this.show(itineraryId);
+      const updatedItinerary = await this.show(itineraryId);
+
+      return updatedItinerary;
     } catch (error) {
-      throw new HttpException('Error update this itinerary.', 400);
+      throw error;
     }
   }
 
@@ -287,7 +307,7 @@ export class ItinerariesService {
 
       return;
     } catch (error) {
-      throw new HttpException('Error on delete your itinerary.', 400);
+      throw error;
     }
   }
 }

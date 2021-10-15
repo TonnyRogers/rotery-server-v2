@@ -61,12 +61,9 @@ export class UsersService {
           findOptions[key] = value;
         }
       });
-      return await this.usersRepository.findOneOrFail(
-        findOptions,
-        passPwd ? ['password'] : undefined,
-      );
+      return await this.usersRepository.findOneOrFail(findOptions);
     } catch (error) {
-      throw new HttpException('User not found.', 404);
+      throw error;
     }
   }
 

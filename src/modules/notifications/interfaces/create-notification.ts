@@ -4,5 +4,5 @@ export interface CreateNotificationPayload {
   alias: NotificationAlias;
   content: string;
   subject: string;
-  jsonData: Record<string | number, unknown> | null;
+  jsonData: Record<string, unknown> | null | any;
 }

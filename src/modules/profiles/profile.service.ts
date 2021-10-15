@@ -51,7 +51,7 @@ export class ProfileService {
     try {
       return await this.profileRepository.findOneOrFail(
         { user: { id: authUserId } },
-        ['user', 'file', 'locationJson', 'document', 'phone'],
+        ['user', 'file'],
       );
     } catch (error) {
       throw new NotFoundException(error);

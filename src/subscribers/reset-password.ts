@@ -21,8 +21,6 @@ export class ResetPasswordSubscriber implements EventSubscriber<ResetPassword> {
       { populate: ['user', 'user.email'] },
     );
 
-    console.log(resetEntity);
-
     const { username, email } = resetEntity.user;
 
     const payload = {

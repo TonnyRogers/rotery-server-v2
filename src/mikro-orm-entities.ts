@@ -42,5 +42,4 @@ export default {
     ItineraryRating,
     ResetPassword,
   ],
-  subscribers: [],
 } as MikroOrmModuleOptions;

@@ -50,13 +50,6 @@ export class DirectMessagesService {
 
       await this.directMessageRepository.persistAndFlush(newMessage);
 
-      await this.notificationsService.create(newMessage.receiver.id, {
-        alias: NotificationAlias.NEW_MESSAGE,
-        subject: NotificationSubject.newMessage,
-        content: `de ${newMessage.sender.username}`,
-        jsonData: { ...newMessage },
-      });
-
       return newMessage;
     } catch (error) {
       throw new HttpException('Error on send message.', 400);

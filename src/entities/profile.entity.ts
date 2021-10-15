@@ -20,13 +20,13 @@ export class Profile {
   @Property({ nullable: true })
   birth?: Date;
 
-  @Property({ unique: true, nullable: true, lazy: true })
+  @Property({ unique: true, nullable: true, hidden: true })
   document?: string;
 
   @Property({ nullable: true })
   profission?: string;
 
-  @Property({ nullable: true, lazy: true })
+  @Property({ nullable: true, hidden: true })
   phone?: string;
 
   @Enum({ items: () => Gender, nullable: true })
@@ -35,7 +35,7 @@ export class Profile {
   @Property({ nullable: true })
   location?: string;
 
-  @Property({ type: JsonType, nullable: true, lazy: true })
+  @Property({ type: JsonType, nullable: true, hidden: true })
   locationJson?: Record<string, unknown>;
 
   @OneToOne({ nullable: true, onDelete: 'set null' })

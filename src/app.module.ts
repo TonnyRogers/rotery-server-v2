@@ -22,13 +22,11 @@ import { UserRatingsModule } from './modules/user-ratings/user-ratings.module';
 import { ItinerariesRatingsModule } from './modules/itinerary-ratings/itinerary-ratings.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { ResetPasswordsModule } from './modules/reset-passwords/reset-passwords.module';
-import { ResetPasswordSubscriber } from './subscribers/reset-password';
+import { ChatSocketModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
-    MikroOrmModule.forRoot({
-      ...mikroormconfig,
-    }),
+    MikroOrmModule.forRoot(mikroormconfig),
     UsersModule,
     AuthModule,
     ProfileModule,
@@ -48,6 +46,7 @@ import { ResetPasswordSubscriber } from './subscribers/reset-password';
     ItinerariesRatingsModule,
     EmailsModule,
     ResetPasswordsModule,
+    ChatSocketModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',
