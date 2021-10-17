@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  app:
+    container_name: rotery_server
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+      args:
+        - NODE_ENV=development
+    depends_on:
+      - postgres
+    ports:
+      - 3333:3333
+    volumes:
+      - ./:/home/app/
+      - /home/app/node_modules
+    networks:
+      - rotery-services
+    restart: always
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq1
+    env_file: .env
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - rotery-services
+    restart: always
+  postgres:
+    image: postgres
+    env_file: .env
+    container_name: postgres1
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - rotery-services
+    expose:
+      - 5432
+  # redis:
+  #   image: redis:3.2
+  #   container_name: redis
+  #   volumes:
+  #       - ./db/storage/cache:/data:cached
+  #   command: redis-server --requirepass secret
+  #   ports:
+  #       - 6379:6379
+  #   networks:
+  #       - rotery-services
+volumes:
+  db_data:
+networks:
+  rotery-services:
+    name: rotery_services_network

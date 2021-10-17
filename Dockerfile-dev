@@ -1,0 +1,6 @@
+FROM node:14.17
+WORKDIR /home/app
+COPY . ./
+RUN yarn && yarn cache clean
+EXPOSE 3333
+CMD ["yarn","start:dev"]
