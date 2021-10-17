@@ -5,6 +5,7 @@ import { NotificationAlias } from 'src/entities/notification.entity';
 import { NotificationSubject } from 'utils/types';
 import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
@@ -21,6 +22,8 @@ export class ItineraryQuestionsService {
     private notificationsService: NotificationsService,
     @InjectRepository(ItineraryQuestion)
     private itineraryQuestionRepository: EntityRepository<ItineraryQuestion>,
+    @Inject(NotificationsGateway)
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async findAll(itineraryId: number) {

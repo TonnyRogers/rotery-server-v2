@@ -23,6 +23,8 @@ export enum NotificationAlias {
   ITINERARY_ANSWER = 'itinerary_answer',
   NEW_CONNECTION_ACCEPTED = 'new_connection_accpted',
   NEW_CONNECTION = 'new_connection',
+  CONNECTION_BLOCK = 'connection_block',
+  CONNECTION_UNBLOCK = 'connection_unblock',
 }
 
 @Entity()

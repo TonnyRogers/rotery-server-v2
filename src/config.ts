@@ -19,6 +19,9 @@ const REQUIRED_ENV_VARS = [
   'API_TOKEN_EXPIRES',
   'REDIS_HOST',
   'REDIS_PASSWORD',
+  'FIREBASE_DB_URL',
+  'RABBITMQ_HOST',
+  'SEND_MAIL_QUEUE',
 ];
 
 REQUIRED_ENV_VARS.forEach((envVar) => {
@@ -56,6 +59,10 @@ export const smtp = {
   host: process.env.SMTP_HOST,
   mailUsername: process.env.MAIL_USERNAME,
   mailPassword: process.env.MAIL_PASSWORD,
+};
+
+export const firebaseConfig = {
+  baseUrl: process.env.FIREBASE_DB_URL,
 };
 
 export const redisConfig = {

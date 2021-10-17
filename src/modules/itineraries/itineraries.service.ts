@@ -257,12 +257,10 @@ export class ItinerariesService {
             jsonData: { ...itinerary },
           };
 
-          const notification = await this.notificationsService.create(
+          await this.notificationsService.create(
             member.user.id,
             notificationPayload,
           );
-
-          this.notificationsGateway.send(member.user.id, notification);
         }
       });
 

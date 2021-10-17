@@ -34,4 +34,6 @@ export enum NotificationSubject {
   newConnection = 'Nova Solicitação',
   newConnectionAccepted = 'Nova Conexão',
   itineraryRate = 'Avaliar Roteiro',
+  connectionBlock = 'Conexão Bloqueada',
+  connectionUnblock = 'Conexão Desbloqueada',
 }

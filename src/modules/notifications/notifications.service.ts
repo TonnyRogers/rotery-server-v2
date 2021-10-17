@@ -4,6 +4,11 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Notification } from '../../entities/notification.entity';
 import { UsersService } from '../users/users.service';
 import { CreateNotificationPayload } from './interfaces/create-notification';
+import {
+  FirebaseNotificationPayload,
+  sendToUser,
+} from 'src/providers/firebase';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
@@ -12,11 +17,15 @@ export class NotificationsService {
     private notificationRepository: EntityRepository<Notification>,
     @Inject(UsersService)
     private usersService: UsersService,
+    @Inject(NotificationsGateway)
+    private notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(
     authUserId: number,
     notificationPayload: CreateNotificationPayload,
+    withPush = true,
+    withWebSocket = true,
   ) {
     try {
       const user = await this.usersService.findOne({ id: authUserId });
@@ -26,6 +35,27 @@ export class NotificationsService {
       });
 
       this.notificationRepository.persistAndFlush(newNotification);
+
+      if (withPush) {
+        const fbNotificationPayload: FirebaseNotificationPayload = {
+          tokenId: 'id' in user && user.deviceToken,
+          title: newNotification.subject,
+          body: newNotification.content,
+          data: {
+            alias: newNotification.alias,
+            json_data: JSON.stringify(notificationPayload.jsonData),
+          },
+        };
+
+        await sendToUser(fbNotificationPayload);
+      }
+
+      if (withWebSocket) {
+        this.notificationsGateway.send(
+          'id' in user && user.id,
+          newNotification,
+        );
+      }
 
       return newNotification;
     } catch (error) {

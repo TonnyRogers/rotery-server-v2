@@ -14,10 +14,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequestUser } from 'utils/types';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Put('device')
+  @HttpCode(201)
+  async setToken(@Req() request: RequestUser, @Body() body: { token: string }) {
+    return this.userService.setDeviceToken(request.user.userId, body.token);
+  }
 
   @Post()
   @HttpCode(201)

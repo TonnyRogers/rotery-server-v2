@@ -60,6 +60,9 @@ export class ChatSocketGateway {
   ) {
     try {
       const userId = Number(client.handshake.query.userId);
+      if (userId === data.receiver.id) {
+        throw new Error('Invalid receiver user.');
+      }
       const newMessage = await this.directMessagesService.create(
         userId,
         data.receiver.id,

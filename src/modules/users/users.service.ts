@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from '../../entities/user.entity';
@@ -27,7 +27,10 @@ export class UsersService {
     });
 
     if (foundedUser) {
-      throw new HttpException("Can't use this e-mail.", 403);
+      throw new HttpException(
+        "Can't use this e-mail.",
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -37,7 +40,10 @@ export class UsersService {
     });
 
     if (foundedUser) {
-      throw new HttpException('This username is already in use.', 403);
+      throw new HttpException(
+        'This username is already in use.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -45,7 +51,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findAll();
     } catch (error) {
-      throw new HttpException('Users not found.', 404);
+      throw new HttpException('Users not found.', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -85,7 +91,7 @@ export class UsersService {
 
       return sanizedUser;
     } catch (error) {
-      throw new HttpException("Can't create user.", 404);
+      throw new HttpException("Can't create user.", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -93,7 +99,7 @@ export class UsersService {
     try {
       return await this.usersRepository.nativeUpdate({ id }, updateUserDto);
     } catch (error) {
-      throw new HttpException("Can't update user.", 404);
+      throw new HttpException("Can't update user.", HttpStatus.NOT_FOUND);
     }
   }
 
@@ -101,7 +107,7 @@ export class UsersService {
     try {
       await this.usersRepository.nativeDelete({ id });
     } catch (error) {
-      throw new HttpException(error.message, 400);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -109,7 +115,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findOneOrFail({ id }, populate);
     } catch (error) {
-      throw new HttpException('User not found.', 404);
+      throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -130,16 +136,38 @@ export class UsersService {
       const user = await this.usersRepository.findOne({ activationCode: code });
 
       if (!user) {
-        throw new HttpException('Invalid Activation Code', 404);
+        throw new HttpException(
+          'Invalid Activation Code',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       user.activationCode = null;
       user.isActive = true;
       this.usersRepository.flush();
 
-      return { message: 'User activated.', statusCode: 200 };
+      return { message: 'User activated.', statusCode: HttpStatus.OK };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async setDeviceToken(authUserId: number, token: string) {
+    try {
+      const user = await this.findOne({ id: authUserId });
+
+      if ('id' in user) {
+        user.deviceToken = token;
+
+        await this.usersRepository.flush();
+      }
+
+      return { message: 'Success', status: HttpStatus.OK };
+    } catch (error) {
+      throw new HttpException(
+        'Error on set device token.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

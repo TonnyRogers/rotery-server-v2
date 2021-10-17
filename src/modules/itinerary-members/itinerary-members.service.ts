@@ -14,6 +14,7 @@ import { itineraryRelations } from 'utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationAlias } from 'src/entities/notification.entity';
 import { NotificationSubject } from 'utils/types';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class ItineraryMembersService {
@@ -28,6 +29,8 @@ export class ItineraryMembersService {
     private usersService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,
+    @Inject(NotificationsGateway)
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(

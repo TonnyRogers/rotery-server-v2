@@ -6,8 +6,9 @@ import { UsersService } from '../users/users.service';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
 import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationAlias } from 'src/entities/notification.entity';
+import { NotificationAlias } from '../../entities/notification.entity';
 import { NotificationSubject } from 'utils/types';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 export interface ConnectionReponse {
   connections: UserConnection[];
@@ -22,6 +23,8 @@ export class UserConnectionService {
     private userService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,
+    @Inject(NotificationsGateway)
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async connect(authUserId: number, targetId: number) {
@@ -122,6 +125,22 @@ export class UserConnectionService {
 
       this.userConnectionRepository.persist(connection);
       await this.userConnectionRepository.flush();
+
+      if (updateConnectionDto.isBlocked) {
+        await this.notificationsService.create(connection.target.id, {
+          alias: NotificationAlias.CONNECTION_BLOCK,
+          subject: NotificationSubject.connectionBlock,
+          content: `com ${connection.owner.username}`,
+          jsonData: { ...connection },
+        });
+      } else {
+        await this.notificationsService.create(connection.target.id, {
+          alias: NotificationAlias.CONNECTION_UNBLOCK,
+          subject: NotificationSubject.connectionUnblock,
+          content: `com ${connection.owner.username}`,
+          jsonData: { ...connection },
+        });
+      }
 
       return connection;
     } catch (error) {

@@ -43,6 +43,7 @@
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "eta": "^1.12.3",
+    "firebase-admin": "^10.0.0",
     "ioredis": "^4.27.11",
     "jsonwebtoken": "^8.5.1",
     "mjml": "^4.10.4",
