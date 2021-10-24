@@ -54,7 +54,7 @@ export class ItineraryMembersController {
     );
   }
 
-  @Delete('/:id/remove')
+  @Post('/:id/remove')
   async rejectMember(
     @Param() params: ParamId,
     @Req() request: RequestUser,
@@ -91,5 +91,9 @@ export class ItineraryMembersController {
       params.id,
       acceptMemberDto,
     );
+  }
+  @Post('/:id/leave')
+  async leaveItinerary(@Param() params: ParamId, @Req() request: RequestUser) {
+    return this.itinerarymembersService.leave(request.user.userId, params.id);
   }
 }

@@ -43,13 +43,13 @@ export class User {
   @Property({ unique: true })
   username!: string;
 
-  @Property({ unique: true, hidden: true })
+  @Property({ unique: true, lazy: true })
   email!: string;
 
   @Property({ hidden: true })
   password!: string;
 
-  @Property({ nullable: true, hidden: true })
+  @Property({ nullable: true, lazy: true })
   deviceToken?: string;
 
   @Enum({ items: () => UserRole, default: UserRole.USER })
@@ -61,7 +61,7 @@ export class User {
   @Property({ type: 'boolean', default: false })
   isHost: boolean;
 
-  @Property({ type: 'string', nullable: true, hidden: true })
+  @Property({ type: 'string', nullable: true, lazy: true })
   activationCode: string;
 
   @OneToOne(() => Profile, (profile) => profile.user)
@@ -90,11 +90,6 @@ export class User {
 
   @Property()
   updatedAt: Date = new Date();
-
-  // @Property({ name: 'getEmail' })
-  // getEmail() {
-  //   return `${this.email}`;
-  // }
 
   @AfterCreate()
   async afterCreate() {

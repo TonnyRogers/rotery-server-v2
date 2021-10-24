@@ -38,7 +38,7 @@ export class ActivitiesService {
 
   async findOne(languageName: string) {
     try {
-      return this.activityRepository.findOne({ name: languageName });
+      return this.activityRepository.findOneOrFail({ name: languageName });
     } catch (error) {
       throw new HttpException('Error on list activities.', 400);
     }

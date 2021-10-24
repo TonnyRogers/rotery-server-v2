@@ -31,6 +31,17 @@ export class FilesController {
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return this.fileService.uploadImage(file);
+    return this.fileService.uploadImage(file, 'upload');
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 2e6, parts: 1 },
+    }),
+  )
+  uploadProfileAvatar(@UploadedFile() file: Express.Multer.File) {
+    return this.fileService.uploadImage(file, 'upload/avatar');
   }
 }

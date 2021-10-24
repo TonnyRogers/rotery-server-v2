@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { RequestUser } from 'utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ProfileService } from './profile.service';
 
@@ -35,5 +36,17 @@ export class ProfileController {
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.profileService.update(request.user.userId, updateProfileDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/avatar')
+  async updateProfileAvatar(
+    @Req() request: RequestUser,
+    @Body() updateProfileDto: UpdateProfileFileDto,
+  ) {
+    return this.profileService.updateAvatar(
+      request.user.userId,
+      updateProfileDto,
+    );
   }
 }

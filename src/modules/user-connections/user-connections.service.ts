@@ -27,7 +27,7 @@ export class UserConnectionService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  async connect(authUserId: number, targetId: number) {
+  async connect(authUserId: number, targetId: number): Promise<UserConnection> {
     try {
       if (Number(authUserId) === Number(targetId)) {
         throw new HttpException(
@@ -38,15 +38,17 @@ export class UserConnectionService {
 
       const authUser = await this.userService.findOne({ id: authUserId });
       const targetUser = await this.userService.findOne({ id: targetId });
-      const connectionExists = await this.userConnectionRepository.findOne({
-        target: targetId,
-        owner: authUserId,
-      });
+      const connectionExists =
+        await this.userConnectionRepository.findOneOrFail({
+          target: targetId,
+          owner: authUserId,
+        });
 
-      const inversedConnection = await this.userConnectionRepository.findOne({
-        target: authUserId,
-        owner: targetId,
-      });
+      const inviteConnection =
+        await this.userConnectionRepository.findOneOrFail({
+          target: authUserId,
+          owner: targetId,
+        });
 
       if (connectionExists) {
         throw new HttpException(
@@ -61,14 +63,16 @@ export class UserConnectionService {
 
       await this.userConnectionRepository.persistAndFlush(newConnection);
 
-      if (inversedConnection) {
-        await this.notificationsService.create(inversedConnection.owner.id, {
+      if (inviteConnection) {
+        // connection
+        await this.notificationsService.create(inviteConnection.owner.id, {
           alias: NotificationAlias.NEW_CONNECTION_ACCEPTED,
           subject: NotificationSubject.newConnectionAccepted,
           content: `com ${newConnection.owner.username}`,
           jsonData: { ...newConnection },
         });
       } else {
+        //invite
         await this.notificationsService.create(newConnection.target.id, {
           alias: NotificationAlias.NEW_CONNECTION,
           subject: NotificationSubject.newConnection,
@@ -79,7 +83,7 @@ export class UserConnectionService {
 
       return newConnection;
     } catch (error) {
-      throw new HttpException(error.message, 400);
+      throw error;
     }
   }
 
@@ -109,16 +113,16 @@ export class UserConnectionService {
 
   async update(
     authUserId: number,
-    connectionId: number,
+    connectionUserId: number,
     updateConnectionDto: UpdateConnectionDto,
   ) {
     try {
-      const connection = await this.userConnectionRepository.findOne(
+      const connection = await this.userConnectionRepository.findOneOrFail(
         {
-          id: connectionId,
+          target: connectionUserId,
           owner: authUserId,
         },
-        ['target.profile.file'],
+        ['target.profile.file', 'owner'],
       );
 
       connection.isBlocked = updateConnectionDto.isBlocked;
@@ -150,7 +154,7 @@ export class UserConnectionService {
 
   async delete(authUserId: number, connectionId: number) {
     try {
-      const connection = await this.userConnectionRepository.findOne({
+      const connection = await this.userConnectionRepository.findOneOrFail({
         id: connectionId,
         owner: authUserId,
       });

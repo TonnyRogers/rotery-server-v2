@@ -10,13 +10,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { RequestUser } from 'utils/types';
+import { ParamId, RequestUser } from 'utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
 import { ItinerariesService } from './itineraries.service';
 
-@UseGuards(JwtAuthGuard)
 @Controller('itineraries')
 export class ItinerariesController {
   constructor(
@@ -24,6 +23,7 @@ export class ItinerariesController {
     private itinerariesService: ItinerariesService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async newItinerary(
     @Body() createItineraryDto: CreateItineraryDto,
@@ -35,11 +35,32 @@ export class ItinerariesController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/invite')
+  async inviteUser(
+    @Param() params: ParamId,
+    @Req() request: RequestUser,
+    @Body() inviteItineraryDto: { userId: number },
+  ) {
+    return this.itinerariesService.invite(
+      request.user.userId,
+      inviteItineraryDto.userId,
+      params.id,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getItineraries(@Req() request: RequestUser) {
     return this.itinerariesService.findAll(request.user.userId);
   }
 
+  @Get(':id/details')
+  async getItinerary(@Param() params: ParamId) {
+    return this.itinerariesService.show(params.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateItinerary(
     @Param() params: { id: number },
@@ -53,6 +74,7 @@ export class ItinerariesController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async removeItinerary(
     @Param() params: { id: number },

@@ -5,8 +5,12 @@ import { UsersService } from '../users/users.service';
 import { CreateDirectMessageDto } from './dto/create-message.dto';
 import { DirectMessage } from '../../entities/direct-message.entity';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationAlias } from 'src/entities/notification.entity';
-import { NotificationSubject } from 'utils/types';
+
+const messagePopulate = [
+  'sender.profile.file',
+  'receiver.profile.file',
+  'file',
+];
 
 @Injectable()
 export class DirectMessagesService {
@@ -24,7 +28,7 @@ export class DirectMessagesService {
     try {
       return this.directMessageRepository.find(
         { receiver: authUser },
-        ['sender.profile.file', 'file'],
+        messagePopulate,
         undefined,
         limit,
         last,
@@ -43,14 +47,16 @@ export class DirectMessagesService {
       const sender = await this.usersService.findOne({ id: authUser });
       const receiver = await this.usersService.findOne({ id: receiverId });
       const newMessage = new DirectMessage({
-        sender: 'id' in sender && sender,
+        sender: sender,
         ...createDirectMessageDto,
-        receiver: 'id' in receiver && receiver,
+        receiver: receiver,
       });
 
       await this.directMessageRepository.persistAndFlush(newMessage);
 
-      return newMessage;
+      const message = await this.findOne(newMessage.id);
+
+      return message;
     } catch (error) {
       throw new HttpException('Error on send message.', 400);
     }
@@ -58,10 +64,10 @@ export class DirectMessagesService {
 
   async findOne(id: number) {
     try {
-      return this.directMessageRepository.findOneOrFail({ id }, [
-        'sender.profile.file',
-        'file',
-      ]);
+      return this.directMessageRepository.findOneOrFail(
+        { id },
+        messagePopulate,
+      );
     } catch (error) {
       throw new HttpException("Can't find this message.", 404);
     }
@@ -76,7 +82,7 @@ export class DirectMessagesService {
             { sender: authUserId, receiver: receiverId },
           ],
         },
-        ['sender.profile.file', 'receiver.profile.file', 'file'],
+        messagePopulate,
         { createdAt: -1 },
       );
 

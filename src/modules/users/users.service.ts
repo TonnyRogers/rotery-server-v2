@@ -22,7 +22,7 @@ export class UsersService {
   ) {}
 
   private async validateEmail(createUserDto: CreateUserDto) {
-    const foundedUser = await this.usersRepository.findOne({
+    const foundedUser = await this.usersRepository.findOneOrFail({
       email: createUserDto.email,
     });
 
@@ -35,7 +35,7 @@ export class UsersService {
   }
 
   private async validateUsername(createUserDto: CreateUserDto) {
-    const foundedUser = await this.usersRepository.findOne({
+    const foundedUser = await this.usersRepository.findOneOrFail({
       username: createUserDto.username,
     });
 
@@ -47,18 +47,20 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(username: string) {
     try {
-      return await this.usersRepository.findAll();
+      return await this.usersRepository.find(
+        {
+          username: { $like: '%' + username + '%' },
+        },
+        { populate: ['profile.file'] },
+      );
     } catch (error) {
       throw new HttpException('Users not found.', HttpStatus.NOT_FOUND);
     }
   }
 
-  async findOne(
-    options: FindAllAttrs,
-    passPwd = false,
-  ): Promise<User | HttpException> {
+  async findOne(options: FindAllAttrs, passPwd = false): Promise<User> {
     try {
       const findOptions = {};
 
@@ -91,21 +93,24 @@ export class UsersService {
 
       return sanizedUser;
     } catch (error) {
-      throw new HttpException("Can't create user.", HttpStatus.NOT_FOUND);
+      throw error;
     }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(authUserId: number, updateUserDto: UpdateUserDto) {
     try {
-      return await this.usersRepository.nativeUpdate({ id }, updateUserDto);
+      return await this.usersRepository.nativeUpdate(
+        { id: authUserId },
+        updateUserDto,
+      );
     } catch (error) {
       throw new HttpException("Can't update user.", HttpStatus.NOT_FOUND);
     }
   }
 
-  async delete(id: number) {
+  async delete(authUserId: number) {
     try {
-      await this.usersRepository.nativeDelete({ id });
+      await this.usersRepository.nativeDelete({ id: authUserId });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -121,7 +126,7 @@ export class UsersService {
 
   async setNewPassword(id: number, password: string) {
     try {
-      const user = await this.usersRepository.findOne({ id });
+      const user = await this.usersRepository.findOneOrFail({ id });
       user.password = await hashPassword(password);
       this.usersRepository.flush();
 
@@ -133,7 +138,9 @@ export class UsersService {
 
   async activate(code: string) {
     try {
-      const user = await this.usersRepository.findOne({ activationCode: code });
+      const user = await this.usersRepository.findOneOrFail({
+        activationCode: code,
+      });
 
       if (!user) {
         throw new HttpException(

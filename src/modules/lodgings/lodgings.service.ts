@@ -38,7 +38,7 @@ export class LodgingsService {
 
   async findOne(lodgingName: string) {
     try {
-      return this.lodgingRepository.findOne({ name: lodgingName });
+      return this.lodgingRepository.findOneOrFail({ name: lodgingName });
     } catch (error) {
       throw new HttpException('Error on list lodgings.', 400);
     }

@@ -1,8 +1,9 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { NotificationAlias } from 'src/entities/notification.entity';
-import { NotificationSubject } from 'utils/types';
+
+import { NotificationAlias } from '../../entities/notification.entity';
+import { NotificationSubject } from '../../../utils/types';
 import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
@@ -30,7 +31,19 @@ export class ItineraryQuestionsService {
     try {
       return this.itineraryQuestionRepository.find({ itinerary: itineraryId }, [
         'owner.profile.file',
+        'itinerary',
       ]);
+    } catch (error) {
+      throw new HttpException("Can't find any question", 400);
+    }
+  }
+
+  async findOne(itineraryQuestionId: string) {
+    try {
+      return this.itineraryQuestionRepository.findOneOrFail(
+        { id: itineraryQuestionId },
+        ['owner.profile.file'],
+      );
     } catch (error) {
       throw new HttpException("Can't find any question", 400);
     }
@@ -46,18 +59,20 @@ export class ItineraryQuestionsService {
       const user = await this.usersService.findOne({ id: authUserId });
 
       const newQuestion = new ItineraryQuestion({
-        itinerary: 'id' in itinerary && itinerary,
-        owner: 'id' in user && user,
+        itinerary: itinerary,
+        owner: user,
         ...createItineraryQuestionDto,
       });
 
       await this.itineraryQuestionRepository.persistAndFlush(newQuestion);
 
+      const selectedQuestion = await this.findOne(newQuestion.id);
+
       await this.notificationsService.create(itinerary.owner.id, {
         alias: NotificationAlias.ITINERARY_QUESTION,
         subject: NotificationSubject.itineraryQuestion,
         content: `em ${itinerary.name}`,
-        jsonData: { ...itinerary },
+        jsonData: selectedQuestion,
       });
 
       return newQuestion;
@@ -78,9 +93,9 @@ export class ItineraryQuestionsService {
         return new HttpException("Can't answer this question.", 403);
       }
 
-      const itineraryQuestion = await this.itineraryQuestionRepository.findOne({
-        id: String(replyItineraryQuestionDto.questionId),
-      });
+      const itineraryQuestion = await this.findOne(
+        String(replyItineraryQuestionDto.questionId),
+      );
 
       itineraryQuestion.answer = replyItineraryQuestionDto.answer;
 
@@ -90,7 +105,7 @@ export class ItineraryQuestionsService {
         alias: NotificationAlias.ITINERARY_ANSWER,
         subject: NotificationSubject.itineraryAnswer,
         content: `em ${itinerary.name}`,
-        jsonData: { ...itinerary },
+        jsonData: itineraryQuestion,
       });
 
       return itineraryQuestion;

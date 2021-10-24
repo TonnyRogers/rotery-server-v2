@@ -4,9 +4,10 @@ import {
   Inject,
   Param,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId } from 'utils/types';
+import { ParamId, RequestUser } from 'utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FeedItinerariesService } from './feed-itineraries.service';
 
@@ -19,8 +20,8 @@ export class FeedItinerariesController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async feed(@Query() filter: any) {
-    return this.feedItinerariesService.findAll(filter);
+  async feed(@Req() request: RequestUser, @Query() filter: any) {
+    return this.feedItinerariesService.findAll(request.user.userId, filter);
   }
 
   @Get(':id')

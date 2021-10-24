@@ -23,6 +23,16 @@ export class ItinerariesRatingsService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
+  async findOne(itineraryRatingId: string) {
+    try {
+      return this.ItinerariesRatingsRepository.findOneOrFail({
+        id: itineraryRatingId,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(
     itineraryId: number,
     createItineraryRatingDto: CreateItineraryRatingDto,
@@ -35,12 +45,14 @@ export class ItinerariesRatingsService {
       });
       await this.ItinerariesRatingsRepository.persistAndFlush(newRating);
 
+      const selectedRating = await this.findOne(newRating.id);
+
       itinerary.members.getItems().forEach(async (member) => {
         const notificationPayload: CreateNotificationPayload = {
           alias: NotificationAlias.ITINERARY_RATE,
           subject: NotificationSubject.itineraryRate,
           content: `${itinerary.name}`,
-          jsonData: { ...itinerary },
+          jsonData: selectedRating,
         };
 
         await this.notificationsService.create(

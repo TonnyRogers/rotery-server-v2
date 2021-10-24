@@ -1,4 +1,5 @@
 export const itineraryRelations = [
+  'owner.profile.file',
   'photos.file',
   'activities.activity',
   'lodgings.lodging',

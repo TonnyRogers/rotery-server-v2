@@ -38,7 +38,7 @@ export class TransportsService {
 
   async findOne(transportName: string) {
     try {
-      return this.TransportRepository.findOne({ name: transportName });
+      return this.TransportRepository.findOneOrFail({ name: transportName });
     } catch (error) {
       throw new HttpException('Error on list transports.', 400);
     }

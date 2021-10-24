@@ -99,7 +99,17 @@ export class ChatSocketGateway {
         );
       }
 
-      return { message: 'Message sended.', statusCode: 201 };
+      client.emit(`${chatName}:${userId}sended`, {
+        message: 'Message sended.',
+        statusCode: 201,
+        payload: newMessage,
+      });
+
+      return {
+        message: 'Message sended.',
+        statusCode: 201,
+        payload: newMessage,
+      };
     } catch (error) {
       return error;
     }

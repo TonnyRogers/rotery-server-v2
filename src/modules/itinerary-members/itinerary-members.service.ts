@@ -1,6 +1,6 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Itinerary } from '../../entities/itinerary.entity';
 import { ItineraryMember } from '../../entities/itinerary-member.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
@@ -10,10 +10,10 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { DemoteMemberDto } from './dto/demote-member.dto';
 import { PromoteMemberDto } from './dto/promote-member.dto';
 import { RefuseMemberDto } from './dto/refuse-member.dto';
-import { itineraryRelations } from 'utils/constants';
+import { itineraryRelations } from '../../../utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationAlias } from 'src/entities/notification.entity';
-import { NotificationSubject } from 'utils/types';
+import { NotificationAlias } from '../../entities/notification.entity';
+import { NotificationSubject } from '../../../utils/types';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
@@ -33,6 +33,17 @@ export class ItineraryMembersService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
+  async findOne(itineraryMemberId: string) {
+    try {
+      return this.itineraryMemberRepository.findOneOrFail(
+        { id: itineraryMemberId },
+        ['user.profile.file'],
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(
     authUserId: number,
     itineraryId: number,
@@ -42,13 +53,13 @@ export class ItineraryMembersService {
       const itinerary = await this.itinerariesService.show(itineraryId);
 
       if (itinerary.owner.id === authUserId) {
-        return new HttpException("You can't join to your itinerary.", 401);
+        throw new HttpException("You can't join to your itinerary.", 401);
       }
 
       const userDate = new Date(Date.parse(createMemberDto.currentDate));
 
       if (itinerary.deadlineForJoin.getTime() < userDate.getTime()) {
-        return new HttpException(
+        throw new HttpException(
           "You can't join to this itinerary anymore.",
           401,
         );
@@ -56,22 +67,24 @@ export class ItineraryMembersService {
 
       const user = await this.usersService.findOne({ id: authUserId });
       const newMember = new ItineraryMember({
-        itinerary: 'id' in itinerary && itinerary,
-        user: 'id' in user && user,
+        itinerary: itinerary,
+        user: user,
       });
 
       await this.itineraryMemberRepository.persistAndFlush(newMember);
+
+      const selectedMember = await this.findOne(newMember.id);
 
       await this.notificationsService.create(itinerary.owner.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_REQUEST,
         subject: NotificationSubject.memberRequest,
         content: `em ${itinerary.name}`,
-        jsonData: { ...itinerary },
+        jsonData: selectedMember,
       });
 
       return newMember;
     } catch (error) {
-      throw new HttpException('Error on join in itinerary', 400);
+      throw error;
     }
   }
 
@@ -92,9 +105,9 @@ export class ItineraryMembersService {
     acceptMemberDto: AcceptMemberDto,
   ) {
     try {
-      const member = await this.itineraryMemberRepository.findOne(
+      const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          user: acceptMemberDto.userId,
+          id: String(acceptMemberDto.memberId),
           itinerary: { id: itineraryId, owner: authUserId },
         },
         ['itinerary.owner'],
@@ -104,11 +117,13 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      const selectedMember = await this.findOne(member.id);
+
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_ACCEPTED,
         subject: NotificationSubject.memberAccept,
         content: `em ${member.itinerary.name}`,
-        jsonData: { ...member.itinerary },
+        jsonData: selectedMember,
       });
 
       return member;
@@ -123,10 +138,10 @@ export class ItineraryMembersService {
     refuseMemberDto: RefuseMemberDto,
   ) {
     try {
-      const member = await this.itineraryMemberRepository.findOne(
+      const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           itinerary: { id: itineraryId, owner: authUserId },
-          user: refuseMemberDto.userId,
+          id: String(refuseMemberDto.memberId),
         },
         ['itinerary.owner', 'user'],
       );
@@ -135,11 +150,13 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      const selectedMember = await this.findOne(member.id);
+
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_REJECTED,
         subject: NotificationSubject.memberReject,
         content: `em ${member.itinerary.name}`,
-        jsonData: { ...member.itinerary },
+        jsonData: selectedMember,
       });
 
       return member;
@@ -154,10 +171,10 @@ export class ItineraryMembersService {
     promoteMemberDto: PromoteMemberDto,
   ) {
     try {
-      const member = await this.itineraryMemberRepository.findOne(
+      const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           itinerary: { id: itineraryId, owner: authUserId },
-          user: promoteMemberDto.userId,
+          id: String(promoteMemberDto.memberId),
         },
         ['itinerary.owner', 'user'],
       );
@@ -166,11 +183,13 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      const selectedMember = await this.findOne(member.id);
+
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_PROMOTED,
         subject: NotificationSubject.memberPromoted,
         content: `em ${member.itinerary.name}`,
-        jsonData: { ...member.itinerary },
+        jsonData: selectedMember,
       });
 
       return member;
@@ -185,9 +204,9 @@ export class ItineraryMembersService {
     demoteMemberDto: DemoteMemberDto,
   ) {
     try {
-      const member = await this.itineraryMemberRepository.findOne(
+      const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          user: demoteMemberDto.userId,
+          id: String(demoteMemberDto.memberId),
           itinerary: { id: itineraryId, owner: authUserId },
         },
         ['itinerary.owner', 'user'],
@@ -197,16 +216,37 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
+      const selectedMember = await this.findOne(member.id);
+
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_DEMOTED,
         subject: NotificationSubject.memberDemoted,
         content: `em ${member.itinerary.name}`,
-        jsonData: { ...member.itinerary },
+        jsonData: selectedMember,
       });
 
       return member;
     } catch (error) {
       throw new HttpException('Error on demote member', 401);
+    }
+  }
+
+  async leave(authUserId: number, itineraryId: number) {
+    try {
+      const itineraryMember =
+        await this.itineraryMemberRepository.findOneOrFail({
+          itinerary: itineraryId,
+          user: authUserId,
+        });
+
+      return await this.itineraryMemberRepository.removeAndFlush(
+        itineraryMember,
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Error on leave itinerary',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

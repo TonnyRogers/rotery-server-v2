@@ -7,6 +7,8 @@ import { digitalSpaces } from 'src/config';
 import { s3 } from '../../providers/spaces';
 import { File } from '../../entities/file.entity';
 
+export type FilePathOption = 'upload' | 'upload/avatar';
+
 @Injectable()
 export class FilesService {
   constructor(
@@ -23,7 +25,10 @@ export class FilesService {
     }
   }
 
-  async uploadImage(file: Express.Multer.File): Promise<File> {
+  async uploadImage(
+    file: Express.Multer.File,
+    filePathOption: FilePathOption,
+  ): Promise<File> {
     try {
       const { mimetype } = file;
       const fileSuffix = Date.now() + Math.round(Math.random() * 1e9);
@@ -40,7 +45,7 @@ export class FilesService {
         const options: S3.PutObjectRequest = {
           Bucket: digitalSpaces.bucket,
           ACL: 'public-read',
-          Key: `upload/${fileName}`,
+          Key: `${filePathOption}/${fileName}`,
           Body: file.buffer,
           ContentType: file.mimetype,
         };

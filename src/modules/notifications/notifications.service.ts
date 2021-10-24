@@ -34,7 +34,7 @@ export class NotificationsService {
         ...notificationPayload,
       });
 
-      this.notificationRepository.persistAndFlush(newNotification);
+      await this.notificationRepository.persistAndFlush(newNotification);
 
       if (withPush) {
         const fbNotificationPayload: FirebaseNotificationPayload = {
@@ -51,10 +51,10 @@ export class NotificationsService {
       }
 
       if (withWebSocket) {
-        this.notificationsGateway.send(
-          'id' in user && user.id,
-          newNotification,
-        );
+        this.notificationsGateway.send('id' in user && user.id, {
+          ...newNotification,
+          jsonData: notificationPayload.jsonData,
+        });
       }
 
       return newNotification;
@@ -76,7 +76,7 @@ export class NotificationsService {
 
   async read(authUserId: number, notificationId: number) {
     try {
-      const notification = await this.notificationRepository.findOne({
+      const notification = await this.notificationRepository.findOneOrFail({
         user: authUserId,
         id: String(notificationId),
       });

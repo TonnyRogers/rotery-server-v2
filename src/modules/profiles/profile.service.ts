@@ -10,7 +10,16 @@ import {
 import { User } from '../../entities/user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Profile } from '../../entities/profile.entity';
+import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
 
+const profilePopulate = [
+  'user',
+  'user.email',
+  'file',
+  'phone',
+  'document',
+  'locationJson',
+];
 @Injectable()
 export class ProfileService {
   constructor(
@@ -35,10 +44,6 @@ export class ProfileService {
       );
 
       delete profilePayload.user.id;
-      delete profilePayload.phone;
-      delete profilePayload.name;
-      delete profilePayload.document;
-      delete profilePayload.locationJson;
       delete profilePayload.id;
 
       return profilePayload;
@@ -49,16 +54,36 @@ export class ProfileService {
 
   async show(authUserId: number) {
     try {
-      return await this.profileRepository.findOneOrFail(
+      const profile = await this.profileRepository.findOneOrFail(
         { user: { id: authUserId } },
-        ['user', 'file'],
+        profilePopulate,
       );
+
+      return profile;
     } catch (error) {
       throw new NotFoundException(error);
     }
   }
 
   async update(id: number, updateProfileDto: UpdateProfileDto) {
+    try {
+      await this.profileRepository.nativeUpdate(
+        { user: { id } },
+        updateProfileDto,
+      );
+
+      const profile = await this.profileRepository.findOneOrFail(
+        { user: { id } },
+        profilePopulate,
+      );
+
+      return profile;
+    } catch (error) {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async updateAvatar(id: number, updateProfileDto: UpdateProfileFileDto) {
     try {
       await this.profileRepository.nativeUpdate(
         { user: { id } },

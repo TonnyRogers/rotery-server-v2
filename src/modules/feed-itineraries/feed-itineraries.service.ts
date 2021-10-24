@@ -14,7 +14,10 @@ export class FeedItinerariesService {
     private feedItinerariesRepository: EntityRepository<Itinerary>,
   ) {}
 
-  async findAll(filter: QueryFilter): Promise<PaginatedResponse<Itinerary>> {
+  async findAll(
+    auuthUserId: number,
+    filter: QueryFilter,
+  ): Promise<PaginatedResponse<Itinerary>> {
     try {
       const { limit = 10, page = 1, ...rest } = filter;
 
@@ -58,6 +61,7 @@ export class FeedItinerariesService {
         {
           status: ItineraryStatus.ACTIVE,
           ...dynamicFilter,
+          $not: { owner: auuthUserId },
         },
         { populate: itineraryRelations, offset, limit },
       );
@@ -83,7 +87,7 @@ export class FeedItinerariesService {
 
   async findOne(itineraryId: number) {
     try {
-      return this.feedItinerariesRepository.findOne(
+      return this.feedItinerariesRepository.findOneOrFail(
         { id: itineraryId },
         itineraryRelations,
       );

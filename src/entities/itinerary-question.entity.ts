@@ -41,6 +41,6 @@ export class ItineraryQuestion {
   @Property()
   createdAt: Date = new Date();
 
-  @Property()
+  @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 }

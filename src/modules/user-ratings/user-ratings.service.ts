@@ -18,7 +18,7 @@ export class UserRatingsService {
     try {
       const user = await this.usersService.findOne({ id: userId });
       const newRating = new UserRating({
-        user: 'id' in user && user,
+        user: user,
         ...createUserRatingDto,
       });
       await this.userRatingsRepository.persistAndFlush(newRating);

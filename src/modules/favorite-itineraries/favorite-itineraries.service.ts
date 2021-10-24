@@ -15,9 +15,9 @@ export class FavoriteItinerariesService {
 
   async list(authUserId: number) {
     try {
-      const user = await this.userRepository.findOne({ id: authUserId }, [
+      const user = await this.userRepository.findOneOrFail({ id: authUserId }, [
         'favoriteItineraries.owner.profile.file',
-        'favoriteItineraries.photos',
+        'favoriteItineraries.photos.file',
         'favoriteItineraries.members.user',
         'favoriteItineraries.questions',
         'favoriteItineraries.activities',
@@ -34,7 +34,7 @@ export class FavoriteItinerariesService {
 
   async add(authUserId: number, itineraryId: number) {
     try {
-      const user = await this.userRepository.findOne({ id: authUserId });
+      const user = await this.userRepository.findOneOrFail({ id: authUserId });
       const itinerary = await this.itinerariesService.show(itineraryId);
 
       user.favoriteItineraries.add(itinerary);
@@ -48,7 +48,7 @@ export class FavoriteItinerariesService {
 
   async remove(authUserId: number, itineraryId: number) {
     try {
-      const user = await this.userRepository.findOne({ id: authUserId }, [
+      const user = await this.userRepository.findOneOrFail({ id: authUserId }, [
         'favoriteItineraries',
       ]);
       const itinerary = await this.itinerariesService.show(itineraryId);

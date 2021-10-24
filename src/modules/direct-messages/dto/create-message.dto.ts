@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { User } from '../../../entities/user.entity';
 import { MessageType } from '../../../entities/direct-message.entity';
 
 export class CreateDirectMessageDto {
   @ApiProperty()
-  receiver: User;
+  receiver: { id: number };
 
   @ApiProperty()
   @IsNotEmpty()
@@ -13,7 +12,7 @@ export class CreateDirectMessageDto {
   message: string;
 
   @ApiProperty()
-  jsonData: Record<string, unknown>;
+  jsonData: Record<string | number, unknown>;
 
   @ApiProperty()
   type: MessageType;

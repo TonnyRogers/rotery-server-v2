@@ -24,7 +24,7 @@ export class ResetPasswordsService {
         email: resetPasswordDto.email,
       });
 
-      const reset = await this.resetPasswordsRepository.findOne({
+      const reset = await this.resetPasswordsRepository.findOneOrFail({
         user: 'id' in user && user.id,
       });
 
@@ -48,7 +48,7 @@ export class ResetPasswordsService {
     try {
       const dateNow = moment().valueOf();
 
-      const findReset = await this.resetPasswordsRepository.findOne({
+      const findReset = await this.resetPasswordsRepository.findOneOrFail({
         code: String(code),
       });
 

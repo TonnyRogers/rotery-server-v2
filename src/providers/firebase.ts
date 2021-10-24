@@ -23,7 +23,7 @@ async function sendMessage(message: messaging.Message) {
     const messageId = await admin.messaging().send(message);
     return messageId;
   } catch (error) {
-    throw error;
+    console.log(error);
   }
 }
 

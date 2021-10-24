@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,8 +37,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get()
   @HttpCode(200)
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: { username: string }) {
+    return this.userService.findAll(query.username);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -57,7 +58,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete()
   @HttpCode(201)
-  async delete(@Req() request: any) {
+  async delete(@Req() request: RequestUser) {
     return this.userService.delete(request.user.userId);
   }
 

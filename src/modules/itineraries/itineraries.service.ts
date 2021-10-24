@@ -15,6 +15,9 @@ import { CreateNotificationPayload } from '../notifications/interfaces/create-no
 import { NotificationAlias } from 'src/entities/notification.entity';
 import { NotificationSubject } from 'utils/types';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { DirectMessagesService } from '../direct-messages/direct-messages.service';
+import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
+import { MessageType } from 'src/entities/direct-message.entity';
 
 @Injectable()
 export class ItinerariesService {
@@ -35,6 +38,8 @@ export class ItinerariesService {
     private readonly notificationsService: NotificationsService,
     @Inject(NotificationsGateway)
     private readonly notificationsGateway: NotificationsGateway,
+    @Inject(DirectMessagesService)
+    private readonly directMessagesService: DirectMessagesService,
   ) {}
 
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
@@ -127,9 +132,12 @@ export class ItinerariesService {
 
   async show(id: number) {
     try {
-      return await this.itineraryRepository.findOne({ id }, itineraryRelations);
+      return await this.itineraryRepository.findOneOrFail(
+        { id },
+        itineraryRelations,
+      );
     } catch (error) {
-      throw error;
+      throw new HttpException('Error on find itinerary.', 404);
     }
   }
 
@@ -139,7 +147,7 @@ export class ItinerariesService {
     updateUserDto: UpdateItineraryDto,
   ) {
     try {
-      const itinerary = await this.itineraryRepository.findOne(
+      const itinerary = await this.itineraryRepository.findOneOrFail(
         {
           owner: authUserId,
           id: itineraryId,
@@ -170,7 +178,9 @@ export class ItinerariesService {
       itinerary.description = description;
       itinerary.capacity = capacity;
       itinerary.location = location;
-      itinerary.locationJson = locationJson;
+      if (locationJson) {
+        itinerary.locationJson = locationJson;
+      }
       itinerary.isPrivate = isPrivate;
 
       const newActivityList = [];
@@ -183,7 +193,7 @@ export class ItinerariesService {
           itinerary: itinerary.id,
         });
 
-        updateUserDto.activities.forEach(async (activity) => {
+        updateUserDto.activities.forEach((activity) => {
           const newActivity = new ItineraryActivity({
             itinerary: itinerary.id,
             ...activity,
@@ -197,7 +207,7 @@ export class ItinerariesService {
           itinerary: itinerary.id,
         });
 
-        updateUserDto.transports.forEach(async (transport) => {
+        updateUserDto.transports.forEach((transport) => {
           const newTransport = new ItineraryTransport({
             itinerary: itinerary.id,
             ...transport,
@@ -211,7 +221,7 @@ export class ItinerariesService {
           itinerary: itinerary.id,
         });
 
-        updateUserDto.lodgings.forEach(async (lodging) => {
+        updateUserDto.lodgings.forEach((lodging) => {
           const newLodging = new ItineraryLodging({
             itinerary: itinerary.id,
             ...lodging,
@@ -234,7 +244,6 @@ export class ItinerariesService {
         });
       }
 
-      await this.itineraryRepository.flush();
       newActivityList.length > 0 &&
         (await this.itineraryActivityRepository.persistAndFlush(
           newActivityList,
@@ -247,6 +256,8 @@ export class ItinerariesService {
         ));
       newPhotoList.length > 0 &&
         (await this.itineraryPhotoRepository.persistAndFlush(newPhotoList));
+
+      await this.itineraryRepository.flush();
 
       itinerary.members.getItems().forEach(async (member) => {
         if (member.isAccepted === true) {
@@ -264,9 +275,7 @@ export class ItinerariesService {
         }
       });
 
-      const updatedItinerary = await this.show(itineraryId);
-
-      return updatedItinerary;
+      return await this.show(itineraryId);
     } catch (error) {
       throw error;
     }
@@ -274,7 +283,7 @@ export class ItinerariesService {
 
   async delete(authUserId: number, itineraryId: number) {
     try {
-      const itinerary = await this.itineraryRepository.findOne(
+      const itinerary = await this.itineraryRepository.findOneOrFail(
         {
           owner: { id: authUserId },
           id: itineraryId,
@@ -304,6 +313,47 @@ export class ItinerariesService {
       });
 
       return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async invite(authUserId: number, userId: number, itineraryId: number) {
+    try {
+      const { name, location, begin, id } =
+        await this.itineraryRepository.findOneOrFail({
+          id: itineraryId,
+        });
+      const user = await this.usersService.findOne({ id: authUserId });
+
+      const itineraryPayload = {
+        name,
+        location,
+        begin,
+        id,
+      };
+
+      const newMessagPayload: CreateDirectMessageDto = {
+        jsonData: { ...itineraryPayload },
+        message: '',
+        type: MessageType.ITINERARY_INVITE,
+        receiver: { id: userId },
+      };
+
+      const newMessage = await this.directMessagesService.create(
+        authUserId,
+        userId,
+        newMessagPayload,
+      );
+
+      const notificationPayload: CreateNotificationPayload = {
+        alias: NotificationAlias.NEW_MESSAGE,
+        subject: NotificationSubject.newMessage,
+        content: `de ${user.username}`,
+        jsonData: { ...newMessage },
+      };
+
+      await this.notificationsService.create(userId, notificationPayload);
     } catch (error) {
       throw error;
     }
