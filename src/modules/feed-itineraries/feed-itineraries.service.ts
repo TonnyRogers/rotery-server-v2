@@ -2,9 +2,9 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { HttpException, Injectable } from '@nestjs/common';
 import momentTimezone from 'moment-timezone';
-import { Itinerary, ItineraryStatus } from 'src/entities/itinerary.entity';
-import { itineraryRelations } from 'utils/constants';
-import { PaginatedResponse } from 'utils/types';
+import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
+import { itineraryRelations } from '../../../utils/constants';
+import { PaginatedResponse } from '../../../utils/types';
 import { QueryFilter } from './interfaces/feed-filter';
 
 @Injectable()

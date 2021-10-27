@@ -7,7 +7,7 @@ import { CreateNotificationPayload } from './interfaces/create-notification';
 import {
   FirebaseNotificationPayload,
   sendToUser,
-} from 'src/providers/firebase';
+} from '../../providers/firebase';
 import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()

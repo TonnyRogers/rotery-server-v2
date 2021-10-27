@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ItineraryPhoto } from 'src/entities/itinerary-photo.entity';
+import { ItineraryPhoto } from '../../entities/itinerary-photo.entity';
 import { ItineraryActivity } from '../../entities/itinerary-activity.entity';
 import { ItineraryLodging } from '../../entities/itinerary-lodging.entity';
 import { ItineraryTransport } from '../../entities/itinerary-transport.entity';

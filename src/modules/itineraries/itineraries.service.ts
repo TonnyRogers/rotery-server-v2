@@ -2,7 +2,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ItineraryTransport } from '../../entities/itinerary-transport.entity';
-import { Itinerary, ItineraryStatus } from 'src/entities/itinerary.entity';
+import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { ItineraryActivity } from '../../entities/itinerary-activity.entity';
 import { ItineraryLodging } from '../../entities/itinerary-lodging.entity';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';

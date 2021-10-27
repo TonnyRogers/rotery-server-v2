@@ -6,8 +6,8 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UsersService } from '../users/users.service';
 import moment from 'moment-timezone';
 import { NewPasswordDto } from './dto/new-password.dto';
-import { RabbitMQPublisher } from 'src/providers/rabbit-publisher';
-import { EmailTypes } from 'utils/constants';
+import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
+import { EmailTypes } from '../../../utils/constants';
 
 @Injectable()
 export class ResetPasswordsService {

@@ -4,7 +4,7 @@ import amqp, {
   ChannelWrapper,
 } from 'amqp-connection-manager';
 import { Channel, ConsumeMessage } from 'amqplib';
-import { rabbitmqConfig } from 'src/config';
+import { rabbitmqConfig } from '../config';
 
 const tlExchange = 'TLX_send_email';
 const dlExchange = 'DLX_send_email';

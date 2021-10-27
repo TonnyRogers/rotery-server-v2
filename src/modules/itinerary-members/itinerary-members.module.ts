@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { Itinerary } from 'src/entities/itinerary.entity';
+import { Itinerary } from '../../entities/itinerary.entity';
 import { ItineraryMember } from '../../entities/itinerary-member.entity';
 import { ItinerariesModule } from '../itineraries/itineraries.module';
 import { NotificationsModule } from '../notifications/notifications.module';

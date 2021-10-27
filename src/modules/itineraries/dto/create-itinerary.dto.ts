@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsDateString, IsNotEmpty } from 'class-validator';
-import { ItineraryActivity } from 'src/entities/itinerary-activity.entity';
-import { ItineraryLodging } from 'src/entities/itinerary-lodging.entity';
-import { ItineraryPhoto } from 'src/entities/itinerary-photo.entity';
-import { ItineraryTransport } from 'src/entities/itinerary-transport.entity';
+import { ItineraryActivity } from '../../../entities/itinerary-activity.entity';
+import { ItineraryLodging } from '../../../entities/itinerary-lodging.entity';
+import { ItineraryPhoto } from '../../../entities/itinerary-photo.entity';
+import { ItineraryTransport } from '../../../entities/itinerary-transport.entity';
 
 export class CreateItineraryDto {
   @ApiProperty()

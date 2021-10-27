@@ -1,7 +1,7 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Inject, Injectable } from '@nestjs/common';
-import { UserRating } from 'src/entities/user-rating';
+import { UserRating } from '../../entities/user-rating';
 import { UsersService } from '../users/users.service';
 import { CreateUserRatingDto } from './dto/create-user-rating.dto';
 

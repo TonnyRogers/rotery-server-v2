@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { ItineraryMember } from 'src/entities/itinerary-member.entity';
+import { ItineraryMember } from '../src/entities/itinerary-member.entity';
 
 export interface RequestUser extends Request {
   user: { userId: number };

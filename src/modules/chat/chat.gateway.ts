@@ -7,9 +7,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { NotificationAlias } from 'src/entities/notification.entity';
-import { formatChatName } from 'utils/functions';
-import { NotificationSubject } from 'utils/types';
+import { NotificationAlias } from '../../entities/notification.entity';
+import { formatChatName } from '../../../utils/functions';
+import { NotificationSubject } from '../../../utils/types';
 import { WsJwtGuard } from '../auth/ws.guard';
 import { DirectMessagesService } from '../direct-messages/direct-messages.service';
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
