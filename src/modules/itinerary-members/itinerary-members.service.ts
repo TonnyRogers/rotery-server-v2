@@ -107,7 +107,7 @@ export class ItineraryMembersService {
     try {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          id: String(acceptMemberDto.memberId),
+          user: acceptMemberDto.userId,
           itinerary: { id: itineraryId, owner: authUserId },
         },
         ['itinerary.owner'],
@@ -141,7 +141,7 @@ export class ItineraryMembersService {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           itinerary: { id: itineraryId, owner: authUserId },
-          id: String(refuseMemberDto.memberId),
+          user: refuseMemberDto.userId,
         },
         ['itinerary.owner', 'user'],
       );
@@ -174,7 +174,7 @@ export class ItineraryMembersService {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           itinerary: { id: itineraryId, owner: authUserId },
-          id: String(promoteMemberDto.memberId),
+          user: promoteMemberDto.userId,
         },
         ['itinerary.owner', 'user'],
       );
@@ -206,7 +206,7 @@ export class ItineraryMembersService {
     try {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          id: String(demoteMemberDto.memberId),
+          user: demoteMemberDto.userId,
           itinerary: { id: itineraryId, owner: authUserId },
         },
         ['itinerary.owner', 'user'],

@@ -22,7 +22,7 @@ export class UsersService {
   ) {}
 
   private async validateEmail(createUserDto: CreateUserDto) {
-    const foundedUser = await this.usersRepository.findOneOrFail({
+    const foundedUser = await this.usersRepository.findOne({
       email: createUserDto.email,
     });
 
@@ -35,7 +35,7 @@ export class UsersService {
   }
 
   private async validateUsername(createUserDto: CreateUserDto) {
-    const foundedUser = await this.usersRepository.findOneOrFail({
+    const foundedUser = await this.usersRepository.findOne({
       username: createUserDto.username,
     });
 
@@ -60,7 +60,7 @@ export class UsersService {
     }
   }
 
-  async findOne(options: FindAllAttrs, passPwd = false): Promise<User> {
+  async findOne(options: FindAllAttrs): Promise<User> {
     try {
       const findOptions = {};
 
@@ -70,6 +70,21 @@ export class UsersService {
         }
       });
       return await this.usersRepository.findOneOrFail(findOptions);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAndValidate(options: FindAllAttrs): Promise<User> {
+    try {
+      const findOptions = {};
+
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined || value !== null) {
+          findOptions[key] = value;
+        }
+      });
+      return await this.usersRepository.findOne(findOptions);
     } catch (error) {
       throw error;
     }

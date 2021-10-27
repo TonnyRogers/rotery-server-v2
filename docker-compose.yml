@@ -18,6 +18,7 @@ services:
     networks:
       - rotery-services
     restart: always
+
   rabbitmq:
     image: rabbitmq:3.9-management
     container_name: rabbitmq1

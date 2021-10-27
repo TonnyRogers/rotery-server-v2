@@ -82,4 +82,13 @@ export class ItinerariesController {
   ) {
     return this.itinerariesService.delete(request.user.userId, params.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/finish')
+  async finishItinerary(
+    @Param() params: { id: number },
+    @Req() request: RequestUser,
+  ) {
+    return this.itinerariesService.finish(request.user.userId, params.id);
+  }
 }

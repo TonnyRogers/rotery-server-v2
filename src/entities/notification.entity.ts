@@ -10,7 +10,7 @@ import {
 import { User } from './user.entity';
 
 export enum NotificationAlias {
-  ITINERARY_RATE = 'itinerary_rate',
+  ITINERARY_RATE = 'rate_itinerary',
   NEW_MESSAGE = 'new_message',
   ITINERARY_UPDATED = 'itinerary_updated',
   ITINERARY_DELETED = 'itinerary_deleted',
@@ -21,7 +21,7 @@ export enum NotificationAlias {
   ITINERARY_MEMBER_DEMOTED = 'itinerary_member_demoted',
   ITINERARY_QUESTION = 'itinerary_question',
   ITINERARY_ANSWER = 'itinerary_answer',
-  NEW_CONNECTION_ACCEPTED = 'new_connection_accpted',
+  NEW_CONNECTION_ACCEPTED = 'new_connection_accepted',
   NEW_CONNECTION = 'new_connection',
   CONNECTION_BLOCK = 'connection_block',
   CONNECTION_UNBLOCK = 'connection_unblock',

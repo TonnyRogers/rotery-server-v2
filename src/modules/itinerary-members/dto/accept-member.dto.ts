@@ -4,5 +4,5 @@ import { IsNotEmpty } from 'class-validator';
 export class AcceptMemberDto {
   @ApiProperty()
   @IsNotEmpty()
-  memberId: number;
+  userId: number;
 }

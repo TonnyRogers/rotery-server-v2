@@ -7,13 +7,15 @@ import { UpdateConnectionDto } from './dto/update-connection.dto';
 import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationAlias } from '../../entities/notification.entity';
-import { NotificationSubject } from 'utils/types';
+import { NotificationSubject } from '../../../utils/types';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 export interface ConnectionReponse {
   connections: UserConnection[];
   invites: UserConnection[];
 }
+
+const connectionPopulate = ['owner.profile.file', 'target.profile.file'];
 @Injectable()
 export class UserConnectionService {
   constructor(
@@ -38,17 +40,15 @@ export class UserConnectionService {
 
       const authUser = await this.userService.findOne({ id: authUserId });
       const targetUser = await this.userService.findOne({ id: targetId });
-      const connectionExists =
-        await this.userConnectionRepository.findOneOrFail({
-          target: targetId,
-          owner: authUserId,
-        });
+      const connectionExists = await this.userConnectionRepository.findOne({
+        target: targetId,
+        owner: authUserId,
+      });
 
-      const inviteConnection =
-        await this.userConnectionRepository.findOneOrFail({
-          target: authUserId,
-          owner: targetId,
-        });
+      const inviteConnection = await this.userConnectionRepository.findOne({
+        target: authUserId,
+        owner: targetId,
+      });
 
       if (connectionExists) {
         throw new HttpException(
@@ -63,13 +63,18 @@ export class UserConnectionService {
 
       await this.userConnectionRepository.persistAndFlush(newConnection);
 
+      const selectedConnection = await this.userConnectionRepository.findOne(
+        { id: newConnection.id },
+        connectionPopulate,
+      );
+
       if (inviteConnection) {
         // connection
         await this.notificationsService.create(inviteConnection.owner.id, {
           alias: NotificationAlias.NEW_CONNECTION_ACCEPTED,
           subject: NotificationSubject.newConnectionAccepted,
           content: `com ${newConnection.owner.username}`,
-          jsonData: { ...newConnection },
+          jsonData: { ...selectedConnection },
         });
       } else {
         //invite
@@ -77,11 +82,11 @@ export class UserConnectionService {
           alias: NotificationAlias.NEW_CONNECTION,
           subject: NotificationSubject.newConnection,
           content: `com ${newConnection.owner.username}`,
-          jsonData: { ...newConnection },
+          jsonData: { ...selectedConnection },
         });
       }
 
-      return newConnection;
+      return selectedConnection;
     } catch (error) {
       throw error;
     }
@@ -93,13 +98,13 @@ export class UserConnectionService {
         {
           owner: authUserId,
         },
-        ['target.profile.file'],
+        connectionPopulate,
       );
       const invites = await this.userConnectionRepository.find(
         {
           target: authUserId,
         },
-        ['owner.profile.file'],
+        connectionPopulate,
       );
 
       return {
@@ -122,7 +127,7 @@ export class UserConnectionService {
           target: connectionUserId,
           owner: authUserId,
         },
-        ['target.profile.file', 'owner'],
+        connectionPopulate,
       );
 
       connection.isBlocked = updateConnectionDto.isBlocked;
@@ -152,12 +157,21 @@ export class UserConnectionService {
     }
   }
 
-  async delete(authUserId: number, connectionId: number) {
+  async delete(authUserId: number, userId: number) {
     try {
-      const connection = await this.userConnectionRepository.findOneOrFail({
-        id: connectionId,
-        owner: authUserId,
+      const connection = await this.userConnectionRepository.findOne({
+        owner: userId,
+        target: authUserId,
       });
+
+      const connectionReverse = await this.userConnectionRepository.findOne({
+        owner: authUserId,
+        target: connection.owner.id,
+      });
+
+      if (connectionReverse) {
+        await this.userConnectionRepository.removeAndFlush(connectionReverse);
+      }
 
       await this.userConnectionRepository.removeAndFlush(connection);
     } catch (error) {

@@ -1,6 +1,6 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserRating } from 'src/entities/user-rating';
 import { UsersService } from '../users/users.service';
 import { CreateUserRatingDto } from './dto/create-user-rating.dto';
@@ -25,7 +25,7 @@ export class UserRatingsService {
 
       return newRating;
     } catch (error) {
-      throw new HttpException(error.message, error.code);
+      throw error;
     }
   }
 }

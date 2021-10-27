@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { ItineraryMember } from 'src/entities/itinerary-member.entity';
 
 export interface RequestUser extends Request {
   user: { userId: number };
@@ -18,6 +19,15 @@ export type PageMeta = {
 export interface PaginatedResponse<T> {
   items: T[];
   meta: PageMeta;
+}
+
+type ItineraryMemberInterface = typeof ItineraryMember;
+
+export type FullMemberResponse = ItineraryMemberInterface;
+
+export interface CustomMemberResponse
+  extends Omit<FullMemberResponse, 'itinerary'> {
+  itinerary: number;
 }
 
 export enum NotificationSubject {

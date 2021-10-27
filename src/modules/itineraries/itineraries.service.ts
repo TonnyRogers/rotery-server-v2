@@ -1,23 +1,23 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { ItineraryTransport } from 'src/entities/itinerary-transport.entity';
-import { Itinerary } from 'src/entities/itinerary.entity';
-import { ItineraryActivity } from 'src/entities/itinerary-activity.entity';
-import { ItineraryLodging } from 'src/entities/itinerary-lodging.entity';
+import { ItineraryTransport } from '../../entities/itinerary-transport.entity';
+import { Itinerary, ItineraryStatus } from 'src/entities/itinerary.entity';
+import { ItineraryActivity } from '../../entities/itinerary-activity.entity';
+import { ItineraryLodging } from '../../entities/itinerary-lodging.entity';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UsersService } from '../users/users.service';
-import { ItineraryPhoto } from 'src/entities/itinerary-photo.entity';
+import { ItineraryPhoto } from '../../entities/itinerary-photo.entity';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
-import { itineraryRelations } from 'utils/constants';
+import { itineraryRelations } from '../../../utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
-import { NotificationAlias } from 'src/entities/notification.entity';
-import { NotificationSubject } from 'utils/types';
+import { NotificationAlias } from '../../entities/notification.entity';
+import { NotificationSubject } from '../../../utils/types';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { DirectMessagesService } from '../direct-messages/direct-messages.service';
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
-import { MessageType } from 'src/entities/direct-message.entity';
+import { MessageType } from '../../entities/direct-message.entity';
 
 @Injectable()
 export class ItinerariesService {
@@ -354,6 +354,42 @@ export class ItinerariesService {
       };
 
       await this.notificationsService.create(userId, notificationPayload);
+
+      return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async finish(authUserId: number, itineraryId: number) {
+    try {
+      const itinerary = await this.itineraryRepository.findOneOrFail(
+        {
+          id: itineraryId,
+          owner: authUserId,
+        },
+        ['members'],
+      );
+
+      itinerary.status = ItineraryStatus.FINISHED;
+
+      await this.itineraryRepository.flush();
+
+      itinerary.members.getItems().forEach(async (member) => {
+        const notificationPayload: CreateNotificationPayload = {
+          alias: NotificationAlias.ITINERARY_RATE,
+          subject: NotificationSubject.itineraryRate,
+          content: `${itinerary.name}`,
+          jsonData: { id: itinerary.id },
+        };
+
+        await this.notificationsService.create(
+          member.user.id,
+          notificationPayload,
+        );
+      });
+
+      return;
     } catch (error) {
       throw error;
     }
