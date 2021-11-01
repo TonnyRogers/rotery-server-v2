@@ -63,10 +63,7 @@ export class UserConnectionService {
 
       await this.userConnectionRepository.persistAndFlush(newConnection);
 
-      const selectedConnection = await this.userConnectionRepository.findOne(
-        { id: newConnection.id },
-        connectionPopulate,
-      );
+      const selectedConnection = await this.findOne(newConnection.id);
 
       if (inviteConnection) {
         // connection
@@ -116,6 +113,19 @@ export class UserConnectionService {
     }
   }
 
+  async findOne(connectionId: number) {
+    try {
+      const selectedConnection = await this.userConnectionRepository.findOne(
+        { id: connectionId },
+        connectionPopulate,
+      );
+
+      return selectedConnection;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async update(
     authUserId: number,
     connectionUserId: number,
@@ -136,19 +146,33 @@ export class UserConnectionService {
       await this.userConnectionRepository.flush();
 
       if (updateConnectionDto.isBlocked) {
-        await this.notificationsService.create(connection.target.id, {
-          alias: NotificationAlias.CONNECTION_BLOCK,
-          subject: NotificationSubject.connectionBlock,
-          content: `com ${connection.owner.username}`,
-          jsonData: { ...connection },
-        });
+        await this.notificationsService.create(
+          connection.target.id,
+          {
+            alias: NotificationAlias.CONNECTION_BLOCK,
+            subject: NotificationSubject.connectionBlock,
+            content: `com ${connection.owner.username}`,
+            jsonData: { ...connection },
+          },
+          true,
+          true,
+          false,
+          undefined,
+        );
       } else {
-        await this.notificationsService.create(connection.target.id, {
-          alias: NotificationAlias.CONNECTION_UNBLOCK,
-          subject: NotificationSubject.connectionUnblock,
-          content: `com ${connection.owner.username}`,
-          jsonData: { ...connection },
-        });
+        await this.notificationsService.create(
+          connection.target.id,
+          {
+            alias: NotificationAlias.CONNECTION_UNBLOCK,
+            subject: NotificationSubject.connectionUnblock,
+            content: `com ${connection.owner.username}`,
+            jsonData: { ...connection },
+          },
+          true,
+          true,
+          false,
+          undefined,
+        );
       }
 
       return connection;

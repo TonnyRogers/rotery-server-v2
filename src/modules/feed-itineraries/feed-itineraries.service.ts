@@ -60,6 +60,7 @@ export class FeedItinerariesService {
       const items = await this.feedItinerariesRepository.find(
         {
           status: ItineraryStatus.ACTIVE,
+          isPrivate: false,
           ...dynamicFilter,
           $not: { owner: auuthUserId },
         },

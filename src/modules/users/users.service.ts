@@ -69,7 +69,18 @@ export class UsersService {
           findOptions[key] = value;
         }
       });
-      return await this.usersRepository.findOneOrFail(findOptions);
+
+      return this.usersRepository.findOneOrFail(findOptions);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findWithDeviceToken(id: number): Promise<User> {
+    try {
+      return await this.usersRepository.findOne({ id, isActive: true }, [
+        'deviceToken',
+      ]);
     } catch (error) {
       throw error;
     }
@@ -153,7 +164,7 @@ export class UsersService {
 
   async activate(code: string) {
     try {
-      const user = await this.usersRepository.findOneOrFail({
+      const user = await this.usersRepository.findOne({
         activationCode: code,
       });
 

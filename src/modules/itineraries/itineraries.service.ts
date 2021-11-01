@@ -271,6 +271,10 @@ export class ItinerariesService {
           await this.notificationsService.create(
             member.user.id,
             notificationPayload,
+            true,
+            true,
+            true,
+            { id: itinerary.id },
           );
         }
       });

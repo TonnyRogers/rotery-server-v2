@@ -20,7 +20,7 @@
   Para ativar sua conta só clicar no botão abaixo.
 </mj-text>
 
-<mj-button href="https://rotery.com.br/activation/<%= it.activationCode %>" background-color="#4885FD" font-family="roboto" color="#FFF" font-size="18px" align="left">
+<mj-button href="https://rotery.com.br/activation?code=<%= it.activationCode %>" background-color="#4885FD" font-family="roboto" color="#FFF" font-size="18px" align="left">
   Ativar Conta
 </mj-button>
 

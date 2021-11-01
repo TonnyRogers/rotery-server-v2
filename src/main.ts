@@ -11,6 +11,7 @@ async function bootstrap() {
     new ValidationPipe({ transform: true, forbidNonWhitelisted: true }),
   );
   app.use(json({ limit: '50mb' }));
+  app.enableCors({ origin: '*' });
   // app.connectMicroservice<MicroserviceOptions>({
   //   transport: Transport.REDIS,
   //   options: {

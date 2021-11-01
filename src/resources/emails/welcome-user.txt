@@ -8,7 +8,7 @@ roteiros com amigos e conheça outras pessoas.
 
 Para ativar sua conta só clicar no link abaixo.
 
-https://rotery.com.br/activation/<%= it.activationCode %> Nos apoie
+https://rotery.com.br/activation?code=<%= it.activationCode %> Nos apoie
 
 
 Grande abraço. 🤙

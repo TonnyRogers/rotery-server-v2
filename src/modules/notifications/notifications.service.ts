@@ -2,21 +2,21 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Notification } from '../../entities/notification.entity';
-import { UsersService } from '../users/users.service';
 import { CreateNotificationPayload } from './interfaces/create-notification';
 import {
   FirebaseNotificationPayload,
   sendToUser,
 } from '../../providers/firebase';
 import { NotificationsGateway } from './notifications.gateway';
+import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: EntityRepository<Notification>,
-    @Inject(UsersService)
-    private usersService: UsersService,
+    @InjectRepository(User)
+    private usersRepository: EntityRepository<User>,
     @Inject(NotificationsGateway)
     private notificationsGateway: NotificationsGateway,
   ) {}
@@ -26,24 +26,40 @@ export class NotificationsService {
     notificationPayload: CreateNotificationPayload,
     withPush = true,
     withWebSocket = true,
+    withNotification = true,
+    customPushPayload?: any,
   ) {
     try {
-      const user = await this.usersService.findOne({ id: authUserId });
+      const user: User[] = await this.usersRepository
+        .createQueryBuilder('user')
+        .select('"user".id, "user".device_token')
+        .where({ id: authUserId })
+        .execute();
+
+      const userDeviceToken = user[0].deviceToken;
+      delete user[0].deviceToken;
+
       const newNotification = new Notification({
-        user: 'id' in user && user,
+        user: user[0],
         ...notificationPayload,
       });
 
-      await this.notificationRepository.persistAndFlush(newNotification);
+      if (withNotification) {
+        await this.notificationRepository.persistAndFlush(newNotification);
+      }
 
       if (withPush) {
+        const wsPayload = customPushPayload
+          ? customPushPayload
+          : notificationPayload.jsonData;
+
         const fbNotificationPayload: FirebaseNotificationPayload = {
-          tokenId: 'id' in user && user.deviceToken,
+          tokenId: userDeviceToken,
           title: newNotification.subject,
           body: newNotification.content,
           data: {
             alias: newNotification.alias,
-            json_data: JSON.stringify(notificationPayload.jsonData),
+            json_data: JSON.stringify(wsPayload),
           },
         };
 
@@ -51,7 +67,7 @@ export class NotificationsService {
       }
 
       if (withWebSocket) {
-        this.notificationsGateway.send('id' in user && user.id, {
+        this.notificationsGateway.send(user[0].id, {
           ...newNotification,
           jsonData: notificationPayload.jsonData,
         });

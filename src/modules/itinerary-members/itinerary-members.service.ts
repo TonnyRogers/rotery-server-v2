@@ -117,16 +117,20 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
-      const selectedMember = await this.findOne(member.id);
+      const memberPayload = {
+        memberId: member.id,
+        userId: member.user.id,
+        itineraryId: member.itinerary.id,
+      };
 
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_ACCEPTED,
         subject: NotificationSubject.memberAccept,
         content: `em ${member.itinerary.name}`,
-        jsonData: selectedMember,
+        jsonData: memberPayload,
       });
 
-      return member;
+      return await this.findOne(member.id);
     } catch (error) {
       throw new HttpException('Error on accept member', 401);
     }
@@ -148,15 +152,19 @@ export class ItineraryMembersService {
 
       member.deletedAt = new Date(Date.now());
 
-      await this.itineraryMemberRepository.flush();
+      const memberPayload = {
+        memberId: member.id,
+        userId: member.user.id,
+        itineraryId: member.itinerary.id,
+      };
 
-      const selectedMember = await this.findOne(member.id);
+      await this.itineraryMemberRepository.removeAndFlush(member);
 
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_REJECTED,
         subject: NotificationSubject.memberReject,
         content: `em ${member.itinerary.name}`,
-        jsonData: selectedMember,
+        jsonData: memberPayload,
       });
 
       return member;
@@ -183,13 +191,17 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
-      const selectedMember = await this.findOne(member.id);
+      const memberPayload = {
+        memberId: member.id,
+        userId: member.user.id,
+        itineraryId: member.itinerary.id,
+      };
 
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_PROMOTED,
         subject: NotificationSubject.memberPromoted,
         content: `em ${member.itinerary.name}`,
-        jsonData: selectedMember,
+        jsonData: memberPayload,
       });
 
       return member;
@@ -216,13 +228,17 @@ export class ItineraryMembersService {
 
       await this.itineraryMemberRepository.flush();
 
-      const selectedMember = await this.findOne(member.id);
+      const memberPayload = {
+        memberId: member.id,
+        userId: member.user.id,
+        itineraryId: member.itinerary.id,
+      };
 
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_DEMOTED,
         subject: NotificationSubject.memberDemoted,
         content: `em ${member.itinerary.name}`,
-        jsonData: selectedMember,
+        jsonData: memberPayload,
       });
 
       return member;

@@ -16,8 +16,8 @@ export class AppController {
   ) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHello() {
+    return { status: 200, message: 'alive' };
   }
 
   @Post('auth/login')
