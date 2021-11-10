@@ -59,17 +59,25 @@ export class FeedItinerariesService {
 
       const items = await this.feedItinerariesRepository.find(
         {
+          ...dynamicFilter,
           status: ItineraryStatus.ACTIVE,
           isPrivate: false,
-          ...dynamicFilter,
           $not: { owner: auuthUserId },
+          deletedAt: null,
         },
-        { populate: itineraryRelations, offset, limit },
+        { offset, limit },
       );
 
+      await this.feedItinerariesRepository.populate(items, itineraryRelations, {
+        members: { deletedAt: null },
+      });
+
       const totalRecords = await this.feedItinerariesRepository.count({
-        status: ItineraryStatus.ACTIVE,
         ...dynamicFilter,
+        status: ItineraryStatus.ACTIVE,
+        deletedAt: null,
+        $not: { owner: auuthUserId },
+        isPrivate: false,
       });
 
       const meta = {
@@ -88,10 +96,20 @@ export class FeedItinerariesService {
 
   async findOne(itineraryId: number) {
     try {
-      return this.feedItinerariesRepository.findOneOrFail(
-        { id: itineraryId },
+      const feedFind = await this.feedItinerariesRepository.findOneOrFail({
+        id: itineraryId,
+        deletedAt: null,
+      });
+
+      await this.feedItinerariesRepository.populate(
+        feedFind,
         itineraryRelations,
+        {
+          members: { deletedAt: null },
+        },
       );
+
+      return feedFind;
     } catch (error) {
       throw new HttpException("Can't find this itinerary.", 404);
     }

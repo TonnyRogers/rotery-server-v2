@@ -70,7 +70,7 @@ export class UsersService {
         }
       });
 
-      return this.usersRepository.findOneOrFail(findOptions);
+      return this.usersRepository.findOne(findOptions);
     } catch (error) {
       throw error;
     }

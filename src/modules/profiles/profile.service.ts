@@ -15,6 +15,7 @@ import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
 const profilePopulate = [
   'user',
   'user.email',
+  'user.customerId',
   'file',
   'phone',
   'document',

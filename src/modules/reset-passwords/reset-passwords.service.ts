@@ -24,21 +24,23 @@ export class ResetPasswordsService {
         email: resetPasswordDto.email,
       });
 
-      const reset = await this.resetPasswordsRepository.findOneOrFail({
-        user: 'id' in user && user.id,
-      });
+      if (user) {
+        const reset = await this.resetPasswordsRepository.findOne({
+          user: user.id,
+        });
 
-      if (reset) {
-        await this.resetPasswordsRepository.removeAndFlush(reset);
+        if (reset) {
+          await this.resetPasswordsRepository.removeAndFlush(reset);
+        }
+
+        const newReset = new ResetPassword({
+          user: user,
+          code: String(Math.floor(100000 + Math.random() * 900000)),
+          dateLimit: moment().add(1, 'hour').toDate(),
+        });
+
+        await this.resetPasswordsRepository.persistAndFlush(newReset);
       }
-
-      const newReset = new ResetPassword({
-        user: 'id' in user && user,
-        code: String(Math.floor(100000 + Math.random() * 900000)),
-        dateLimit: moment().add(1, 'hour').toDate(),
-      });
-
-      await this.resetPasswordsRepository.persistAndFlush(newReset);
     } catch (error) {
       throw error;
     }
@@ -48,7 +50,7 @@ export class ResetPasswordsService {
     try {
       const dateNow = moment().valueOf();
 
-      const findReset = await this.resetPasswordsRepository.findOneOrFail({
+      const findReset = await this.resetPasswordsRepository.findOne({
         code: String(code),
       });
 

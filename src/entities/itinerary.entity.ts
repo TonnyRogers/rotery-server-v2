@@ -36,6 +36,7 @@ export class Itinerary {
     name,
     owner,
     locationJson,
+    requestPayment,
   }: Omit<
     Itinerary,
     | 'id'
@@ -48,6 +49,7 @@ export class Itinerary {
     | 'transports'
     | 'questions'
     | 'members'
+    | 'deletedAt'
   >) {
     this.begin = begin;
     this.capacity = capacity;
@@ -59,6 +61,7 @@ export class Itinerary {
     this.name = name;
     this.owner = owner;
     this.locationJson = locationJson;
+    this.requestPayment = requestPayment;
   }
 
   @PrimaryKey()
@@ -93,6 +96,9 @@ export class Itinerary {
 
   @Property({ type: 'boolean', default: false })
   isPrivate: boolean;
+
+  @Property({ type: 'boolean', default: false })
+  requestPayment!: boolean;
 
   @ManyToOne({ entity: () => User, onDelete: 'cascade' })
   owner!: User;
@@ -135,4 +141,7 @@ export class Itinerary {
 
   @Property()
   updatedAt: Date = new Date();
+
+  @Property({ nullable: true })
+  deletedAt: Date;
 }

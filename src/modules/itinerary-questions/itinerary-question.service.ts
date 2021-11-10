@@ -29,10 +29,10 @@ export class ItineraryQuestionsService {
 
   async findAll(itineraryId: number) {
     try {
-      return this.itineraryQuestionRepository.find({ itinerary: itineraryId }, [
-        'owner.profile.file',
-        'itinerary',
-      ]);
+      return this.itineraryQuestionRepository.find(
+        { itinerary: { id: itineraryId, deletedAt: null } },
+        ['owner.profile.file', 'itinerary'],
+      );
     } catch (error) {
       throw new HttpException("Can't find any question", 400);
     }

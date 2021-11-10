@@ -92,6 +92,7 @@ export class ItineraryMembersController {
       acceptMemberDto,
     );
   }
+
   @Post('/:id/leave')
   async leaveItinerary(@Param() params: ParamId, @Req() request: RequestUser) {
     return this.itinerarymembersService.leave(request.user.userId, params.id);

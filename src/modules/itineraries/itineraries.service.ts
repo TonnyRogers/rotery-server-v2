@@ -56,6 +56,7 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
+        hasPayment,
       } = createItineraryDto;
 
       const newItinerary = new Itinerary({
@@ -69,6 +70,7 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
+        hasPayment,
       });
 
       createItineraryDto.activities &&
@@ -121,10 +123,16 @@ export class ItinerariesService {
 
   async findAll(authUserId: number) {
     try {
-      return await this.itineraryRepository.find(
-        { owner: authUserId },
-        itineraryRelations,
-      );
+      const itineraries = await this.itineraryRepository.find({
+        owner: authUserId,
+        deletedAt: null,
+      });
+
+      await this.itineraryRepository.populate(itineraries, itineraryRelations, {
+        members: { deletedAt: null },
+      });
+
+      return itineraries;
     } catch (error) {
       throw error;
     }
@@ -132,10 +140,16 @@ export class ItinerariesService {
 
   async show(id: number) {
     try {
-      return await this.itineraryRepository.findOneOrFail(
-        { id },
-        itineraryRelations,
-      );
+      const itineraries = await this.itineraryRepository.findOneOrFail({
+        id,
+        deletedAt: null,
+      });
+
+      await this.itineraryRepository.populate(itineraries, itineraryRelations, {
+        members: { deletedAt: null },
+      });
+
+      return itineraries;
     } catch (error) {
       throw new HttpException('Error on find itinerary.', 404);
     }
@@ -147,13 +161,15 @@ export class ItinerariesService {
     updateUserDto: UpdateItineraryDto,
   ) {
     try {
-      const itinerary = await this.itineraryRepository.findOneOrFail(
-        {
-          owner: authUserId,
-          id: itineraryId,
-        },
-        itineraryRelations,
-      );
+      const itinerary = await this.itineraryRepository.findOneOrFail({
+        owner: authUserId,
+        id: itineraryId,
+        deletedAt: null,
+      });
+
+      await this.itineraryRepository.populate(itinerary, itineraryRelations, {
+        members: { deletedAt: null },
+      });
 
       if (!itinerary) {
         return new HttpException('Cant find this itinerary.', 404);
@@ -287,18 +303,18 @@ export class ItinerariesService {
 
   async delete(authUserId: number, itineraryId: number) {
     try {
-      const itinerary = await this.itineraryRepository.findOneOrFail(
-        {
-          owner: { id: authUserId },
-          id: itineraryId,
-        },
-        ['members.user'],
-      );
-
-      await this.itineraryRepository.nativeDelete({
+      const itinerary = await this.itineraryRepository.findOneOrFail({
+        owner: { id: authUserId },
         id: itineraryId,
-        owner: authUserId,
       });
+
+      await this.itineraryRepository.populate(itinerary, ['members.user'], {
+        members: { deletedAt: null },
+      });
+
+      itinerary.deletedAt = new Date(Date.now());
+
+      await this.itineraryRepository.flush();
 
       itinerary.members.getItems().forEach(async (member) => {
         if (member.isAccepted === true) {
@@ -327,6 +343,7 @@ export class ItinerariesService {
       const { name, location, begin, id } =
         await this.itineraryRepository.findOneOrFail({
           id: itineraryId,
+          deletedAt: null,
         });
       const user = await this.usersService.findOne({ id: authUserId });
 
@@ -367,13 +384,15 @@ export class ItinerariesService {
 
   async finish(authUserId: number, itineraryId: number) {
     try {
-      const itinerary = await this.itineraryRepository.findOneOrFail(
-        {
-          id: itineraryId,
-          owner: authUserId,
-        },
-        ['members'],
-      );
+      const itinerary = await this.itineraryRepository.findOneOrFail({
+        id: itineraryId,
+        owner: authUserId,
+        deletedAt: null,
+      });
+
+      await this.itineraryRepository.populate(itinerary, ['members'], {
+        members: { deletedAt: null },
+      });
 
       itinerary.status = ItineraryStatus.FINISHED;
 

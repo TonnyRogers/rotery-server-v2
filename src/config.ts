@@ -22,6 +22,8 @@ const REQUIRED_ENV_VARS = [
   'FIREBASE_DB_URL',
   'RABBITMQ_HOST',
   'SEND_MAIL_QUEUE',
+  'PAYMENT_API_TOKEN',
+  'PAYMENT_API_URL',
 ];
 
 REQUIRED_ENV_VARS.forEach((envVar) => {
@@ -68,6 +70,11 @@ export const firebaseConfig = {
 export const redisConfig = {
   host: process.env.REDIS_HOST,
   password: process.env.REDIS_PASSWORD,
+};
+
+export const paymentApiOptions = {
+  token: process.env.PAYMENT_API_TOKEN,
+  url: process.env.PAYMENT_API_URL,
 };
 
 export const rabbitmqConfig = {

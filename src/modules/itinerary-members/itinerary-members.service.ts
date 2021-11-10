@@ -36,7 +36,11 @@ export class ItineraryMembersService {
   async findOne(itineraryMemberId: string) {
     try {
       return this.itineraryMemberRepository.findOneOrFail(
-        { id: itineraryMemberId },
+        {
+          id: itineraryMemberId,
+          itinerary: { deletedAt: null },
+          deletedAt: null,
+        },
         ['user.profile.file'],
       );
     } catch (error) {
@@ -91,7 +95,7 @@ export class ItineraryMembersService {
   async itineraries(authUserId: number) {
     try {
       return this.itineraryRepository.find(
-        { members: { user: authUserId } },
+        { members: { user: authUserId, deletedAt: null }, deletedAt: null },
         itineraryRelations,
       );
     } catch (error) {
@@ -108,7 +112,8 @@ export class ItineraryMembersService {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           user: acceptMemberDto.userId,
-          itinerary: { id: itineraryId, owner: authUserId },
+          itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
+          deletedAt: null,
         },
         ['itinerary.owner'],
       );
@@ -144,8 +149,9 @@ export class ItineraryMembersService {
     try {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          itinerary: { id: itineraryId, owner: authUserId },
+          itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
           user: refuseMemberDto.userId,
+          deletedAt: null,
         },
         ['itinerary.owner', 'user'],
       );
@@ -158,7 +164,7 @@ export class ItineraryMembersService {
         itineraryId: member.itinerary.id,
       };
 
-      await this.itineraryMemberRepository.removeAndFlush(member);
+      await this.itineraryMemberRepository.flush();
 
       await this.notificationsService.create(member.user.id, {
         alias: NotificationAlias.ITINERARY_MEMBER_REJECTED,
@@ -181,8 +187,9 @@ export class ItineraryMembersService {
     try {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
-          itinerary: { id: itineraryId, owner: authUserId },
+          itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
           user: promoteMemberDto.userId,
+          deletedAt: null,
         },
         ['itinerary.owner', 'user'],
       );
@@ -219,7 +226,8 @@ export class ItineraryMembersService {
       const member = await this.itineraryMemberRepository.findOneOrFail(
         {
           user: demoteMemberDto.userId,
-          itinerary: { id: itineraryId, owner: authUserId },
+          itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
+          deletedAt: null,
         },
         ['itinerary.owner', 'user'],
       );
@@ -251,13 +259,13 @@ export class ItineraryMembersService {
     try {
       const itineraryMember =
         await this.itineraryMemberRepository.findOneOrFail({
-          itinerary: itineraryId,
+          itinerary: { id: itineraryId, deletedAt: null },
+          deletedAt: null,
           user: authUserId,
         });
 
-      return await this.itineraryMemberRepository.removeAndFlush(
-        itineraryMember,
-      );
+      itineraryMember.deletedAt = new Date(Date.now());
+      return await this.itineraryMemberRepository.flush();
     } catch (error) {
       throw new HttpException(
         'Error on leave itinerary',

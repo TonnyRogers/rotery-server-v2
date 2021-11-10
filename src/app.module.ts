@@ -23,6 +23,7 @@ import { ItinerariesRatingsModule } from './modules/itinerary-ratings/itinerary-
 import { EmailsModule } from './modules/emails/emails.module';
 import { ResetPasswordsModule } from './modules/reset-passwords/reset-passwords.module';
 import { ChatSocketModule } from './modules/chat/chat.module';
+import { PaymentModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ChatSocketModule } from './modules/chat/chat.module';
     EmailsModule,
     ResetPasswordsModule,
     ChatSocketModule,
+    PaymentModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',

@@ -17,6 +17,7 @@ import { Notification } from './notification.entity';
 import { UserRating } from './user-rating';
 import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 import { EmailTypes } from '../../utils/constants';
+import { ItineraryMember } from './itinerary-member.entity';
 
 export enum UserRole {
   MASTER = 'master',
@@ -82,8 +83,14 @@ export class User {
   @OneToMany(() => UserRating, (userRating) => userRating.user)
   ratings = new Collection<UserRating>(this);
 
+  @OneToMany(() => ItineraryMember, (itineraryMember) => itineraryMember.user)
+  nextItineraries = new Collection<ItineraryMember>(this);
+
   @ManyToMany({ entity: () => Itinerary, owner: true })
   favoriteItineraries = new Collection<Itinerary>(this);
+
+  @Property({ type: 'string', nullable: true, lazy: true })
+  customerId!: string;
 
   @Property()
   createdAt: Date = new Date();

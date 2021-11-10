@@ -15,16 +15,28 @@ export class FavoriteItinerariesService {
 
   async list(authUserId: number) {
     try {
-      const user = await this.userRepository.findOneOrFail({ id: authUserId }, [
-        'favoriteItineraries.owner.profile.file',
-        'favoriteItineraries.photos.file',
-        'favoriteItineraries.members.user',
-        'favoriteItineraries.questions',
-        'favoriteItineraries.activities',
-        'favoriteItineraries.transports',
-        'favoriteItineraries.lodgings',
-      ]);
-      user.favoriteItineraries.populated(true);
+      const user = await this.userRepository.findOneOrFail({
+        id: authUserId,
+      });
+
+      await this.userRepository.populate(
+        user,
+        [
+          'favoriteItineraries.owner.profile.file',
+          'favoriteItineraries.photos.file',
+          'favoriteItineraries.members.user',
+          'favoriteItineraries.questions',
+          'favoriteItineraries.activities',
+          'favoriteItineraries.transports',
+          'favoriteItineraries.lodgings',
+        ],
+        {
+          favoriteItineraries: {
+            deletedAt: null,
+            members: { deletedAt: null },
+          },
+        },
+      );
 
       return user.favoriteItineraries;
     } catch (error) {
