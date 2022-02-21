@@ -24,6 +24,7 @@ const REQUIRED_ENV_VARS = [
   'SEND_MAIL_QUEUE',
   'PAYMENT_API_TOKEN',
   'PAYMENT_API_URL',
+  'PAYMENT_PLAN_API_URL',
 ];
 
 REQUIRED_ENV_VARS.forEach((envVar) => {
@@ -75,6 +76,8 @@ export const redisConfig = {
 export const paymentApiOptions = {
   token: process.env.PAYMENT_API_TOKEN,
   url: process.env.PAYMENT_API_URL,
+  plan_url: process.env.PAYMENT_PLAN_API_URL,
+  webhook: process.env.PAYMENT_WEBHOOK,
 };
 
 export const rabbitmqConfig = {

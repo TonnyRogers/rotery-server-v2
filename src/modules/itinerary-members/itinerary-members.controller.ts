@@ -12,6 +12,7 @@ import {
 import { ParamId, RequestUser } from 'utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AcceptMemberDto } from './dto/accept-member.dto';
+import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { ItineraryMembersService } from './itinerary-members.service';
 
@@ -33,6 +34,19 @@ export class ItineraryMembersController {
       request.user.userId,
       params.id,
       createMemberDto,
+    );
+  }
+
+  @Post('/:id/join-with-payment')
+  async joinItineraryWithPayment(
+    @Param() params: ParamId,
+    @Req() request: RequestUser,
+    @Body() createMemberWithPayment: CreateMemberWithPaymentDto,
+  ) {
+    return this.itinerarymembersService.createWithPayment(
+      request.user.userId,
+      params.id,
+      createMemberWithPayment,
     );
   }
 
@@ -96,5 +110,17 @@ export class ItineraryMembersController {
   @Post('/:id/leave')
   async leaveItinerary(@Param() params: ParamId, @Req() request: RequestUser) {
     return this.itinerarymembersService.leave(request.user.userId, params.id);
+  }
+
+  @Get('/member-with-payment')
+  async listMemberWithPayment(@Req() request: RequestUser) {
+    return this.itinerarymembersService.listMemberWithPayment(
+      request.user.userId,
+    );
+  }
+
+  @Post('/member/:id/refund')
+  async refund(@Req() request: RequestUser, @Param() params: { id: string}) {
+    return this.itinerarymembersService.refundMember(request.user.userId,params.id);
   }
 }

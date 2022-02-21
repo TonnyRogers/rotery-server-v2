@@ -1,13 +1,21 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import axios, { AxiosResponse } from 'axios';
 
 import { ProcessPaymentDto } from './dto/process-payment.dto';
-import { UsersService } from '../users/users.service';
-import { paymentApiOptions } from 'src/config';
+import { paymentApiOptions } from '../../config';
 import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';
 import { UpdatePaymentCustomerDto } from './dto/update-payment-client.dto copy';
+import {
+  CreateCustomerResponse,
+  PaymentDetailsReponse,
+  PaymentRefundResponse,
+  ProcessPaymentType,
+} from '../../../utils/types';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { User } from '../../entities/user.entity';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { RefundPaymentDto } from './dto/refund-payment.dto';
 
 const api = axios.create({
   baseURL: paymentApiOptions.url,
@@ -17,18 +25,27 @@ const api = axios.create({
     Accept: 'application/json',
   },
 });
-
 @Injectable()
 export class PaymentService {
   constructor(
-    @Inject(UsersService)
-    private usersService: UsersService,
+    @InjectRepository(User)
+    private usersRepository: EntityRepository<User>,
   ) {}
 
-  async createCustomer(createUserDto: CreatePaymentCustomerDto) {
+  async createCustomer(
+    authUserId: number,
+    createUserDto: CreatePaymentCustomerDto,
+  ) {
     try {
-      const response = await api.post('/customers', { ...createUserDto });
+      const response: AxiosResponse<CreateCustomerResponse> = await api.post(
+        '/customers',
+        { ...createUserDto },
+      );
+      const user = await this.usersRepository.findOne({ id: authUserId });
 
+      user.customerId = response.data.id;
+
+      await this.usersRepository.flush();
       return response.data;
     } catch (error) {
       switch (error.response.status) {
@@ -40,7 +57,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -59,7 +76,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -83,7 +100,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -107,7 +124,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -131,7 +148,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -139,14 +156,27 @@ export class PaymentService {
     }
   }
 
-  async pay(authUserId: number, processPaymentDto: ProcessPaymentDto) {
+  async pay(
+    processPaymentDto: ProcessPaymentDto,
+    paymentType: ProcessPaymentType,
+  ): Promise<PaymentDetailsReponse> {
     try {
-      const user = await this.usersService.findOne({ id: authUserId });
-      console.log(JSON.stringify(processPaymentDto, null, 2));
+      if (paymentType === ProcessPaymentType.ITINERARY) {
+        const response: AxiosResponse<PaymentDetailsReponse> = await api.post(
+          `/payments`,
+          {
+            ...processPaymentDto,
+            notification_url:
+              'https://webhook.site/24b44434-b38c-4c77-9ba8-5a280d32b426?source_news=webhooks&validator=checkout',
+            metadata: {
+              ...processPaymentDto?.metadata,
+              payment_validator: 'checkout',
+            }
+          },
+        );
 
-      const response = await api.post(`/payments`, { ...processPaymentDto });
-
-      return response.data;
+        return response.data;
+      }
     } catch (error) {
       switch (error.response.status) {
         case 500:
@@ -157,7 +187,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;
@@ -165,9 +195,93 @@ export class PaymentService {
     }
   }
 
-  async getPaymentDetails(paymentId: number) {
+  async refundPayment(paymentId: number, refundPaymentDto: RefundPaymentDto) {
     try {
-      const response = await api.get(`/payments/${paymentId}`);
+      const response: AxiosResponse<PaymentRefundResponse> = await api.post(
+        `/payments/${paymentId}/refunds`,
+        {
+          ...refundPaymentDto,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      switch (error.response.status) {
+        case 500:
+          throw new HttpException(
+            'Error on refund payment.',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+          break;
+        default:
+          throw new HttpException(
+            error.response.data.cause[0].description,
+            error.response.status,
+          );
+          break;
+      }
+    }
+  }
+
+  async getRefunds(paymentId: number) {
+    try {
+      const response: AxiosResponse<PaymentDetailsReponse> = await api.get(
+        `/payments/${paymentId}/refunds`,
+      );
+
+      return response.data;
+    } catch (error) {
+      switch (error.response.status) {
+        case 500:
+          throw new HttpException(
+            'Error on get payment refunds.',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+          break;
+        default:
+          throw new HttpException(
+            error.response.data.cause[0].description,
+            error.response.status,
+          );
+          break;
+      }
+    }
+  }
+
+  async updatePayment(paymentId: number, updatePaymentDto: UpdatePaymentDto) {
+    try {
+      /* only payments in pending or in_process status can be cancelled */
+      const response: AxiosResponse<PaymentDetailsReponse> = await api.put(
+        `/payments/${paymentId}`,
+        {
+          ...updatePaymentDto,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      switch (error.response.status) {
+        case 500:
+          throw new HttpException(
+            'Error on update a payment.',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+          break;
+        default:
+          throw new HttpException(
+            error.response.data.cause[0].description,
+            error.response.status,
+          );
+          break;
+      }
+    }
+  }
+
+  async getPaymentDetails(paymentId: number): Promise<PaymentDetailsReponse> {
+    try {
+      const response: AxiosResponse<PaymentDetailsReponse> = await api.get(
+        `/payments/${paymentId}`,
+      );
 
       return response.data;
     } catch (error) {
@@ -180,7 +294,7 @@ export class PaymentService {
           break;
         default:
           throw new HttpException(
-            error.response.data.message,
+            error.response.data.cause[0].description,
             error.response.status,
           );
           break;

@@ -24,6 +24,11 @@ import { EmailsModule } from './modules/emails/emails.module';
 import { ResetPasswordsModule } from './modules/reset-passwords/reset-passwords.module';
 import { ChatSocketModule } from './modules/chat/chat.module';
 import { PaymentModule } from './modules/payments/payments.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { RevenuesModule } from './modules/revenues/revenues.module';
+import { CommunicationsModule } from './modules/communications/communications.module';
+import { BankAccountsModule } from './modules/bank-accounts/bank-accounts.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -49,6 +54,11 @@ import { PaymentModule } from './modules/payments/payments.module';
     ResetPasswordsModule,
     ChatSocketModule,
     PaymentModule,
+    WebhooksModule,
+    RevenuesModule,
+    CommunicationsModule,
+    BankAccountsModule,
+    SubscriptionsModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',

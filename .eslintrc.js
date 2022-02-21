@@ -4,10 +4,17 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: [
+    '@typescript-eslint/eslint-plugin',
+    'import',
+    'import-helpers',
+    'unused-imports',
+    'prettier',
+  ],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'prettier',
   ],
   root: true,
   env: {
@@ -20,5 +27,22 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'import-helpers/order-imports': [
+      'warn',
+      {
+        // example configuration
+        newlinesBetween: 'always',
+        // groups: ['module', '/^@shared/', ['parent', 'sibling', 'index']],
+        groups: [
+          '/^@nestjs/',
+          '/^(.*)typeorm(.*)/',
+          'module',
+          '/^(.*)service/',
+          '/^@\\//',
+          ['parent', 'sibling', 'index'],
+        ],
+        alphabetize: { order: 'asc', ignoreCase: true },
+      },
+    ],
   },
 };

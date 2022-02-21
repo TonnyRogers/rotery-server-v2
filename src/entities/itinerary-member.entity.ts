@@ -42,7 +42,7 @@ export class ItineraryMember {
   @ManyToOne(() => User, { onDelete: 'cascade' })
   user!: User;
 
-  @Property({ type: 'string', nullable: true })
+  @Property({ type: 'string', nullable: true, lazy: true })
   paymentId: string;
 
   @Enum({ items: () => PaymentStatus, default: PaymentStatus.FREE })

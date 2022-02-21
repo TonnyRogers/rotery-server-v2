@@ -24,13 +24,13 @@
           </mj-button>
         </mj-column>
         <mj-column >
-            <mj-social>
-          	<mj-social-element name="instagram" href="https://www.instagram.com/roterybr/">
-              @roterybr
-              </mj-social-element>	
-              <mj-social-element src="https://rotery-filestore.nyc3.digitaloceanspaces.com/favicon.ico" href="https://www.instagram.com/roterybr/">
+          <mj-social>
+          	<mj-social-element name="instagram" href="https://www.instagram.com/roteryapp/">
+              @roteryapp
+            </mj-social-element>	
+            <mj-social-element src="https://rotery-filestore.nyc3.digitaloceanspaces.com/favicon.ico" href="https://www.instagram.com/roterybr/">
               Visite nosso site
-              </mj-social-element>	
+            </mj-social-element>	
           </mj-social>
         </mj-column>
         <mj-column >

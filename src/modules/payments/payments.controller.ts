@@ -10,12 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, RequestUser } from 'utils/types';
+import { ParamId, ProcessPaymentType, RequestUser } from 'utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
+import { RefundPaymentDto } from './dto/refund-payment.dto';
 import { UpdatePaymentCustomerDto } from './dto/update-payment-client.dto copy';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PaymentService } from './payments.service';
 
 @Controller()
@@ -31,7 +33,10 @@ export class PaymentController {
     @Req() request: RequestUser,
     @Body() processPaymentDto: ProcessPaymentDto,
   ) {
-    return this.paymentService.pay(request.user.userId, processPaymentDto);
+    return this.paymentService.pay(
+      processPaymentDto,
+      ProcessPaymentType.ITINERARY,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -67,14 +72,42 @@ export class PaymentController {
   @UseGuards(JwtAuthGuard)
   @Post('payments/customer')
   async createPaymentCustomer(
+    @Req() request: RequestUser,
     @Body() createPaymentCustomer: CreatePaymentCustomerDto,
   ) {
-    return this.paymentService.createCustomer(createPaymentCustomer);
+    return this.paymentService.createCustomer(
+      request.user.userId,
+      createPaymentCustomer,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('payments/:id')
   async getPayment(@Param() params: ParamId) {
     return this.paymentService.getPaymentDetails(params.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('payments/:id')
+  async updatePayment(
+    @Param() params: ParamId,
+    @Body() updatePaymentDto: UpdatePaymentDto,
+  ) {
+    return this.paymentService.updatePayment(params.id, updatePaymentDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('payments/:id/refund')
+  async refundPayment(
+    @Param() params: ParamId,
+    @Body() refundPaymentDto: RefundPaymentDto,
+  ) {
+    return this.paymentService.refundPayment(params.id, refundPaymentDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('payments/:id/refund')
+  async getPaymentRefunds(@Param() params: ParamId) {
+    return this.paymentService.getRefunds(params.id);
   }
 }

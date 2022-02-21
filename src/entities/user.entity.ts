@@ -18,6 +18,8 @@ import { UserRating } from './user-rating';
 import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 import { EmailTypes } from '../../utils/constants';
 import { ItineraryMember } from './itinerary-member.entity';
+import { BankAccount } from './bank-account.entity';
+import { Subscription } from './subscription.entity';
 
 export enum UserRole {
   MASTER = 'master',
@@ -67,6 +69,12 @@ export class User {
 
   @OneToOne(() => Profile, (profile) => profile.user)
   profile!: Profile;
+
+  @OneToMany(() => Subscription, (subscription) => subscription.user)
+  subscription = new Collection<Subscription>(this);
+
+  @OneToOne(() => BankAccount, (bankAccount) => bankAccount.user)
+  bankAccount!: BankAccount;
 
   @OneToMany(() => DirectMessage, (directMessage) => directMessage.receiver)
   directs = new Collection<DirectMessage>(this);

@@ -8,14 +8,19 @@ import { EmailSectionTitle, EmailSubject } from 'utils/constants';
 export type EmailType =
   | 'welcome-user'
   | 'user-recover-password'
+  | 'user-request-help'
   | 'user-new-password';
 
 export interface EmailParams {
-  mailHeader: string;
-  sectionTitle: string;
+  mailHeader?: string;
+  sectionTitle?: string;
   name: string;
   resetcode?: number;
   activationCode?: number;
+  type?: string;
+  message?: string;
+  data?: Record<string, any>;
+  userEmail?: string;
 }
 
 export interface SendEmailParams {

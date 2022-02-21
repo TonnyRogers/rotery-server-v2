@@ -1,0 +1,31 @@
+<% layout('../template/default-email.eta') %>
+
+<mj-text font-size="18px" color="#000" font-family="roboto" font-size="25px">
+    Ola, <%= it.name %> solicitou ajuda com um algo relacionado a um <%= it.type %>, abaixo tem mais detalhes:
+</mj-text>
+            
+<mj-table font-family="Roboto,sans-serif" font-size="18px"  line-height="30px" >
+    <tr style="padding:15px 0;">
+        <td >Dados</td>
+    </tr>
+    <% Object.entries(it.data).map(([key,val]) => { %>
+    <tr>
+        <td style="font-weight: bold;">
+            <%= key %>:								
+        </td>
+        <td ><%= val %></td>
+    </tr>
+    <% })%>
+</mj-table>
+            
+<mj-text font-size="18px" color="#000" font-family="roboto" font-size="25px" font-weight="bold">
+   Mensagem:
+</mj-text>
+            
+<mj-text font-size="18px" color="#000" font-family="roboto" font-size="25px">
+   <%= it.message %>
+</mj-text>
+
+<mj-text font-size="18px" color="#000" font-family="roboto" font-size="25px">
+  e-mail do usuário: <%= it.userEmail %>
+</mj-text>

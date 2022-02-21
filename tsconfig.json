@@ -12,11 +12,17 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
+    // "strictNullChecks": false,
+    // "noImplicitAny": false,
+    // "strictBindCallApply": false,
+    // "forceConsistentCasingInFileNames": false,
+    // "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
-  }
+    "moduleResolution": "node",
+    "lib": ["ESNext"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "decs.d.ts","@types/**/*.d.ts",".eslintrc.js"]
 }

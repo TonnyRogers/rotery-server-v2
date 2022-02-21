@@ -1,10 +1,11 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
+import moment from 'moment-timezone';
+
 import { ResetPassword } from '../../entities/reset-password.entity';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UsersService } from '../users/users.service';
-import moment from 'moment-timezone';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
 import { EmailTypes } from '../../../utils/constants';

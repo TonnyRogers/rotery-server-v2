@@ -34,9 +34,6 @@ export class CreatePaymentCustomerDto {
   };
 
   @ApiProperty()
-  date_registered: string;
-
-  @ApiProperty()
   description: string;
 
   @ApiProperty()

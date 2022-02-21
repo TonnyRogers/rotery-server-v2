@@ -1,0 +1,15 @@
+
+Ola, <%= it.name %> 
+solicitou ajuda com um algo relacionado a um <%= it.type %>, abaixo tem mais detalhes:
+
+Dados
+<% Object.entries(it.data).map(([key,val]) => { %>
+    
+    <%= key %>:	<%= val %>
+<% })%>
+
+Mensagem:
+ 
+<%= it.message %>
+
+e-mail do usuário: <%= it.userEmail %>

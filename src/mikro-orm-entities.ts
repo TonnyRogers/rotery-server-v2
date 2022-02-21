@@ -18,6 +18,9 @@ import { Notification } from './entities/notification.entity';
 import { UserRating } from './entities/user-rating';
 import { ItineraryRating } from './entities/itinerary-rating';
 import { ResetPassword } from './entities/reset-password.entity';
+import { BankAccount } from './entities/bank-account.entity';
+import { Plan } from './entities/plan.entity';
+import { Subscription } from './entities/subscription.entity';
 
 export default {
   entities: ['./dist/src/entities'],
@@ -41,5 +44,8 @@ export default {
     UserRating,
     ItineraryRating,
     ResetPassword,
+    BankAccount,
+    Plan,
+    Subscription,
   ],
 } as MikroOrmModuleOptions;

@@ -1,5 +1,5 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { Itinerary } from '../../entities/itinerary.entity';
 import { ItineraryMember } from '../../entities/itinerary-member.entity';
 import { ItinerariesModule } from '../itineraries/itineraries.module';
@@ -7,15 +7,18 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { UsersModule } from '../users/users.module';
 import { ItineraryMembersController } from './itinerary-members.controller';
 import { ItineraryMembersService } from './itinerary-members.service';
+import { PaymentModule } from '../payments/payments.module';
 
 @Module({
   controllers: [ItineraryMembersController],
   providers: [ItineraryMembersService],
   imports: [
     MikroOrmModule.forFeature([ItineraryMember, Itinerary]),
-    ItinerariesModule,
+    forwardRef(() => ItinerariesModule),
     UsersModule,
     NotificationsModule,
+    PaymentModule,
   ],
+  exports: [ItineraryMembersService],
 })
 export class ItineraryMembersModule {}

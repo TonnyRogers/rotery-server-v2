@@ -56,9 +56,4 @@ export class CreateItineraryDto {
 
   @ApiProperty()
   transports: ItineraryTransport[];
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsBoolean()
-  hasPayment: boolean;
 }

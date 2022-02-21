@@ -12,6 +12,10 @@ interface FindAllAttrs {
   email?: string;
 }
 
+interface findOnePopulateOptions {
+  populateEmail?: boolean;
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -70,7 +74,23 @@ export class UsersService {
         }
       });
 
-      return this.usersRepository.findOne(findOptions);
+      return await this.usersRepository.findOne(findOptions);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findOneWithEmail(options: FindAllAttrs): Promise<User> {
+    try {
+      const findOptions = {};
+
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined || value !== null) {
+          findOptions[key] = value;
+        }
+      });
+
+      return await this.usersRepository.findOne(findOptions,['email']);
     } catch (error) {
       throw error;
     }

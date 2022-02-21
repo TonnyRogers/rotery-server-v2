@@ -1,6 +1,6 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
 import { ItineraryTransport } from '../../entities/itinerary-transport.entity';
 import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { ItineraryActivity } from '../../entities/itinerary-activity.entity';
@@ -14,10 +14,10 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { NotificationAlias } from '../../entities/notification.entity';
 import { NotificationSubject } from '../../../utils/types';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { DirectMessagesService } from '../direct-messages/direct-messages.service';
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
 import { MessageType } from '../../entities/direct-message.entity';
+import { ItineraryMembersService } from '../itinerary-members/itinerary-members.service';
 
 @Injectable()
 export class ItinerariesService {
@@ -36,10 +36,10 @@ export class ItinerariesService {
     private readonly usersService: UsersService,
     @Inject(NotificationsService)
     private readonly notificationsService: NotificationsService,
-    @Inject(NotificationsGateway)
-    private readonly notificationsGateway: NotificationsGateway,
     @Inject(DirectMessagesService)
     private readonly directMessagesService: DirectMessagesService,
+    @Inject(forwardRef(() =>  ItineraryMembersService))
+    private readonly itineraryMemberService: ItineraryMembersService,
   ) {}
 
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
@@ -56,11 +56,14 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
-        hasPayment,
+        activities,
+        lodgings,
+        photos,
+        transports,
       } = createItineraryDto;
 
       const newItinerary = new Itinerary({
-        owner: 'id' in authUser && authUser,
+        owner: authUser,
         name,
         begin: new Date(Date.parse(begin)),
         end: new Date(Date.parse(end)),
@@ -70,11 +73,11 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
-        hasPayment,
+        requestPayment: true,
       });
 
-      createItineraryDto.activities &&
-        createItineraryDto.activities.forEach(async (activity) => {
+      activities &&
+        activities.forEach(async (activity) => {
           const newActivity = new ItineraryActivity({
             itinerary: newItinerary,
             ...activity,
@@ -82,8 +85,8 @@ export class ItinerariesService {
           this.itineraryActivityRepository.persist(newActivity);
         });
 
-      createItineraryDto.transports &&
-        createItineraryDto.transports.forEach(async (transport) => {
+      transports &&
+        transports.forEach(async (transport) => {
           const newTransport = new ItineraryTransport({
             itinerary: newItinerary,
             ...transport,
@@ -91,8 +94,8 @@ export class ItinerariesService {
           this.itineraryTransportRepository.persist(newTransport);
         });
 
-      createItineraryDto.lodgings &&
-        createItineraryDto.lodgings.forEach(async (lodging) => {
+      lodgings &&
+        lodgings.forEach(async (lodging) => {
           const newLodging = new ItineraryLodging({
             itinerary: newItinerary,
             ...lodging,
@@ -100,8 +103,8 @@ export class ItinerariesService {
           this.itineraryLodgingRepository.persist(newLodging);
         });
 
-      createItineraryDto.photos &&
-        createItineraryDto.photos.forEach(async (photo) => {
+      photos &&
+        photos.forEach(async (photo) => {
           const newPhoto = new ItineraryPhoto({
             itinerary: newItinerary,
             ...photo,
@@ -308,7 +311,7 @@ export class ItinerariesService {
         id: itineraryId,
       });
 
-      await this.itineraryRepository.populate(itinerary, ['members.user'], {
+      await this.itineraryRepository.populate(itinerary, ['members.user','members.paymentId'], {
         members: { deletedAt: null },
       });
 
@@ -329,6 +332,9 @@ export class ItinerariesService {
             member.user.id,
             notificationPayload,
           );
+
+          await this.itineraryMemberService.paymentRefund(member)
+
         }
       });
 
