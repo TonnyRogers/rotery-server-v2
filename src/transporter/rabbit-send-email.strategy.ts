@@ -76,6 +76,8 @@ export class RabbitMQMailPubSubServer
   }
 
   private async queueConsumer(msg: ConsumeMessage) {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
     try {
       const messageJSON = JSON.parse(msg.content.toString());
 
@@ -112,32 +114,35 @@ export class RabbitMQMailPubSubServer
             time10bindPattern,
             messageJSON,
           );
-          if (process.env.NODE_ENV === 'development') {
+          if (isDevelopment) {
             console.log('First attempt at  ' + new Date().toISOString());
           }
         }
+
         if (messageJSON.retrys === 2) {
           this.messageChannel.publish(
             tlExchange,
             time30bindPattern,
             messageJSON,
           );
-          if (process.env.NODE_ENV === 'development') {
+          if (isDevelopment) {
             console.log('Second attempt at  ' + new Date().toISOString());
           }
         }
+
         if (messageJSON.retrys === 3) {
           this.messageChannel.publish(
             tlExchange,
             time50bindPattern,
             messageJSON,
           );
-          if (process.env.NODE_ENV === 'development') {
+          if (isDevelopment) {
             console.log('Third attempt at  ' + new Date().toISOString());
           }
         }
+        
         if (messageJSON.retrys > 3) {
-          if (process.env.NODE_ENV === 'development') {
+          if (isDevelopment) {
             console.log(
               'All the attempts are exceeded hence discarding the message',
             );

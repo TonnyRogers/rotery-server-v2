@@ -18,17 +18,6 @@ export class NotificationsGateway {
   @WebSocketServer()
   server: Server;
 
-  @UseGuards(WsJwtGuard)
-  @SubscribeMessage('notifications')
-  join(
-    @MessageBody() data: NotificationSocketPayload,
-    @ConnectedSocket() client: Socket,
-  ) {
-    client.join(`notify:${client.handshake.query.userId}`);
-
-    return { message: 'Notifications subscribed.', statusCode: 200 };
-  }
-
   send(userId: number, data: any) {
     this.server.emit(`notify:${userId}`, data);
   }

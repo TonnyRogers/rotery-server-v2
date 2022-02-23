@@ -12,6 +12,7 @@ import { ChangeSubscriptionCardDto } from "./dto/change-subscription-card.dto";
 import { CreatePlanDto } from "./dto/create-plan.dto";
 import { CreateSubscriptionDto } from "./dto/create-subscriptions.dto";
 import { UpdatePlanDto } from "./dto/update-plan.dto";
+import { SubscriptionsGateway } from "./subscriptions.gateway";
 
 const api = axios.create({
     baseURL: paymentApiOptions.plan_url,
@@ -40,6 +41,8 @@ export class SubscriptionsService {
         private subscriptionRespository: EntityRepository<Subscription>,
         @Inject(UsersService)
         private usersService: UsersService,
+        @Inject(SubscriptionsGateway)
+        private subscriptionGateway: SubscriptionsGateway,
     ) {}
 
     async createPlan(createPlanDto: CreatePlanDto) {
@@ -192,6 +195,8 @@ export class SubscriptionsService {
             if(subscription.status !== SubscriptionStatus.CANCELLED) {
                 subscription.status = subscriptionStatus;
                 await this.subscriptionRespository.flush();
+
+                await this.subscriptionGateway.send(user.id,subscription);
             }
 
             return res.status(200).send();

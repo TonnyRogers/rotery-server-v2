@@ -1,10 +1,11 @@
-import amqp, { AmqpConnectionManager } from 'amqp-connection-manager';
+import amqp, { AmqpConnectionManager, ChannelWrapper } from 'amqp-connection-manager';
 import { rabbitmqConfig } from '../config';
 
 const dlExchange = 'DLX_send_email';
 
 export class RabbitMQPublisher {
   private connection: AmqpConnectionManager;
+  private channel: ChannelWrapper;
 
   private connect() {
     this.connection = amqp.connect([rabbitmqConfig.host], {
@@ -23,7 +24,7 @@ export class RabbitMQPublisher {
       if (!this.connection) {
         this.connect();
       }
-
+      
       const channel = this.connection.createChannel();
 
       channel.publish(dlExchange, 'send', Buffer.from(JSON.stringify(data)));

@@ -35,11 +35,11 @@ export class ChatSocketGateway {
 
   @UseGuards(WsJwtGuard)
   @SubscribeMessage('joinChat')
-  join(
+  async join(
     @MessageBody() data: ChatSocketPayload,
     @ConnectedSocket() client: Socket,
-  ): Record<string, any> {
-    client.join(formatChatName(data.userId, data.ownerId));
+  ): Promise<{ message: string, statusCode: number }> {
+    await client.join(formatChatName(data.userId, data.ownerId));
     return { message: 'Chat joined.', statusCode: 200 };
   }
 

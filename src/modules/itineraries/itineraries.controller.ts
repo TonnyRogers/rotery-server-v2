@@ -91,4 +91,10 @@ export class ItinerariesController {
   ) {
     return this.itinerariesService.finish(request.user.userId, params.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('validate')
+  async validateCreation(@Req() request: RequestUser) {
+    return this.itinerariesService.createValidation(request.user.userId);
+  }
 }

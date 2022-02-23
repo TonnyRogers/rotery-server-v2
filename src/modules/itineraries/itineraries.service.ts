@@ -423,4 +423,23 @@ export class ItinerariesService {
       throw error;
     }
   }
+
+  async createValidation(authUserId: number) {
+    try {
+      const countItineraries = await this.itineraryRepository
+        .count({ 
+          owner: authUserId,
+          deletedAt: null, 
+          status: { $nin: [ ItineraryStatus.FINISHED, ItineraryStatus.CANCELLED ] },
+        });
+
+      if(countItineraries === 3) {
+        return { allowed: false, count: countItineraries, limit: 3  };
+      }
+
+      return { allowed: true, count: countItineraries, limit: 3  };
+    } catch (error) {
+      throw error;
+    }
+  } 
 }
