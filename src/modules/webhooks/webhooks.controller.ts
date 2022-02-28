@@ -1,8 +1,9 @@
 import { SubscriptionStatus } from '@/entities/subscription.entity';
 import { Controller, Get, Inject, Post, Query, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
+
 import { PaymentStatus } from 'src/entities/itinerary-member.entity';
-import { PaymentWebhookPayloadResponse } from 'utils/types';
+import { PaymentWebhookPayloadResponse } from '@/utils/types';
 import { ItineraryMembersService } from '../itinerary-members/itinerary-members.service';
 import { PaymentService } from '../payments/payments.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';

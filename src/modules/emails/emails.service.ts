@@ -3,7 +3,7 @@ import mjml2html from 'mjml';
 import * as Eta from 'eta';
 import path from 'path';
 import { mailerOptions, mailerTransporter } from '../../providers/mail';
-import { EmailSectionTitle, EmailSubject } from 'utils/constants';
+import { EmailSectionTitle, EmailSubject } from '@/utils//constants';
 
 export type EmailType =
   | 'welcome-user'

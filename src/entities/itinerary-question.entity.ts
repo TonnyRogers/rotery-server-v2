@@ -1,3 +1,4 @@
+import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   BigIntType,
   Entity,
@@ -5,6 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+
 import { Itinerary } from './itinerary.entity';
 import { User } from './user.entity';
 
@@ -32,10 +34,20 @@ export class ItineraryQuestion {
   @Property({ type: 'boolean', default: true })
   isVisible!: boolean;
 
-  @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => Itinerary, 
+    { 
+      onDelete: 'cascade',
+      serializer: (value:Itinerary) => value.id
+    })
   itinerary!: Itinerary;
 
-  @ManyToOne(() => User, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => User, 
+    { 
+      onDelete: 'cascade', 
+      serializer: (value: User) => userProfileFileSerializer(value),
+    })
   owner!: User;
 
   @Property()

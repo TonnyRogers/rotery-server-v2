@@ -14,7 +14,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { DemoteMemberDto } from './dto/demote-member.dto';
 import { PromoteMemberDto } from './dto/promote-member.dto';
 import { RefuseMemberDto } from './dto/refuse-member.dto';
-import { itineraryRelations } from '../../../utils/constants';
+import { itineraryRelations } from '@/utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationAlias } from '../../entities/notification.entity';
 import {
@@ -22,7 +22,7 @@ import {
   NotificationSubject,
   PaymentRefundResponse,
   ProcessPaymentType,
-} from '../../../utils/types';
+} from '@/utils/types';
 import { PaymentService } from '../payments/payments.service';
 import { Response } from 'express';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';

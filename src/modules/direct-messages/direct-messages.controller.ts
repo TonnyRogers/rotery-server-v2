@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { RequestUser } from 'utils/types';
+import { RequestUser } from '@/utils//types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { DirectMessagesService } from './direct-messages.service';
 import { CreateDirectMessageDto } from './dto/create-message.dto';

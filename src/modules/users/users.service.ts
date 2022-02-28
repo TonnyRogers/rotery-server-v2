@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
+
 import { User } from '../../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hashPassword } from '../../../utils/password';
+import { hashPassword } from '@/utils/password';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ProfileService } from '../profiles/profile.service';
 
@@ -125,7 +126,7 @@ export class UsersService {
     try {
       await this.validateEmail(createUserDto);
       await this.validateUsername(createUserDto);
-
+      
       createUserDto.password = await hashPassword(createUserDto.password);
       const newUser = new User(createUserDto);
       newUser.activationCode = String(
@@ -135,7 +136,7 @@ export class UsersService {
       await this.profileService.create(newUser);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...sanizedUser } = newUser;
+      const { password, activationCode, ...sanizedUser } = newUser;
 
       return sanizedUser;
     } catch (error) {
@@ -195,9 +196,13 @@ export class UsersService {
         );
       }
 
-      user.activationCode = null;
-      user.isActive = true;
-      this.usersRepository.flush();
+      await this.usersRepository
+        .nativeUpdate(
+          { id: user.id },
+          { 
+            activationCode: null,
+            isActive: true 
+          });
 
       return { message: 'User activated.', statusCode: HttpStatus.OK };
     } catch (error) {

@@ -6,7 +6,13 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import axios, { AxiosResponse } from "axios";
 import { Response } from "express";
-import { CreatePlanResponse, CreateSubscriptionResponse, MLPaginatedResponse, SearchSubscriptionResult } from "utils/types";
+
+import { 
+    CreatePlanResponse, 
+    CreateSubscriptionResponse, 
+    MLPaginatedResponse, 
+    SearchSubscriptionResult 
+} from "@/utils/types";
 import { UsersService } from "../users/users.service";
 import { ChangeSubscriptionCardDto } from "./dto/change-subscription-card.dto";
 import { CreatePlanDto } from "./dto/create-plan.dto";

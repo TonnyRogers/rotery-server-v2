@@ -1,14 +1,15 @@
+import { ItineraryActivityRepository } from '@/modules/itineraries/repositories/itinerary-activity.repository';
 import {
-  BigIntType,
   Entity,
+  EntityRepositoryType,
   ManyToOne,
-  PrimaryKey,
+  PrimaryKeyType,
   Property,
 } from '@mikro-orm/core';
 import { Activity } from './activity.entity';
 import { Itinerary } from './itinerary.entity';
 
-@Entity()
+@Entity({ customRepository: () => ItineraryActivityRepository })
 export class ItineraryActivity {
   constructor({
     itinerary,
@@ -26,13 +27,24 @@ export class ItineraryActivity {
     this.isFree = isFree;
   }
 
-  @PrimaryKey({ type: BigIntType })
-  id!: string;
-
-  @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => Itinerary, { 
+      onDelete: 'cascade', 
+      primary: true, 
+      serializer: (value) => value.id 
+    })
   itinerary!: Itinerary;
 
-  @ManyToOne(() => Activity, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => Activity, { 
+      onDelete: 'cascade', 
+      primary: true, 
+      serializer: (value: Activity) => ({
+        id: value.id, 
+        name: value.name, 
+        alias: value.alias
+      }) 
+    })
   activity!: Activity;
 
   @Property({ type: 'number', nullable: false })
@@ -47,9 +59,6 @@ export class ItineraryActivity {
   @Property({ type: 'boolean', default: false })
   isFree!: boolean;
 
-  @Property()
-  createdAt: Date = new Date();
-
-  @Property()
-  updatedAt: Date = new Date();
+  [PrimaryKeyType]?: [number,number];
+  [EntityRepositoryType]?: ItineraryActivityRepository;
 }

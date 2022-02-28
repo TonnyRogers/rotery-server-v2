@@ -1,37 +1,41 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
-import { ItineraryTransport } from '../../entities/itinerary-transport.entity';
-import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
-import { ItineraryActivity } from '../../entities/itinerary-activity.entity';
-import { ItineraryLodging } from '../../entities/itinerary-lodging.entity';
+import {
+  forwardRef, 
+  HttpException, 
+  Inject, 
+  Injectable, 
+} from '@nestjs/common';
+
+import { ItineraryTransport } from '@/entities/itinerary-transport.entity';
+import { Itinerary, ItineraryStatus } from '@/entities/itinerary.entity';
+import { ItineraryActivity } from '@/entities/itinerary-activity.entity';
+import { ItineraryLodging } from '@/entities/itinerary-lodging.entity';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UsersService } from '../users/users.service';
-import { ItineraryPhoto } from '../../entities/itinerary-photo.entity';
+import { ItineraryPhoto } from '@/entities/itinerary-photo.entity';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
-import { itineraryRelations } from '../../../utils/constants';
+import { itineraryRelations } from '@/utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
-import { NotificationAlias } from '../../entities/notification.entity';
-import { NotificationSubject } from '../../../utils/types';
+import { NotificationAlias } from '@/entities/notification.entity';
+import { NotificationSubject } from '@/utils/types';
 import { DirectMessagesService } from '../direct-messages/direct-messages.service';
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
-import { MessageType } from '../../entities/direct-message.entity';
+import { MessageType } from '@/entities/direct-message.entity';
 import { ItineraryMembersService } from '../itinerary-members/itinerary-members.service';
+import { ItineraryTransportRepository } from './repositories/itinerary-transport.repository';
+import { ItineraryActivityRepository } from './repositories/itinerary-activity.repository';
+import { ItineraryLodgingRepository } from './repositories/itinerary-lodging.repository';
+import { ItineraryPhotoRepository } from './repositories/itinerary-photo.repository';
+import { ItineraryRepository } from './repositories/itineraries.repository';
 
 @Injectable()
 export class ItinerariesService {
   constructor(
-    @InjectRepository(Itinerary)
-    private itineraryRepository: EntityRepository<Itinerary>,
-    @InjectRepository(ItineraryActivity)
-    private itineraryActivityRepository: EntityRepository<ItineraryActivity>,
-    @InjectRepository(ItineraryLodging)
-    private itineraryLodgingRepository: EntityRepository<ItineraryLodging>,
-    @InjectRepository(ItineraryTransport)
-    private itineraryTransportRepository: EntityRepository<ItineraryTransport>,
-    @InjectRepository(ItineraryPhoto)
-    private itineraryPhotoRepository: EntityRepository<ItineraryPhoto>,
+    private readonly itineraryActivityRepository: ItineraryActivityRepository,
+    private readonly itineraryLodgingRepository: ItineraryLodgingRepository,
+    private readonly itineraryTransportRepository: ItineraryTransportRepository,
+    private readonly itineraryPhotoRepository: ItineraryPhotoRepository,
+    private itineraryRepository: ItineraryRepository,
     @Inject(UsersService)
     private readonly usersService: UsersService,
     @Inject(NotificationsService)
@@ -143,17 +147,11 @@ export class ItinerariesService {
 
   async show(id: number) {
     try {
-      const itineraries = await this.itineraryRepository.findOneOrFail({
-        id,
-        deletedAt: null,
-      });
+      const itinerary = await this.itineraryRepository
+        .findOneQB({ id, deletedAt: null },itineraryRelations);
 
-      await this.itineraryRepository.populate(itineraries, itineraryRelations, {
-        members: { deletedAt: null },
-      });
-
-      return itineraries;
-    } catch (error) {
+      return itinerary;
+    } catch (error) {      
       throw new HttpException('Error on find itinerary.', 404);
     }
   }
@@ -161,7 +159,7 @@ export class ItinerariesService {
   async update(
     authUserId: number,
     itineraryId: number,
-    updateUserDto: UpdateItineraryDto,
+    updateItineraryDto: UpdateItineraryDto,
   ) {
     try {
       const itinerary = await this.itineraryRepository.findOneOrFail({
@@ -188,8 +186,18 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
-      } = updateUserDto;
+      } = updateItineraryDto;
 
+      const formatedTransports = updateItineraryDto.transports.map(item => ({ ...item, itinerary: itineraryId }));
+      const formatedActivities = updateItineraryDto.activities.map(item => ({ ...item, itinerary: itineraryId }));
+      const formatedLodgings = updateItineraryDto.lodgings.map(item => ({ ...item, itinerary: itineraryId }));
+      const formatedPhotos = updateItineraryDto.photos.map(item => ({ ...item, itinerary: itineraryId }));
+
+      await this.itineraryTransportRepository.insertJoinTable({ itinerary: itineraryId },formatedTransports);
+      await this.itineraryActivityRepository.insertJoinTable({ itinerary: itineraryId },formatedActivities);
+      await this.itineraryLodgingRepository.insertJoinTable({ itinerary: itineraryId },formatedLodgings);
+      await this.itineraryPhotoRepository.insertJoinTable({ itinerary: itineraryId },formatedPhotos);
+      
       itinerary.name = name;
       itinerary.begin = new Date(Date.parse(begin));
       itinerary.end = new Date(Date.parse(end));
@@ -201,80 +209,6 @@ export class ItinerariesService {
         itinerary.locationJson = locationJson;
       }
       itinerary.isPrivate = isPrivate;
-
-      const newActivityList = [];
-      const newTransportList = [];
-      const newLodgingList = [];
-      const newPhotoList = [];
-
-      if (updateUserDto.activities) {
-        await this.itineraryActivityRepository.nativeDelete({
-          itinerary: itinerary.id,
-        });
-
-        updateUserDto.activities.forEach((activity) => {
-          const newActivity = new ItineraryActivity({
-            itinerary: itinerary.id,
-            ...activity,
-          });
-          newActivityList.push(newActivity);
-        });
-      }
-
-      if (updateUserDto.transports) {
-        await this.itineraryTransportRepository.nativeDelete({
-          itinerary: itinerary.id,
-        });
-
-        updateUserDto.transports.forEach((transport) => {
-          const newTransport = new ItineraryTransport({
-            itinerary: itinerary.id,
-            ...transport,
-          });
-          newTransportList.push(newTransport);
-        });
-      }
-
-      if (updateUserDto.lodgings) {
-        await this.itineraryLodgingRepository.nativeDelete({
-          itinerary: itinerary.id,
-        });
-
-        updateUserDto.lodgings.forEach((lodging) => {
-          const newLodging = new ItineraryLodging({
-            itinerary: itinerary.id,
-            ...lodging,
-          });
-          newLodgingList.push(newLodging);
-        });
-      }
-
-      if (updateUserDto.photos) {
-        await this.itineraryPhotoRepository.nativeDelete({
-          itinerary: itinerary.id,
-        });
-
-        updateUserDto.photos.forEach(async (photo) => {
-          const newPhoto = new ItineraryPhoto({
-            itinerary: itinerary.id,
-            ...photo,
-          });
-          newPhotoList.push(newPhoto);
-        });
-      }
-
-      newActivityList.length > 0 &&
-        (await this.itineraryActivityRepository.persistAndFlush(
-          newActivityList,
-        ));
-      newLodgingList.length > 0 &&
-        (await this.itineraryLodgingRepository.persistAndFlush(newLodgingList));
-      newTransportList.length > 0 &&
-        (await this.itineraryTransportRepository.persistAndFlush(
-          newTransportList,
-        ));
-      newPhotoList.length > 0 &&
-        (await this.itineraryPhotoRepository.persistAndFlush(newPhotoList));
 
       await this.itineraryRepository.flush();
 
@@ -296,9 +230,11 @@ export class ItinerariesService {
             { id: itinerary.id },
           );
         }
-      });
+      });      
 
-      return await this.show(itineraryId);
+      const updated = await this.show(itineraryId);
+      
+      return updated;
     } catch (error) {
       throw error;
     }

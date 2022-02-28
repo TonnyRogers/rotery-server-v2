@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, ProcessPaymentType, RequestUser } from 'utils/types';
+import { ParamId, ProcessPaymentType, RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';

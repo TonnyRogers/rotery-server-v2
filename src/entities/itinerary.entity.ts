@@ -1,6 +1,7 @@
 import {
   Collection,
   Entity,
+  EntityRepositoryType,
   Enum,
   JsonType,
   ManyToOne,
@@ -15,6 +16,13 @@ import { ItineraryTransport } from './itinerary-transport.entity';
 import { ItineraryPhoto } from './itinerary-photo.entity';
 import { ItineraryQuestion } from './itinerary-question.entity';
 import { ItineraryMember } from './itinerary-member.entity';
+import { ItineraryRepository } from '@/modules/itineraries/repositories/itineraries.repository';
+import { 
+  itineraryActivityCollectionSerializer, 
+  itineraryLodgingCollectionSerializer, 
+  itineraryTransportCollectionSerializer, 
+  userProfileFileSerializer 
+} from '@/utils/serializers';
 
 export enum ItineraryStatus {
   ACTIVE = 'active',
@@ -23,7 +31,7 @@ export enum ItineraryStatus {
   CANCELLED = 'cancelled',
 }
 
-@Entity()
+@Entity({ customRepository: () => ItineraryRepository })
 export class Itinerary {
   constructor({
     begin,
@@ -100,7 +108,11 @@ export class Itinerary {
   @Property({ type: 'boolean', default: false })
   requestPayment!: boolean;
 
-  @ManyToOne({ entity: () => User, onDelete: 'cascade' })
+  @ManyToOne({ 
+    entity: () => User, 
+    onDelete: 'cascade' , 
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   owner!: User;
 
   @OneToMany(() => ItineraryPhoto, (itineraryPhoto) => itineraryPhoto.itinerary)
@@ -109,18 +121,26 @@ export class Itinerary {
   @OneToMany(
     () => ItineraryActivity,
     (itineraryActivity) => itineraryActivity.itinerary,
+    { serializer: 
+      (value: Collection<ItineraryActivity>) => 
+      itineraryActivityCollectionSerializer(value), 
+    }
   )
   activities = new Collection<ItineraryActivity>(this);
 
   @OneToMany(
     () => ItineraryLodging,
     (itineraryLodging) => itineraryLodging.itinerary,
+    { serializer: (value: Collection<ItineraryLodging>) => 
+      itineraryLodgingCollectionSerializer(value), }
   )
   lodgings = new Collection<ItineraryLodging>(this);
 
   @OneToMany(
     () => ItineraryTransport,
     (itineraryTransport) => itineraryTransport.itinerary,
+    { serializer: (value: Collection<ItineraryTransport>) => 
+      itineraryTransportCollectionSerializer(value), }
   )
   transports = new Collection<ItineraryTransport>(this);
 
@@ -144,4 +164,18 @@ export class Itinerary {
 
   @Property({ nullable: true })
   deletedAt: Date;
+
+  // toJSON(strict = true, strip = ['itinerary'], ...args: any): { [ p: string]: any } {
+  //   const o = wrap(this,true).toObject(...args);
+
+  //   if(strict) {
+  //     strip.forEach(k => delete o[k]);
+  //   }
+
+  //   return o;
+  // }
+
+  [EntityRepositoryType]?: ItineraryRepository;
+
 }
+

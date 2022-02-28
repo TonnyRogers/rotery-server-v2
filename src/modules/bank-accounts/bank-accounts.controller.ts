@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Post, Put, Req, UseGuards } from "@nestjs/common";
-import { RequestUser } from "utils/types";
+import { RequestUser } from "@/utils/types";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { BankAccountsService } from "./bank-accounts.service";
 import { CreateBankAccountDto } from "./dto/create-bank-account.dto";

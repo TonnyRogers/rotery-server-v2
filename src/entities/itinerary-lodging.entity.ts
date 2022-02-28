@@ -1,14 +1,15 @@
+import { ItineraryLodgingRepository } from '@/modules/itineraries/repositories/itinerary-lodging.repository';
 import {
-  BigIntType,
   Entity,
+  EntityRepositoryType,
   ManyToOne,
-  PrimaryKey,
+  PrimaryKeyType,
   Property,
 } from '@mikro-orm/core';
 import { Itinerary } from './itinerary.entity';
 import { Lodging } from './lodging.entity';
 
-@Entity()
+@Entity({ customRepository: () => ItineraryLodgingRepository })
 export class ItineraryLodging {
   constructor({
     itinerary,
@@ -25,14 +26,25 @@ export class ItineraryLodging {
     this.description = description;
     this.isFree = isFree;
   }
-
-  @PrimaryKey({ type: BigIntType })
-  id!: string;
-
-  @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
+  
+  @ManyToOne(
+    () => Itinerary, { 
+      onDelete: 'cascade', 
+      primary: true, 
+      serializer: (value) => value.id 
+    })
   itinerary!: Itinerary;
 
-  @ManyToOne(() => Lodging, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => Lodging, { 
+      onDelete: 'cascade', 
+      primary: true, 
+      serializer: (value: Lodging) => ({ 
+        id: value.id, 
+        name: value.name, 
+        alias: value.alias 
+      }) 
+    })
   lodging!: Lodging;
 
   @Property({ type: 'number', nullable: false })
@@ -47,9 +59,6 @@ export class ItineraryLodging {
   @Property({ type: 'boolean', default: false })
   isFree!: boolean;
 
-  @Property()
-  createdAt: Date = new Date();
-
-  @Property()
-  updatedAt: Date = new Date();
+  [PrimaryKeyType]?: [number,number];
+  [EntityRepositoryType]?: ItineraryLodgingRepository;
 }

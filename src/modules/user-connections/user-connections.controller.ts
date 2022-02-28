@@ -10,10 +10,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { RequestUser } from 'utils/types';
+
+import { RequestUser } from '@/utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
 import { UserConnectionService } from './user-connections.service';
+
 @UseGuards(JwtAuthGuard)
 @Controller('connections')
 export class UserConnectionController {

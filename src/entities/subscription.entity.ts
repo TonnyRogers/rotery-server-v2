@@ -1,3 +1,4 @@
+import { userProfileFileSerializer } from "@/utils/serializers";
 import { Entity, Enum, ManyToOne, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { Plan } from "./plan.entity";
 import { User } from "./user.entity";
@@ -36,10 +37,19 @@ export class Subscription {
     @ManyToOne(() => Plan, { nullable: true })
     plan?: Plan;
 
-    @ManyToOne(() => User, {nullable: false})
+    @ManyToOne(
+        () => User, {
+            nullable: false, 
+            serializer: (value: User) => userProfileFileSerializer(value),
+        })
     user!: User;
 
-    @Enum({ items: () => SubscriptionStatus, default: SubscriptionStatus.PENDING })
+    @Enum(
+        { 
+            items: () => SubscriptionStatus, 
+            default: SubscriptionStatus.PENDING 
+        }
+    )
     status!: SubscriptionStatus;
 
     @Property()

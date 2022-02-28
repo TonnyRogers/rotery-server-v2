@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, RequestUser } from 'utils/types';
+import { ParamId, RequestUser } from '@/utils//types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FavoriteItinerariesService } from './favorite-itineraries.service';
 

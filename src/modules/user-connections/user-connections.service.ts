@@ -7,7 +7,7 @@ import { UpdateConnectionDto } from './dto/update-connection.dto';
 import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationAlias } from '../../entities/notification.entity';
-import { NotificationSubject } from '../../../utils/types';
+import { NotificationSubject } from '@/utils/types';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 export interface ConnectionReponse {

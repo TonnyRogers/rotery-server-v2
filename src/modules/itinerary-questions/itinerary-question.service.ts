@@ -3,7 +3,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
 import { NotificationAlias } from '../../entities/notification.entity';
-import { NotificationSubject } from '../../../utils/types';
+import { NotificationSubject } from '@/utils/types';
 import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { ItinerariesService } from '../itineraries/itineraries.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';

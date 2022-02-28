@@ -16,7 +16,7 @@ import { Itinerary } from './itinerary.entity';
 import { Notification } from './notification.entity';
 import { UserRating } from './user-rating';
 import { RabbitMQPublisher } from '../providers/rabbit-publisher';
-import { EmailTypes } from '../../utils/constants';
+import { EmailTypes } from '@/utils/constants';
 import { ItineraryMember } from './itinerary-member.entity';
 import { BankAccount } from './bank-account.entity';
 import { Subscription } from './subscription.entity';
@@ -34,10 +34,12 @@ export class User {
     username,
     email,
     password,
-  }: Pick<User, 'username' | 'email' | 'password'>) {
+    isHost,
+  }: Pick<User, 'username' | 'email' | 'password' | 'isHost'>) {
     this.username = username;
     this.email = email;
     this.password = password;
+    this.isHost = isHost;
   }
 
   @PrimaryKey()
@@ -73,7 +75,10 @@ export class User {
   @OneToMany(() => Subscription, (subscription) => subscription.user)
   subscription = new Collection<Subscription>(this);
 
-  @OneToOne(() => BankAccount, (bankAccount) => bankAccount.user)
+  @OneToOne(
+    () => BankAccount, 
+    (bankAccount) => bankAccount.user,
+  )
   bankAccount!: BankAccount;
 
   @OneToMany(() => DirectMessage, (directMessage) => directMessage.receiver)

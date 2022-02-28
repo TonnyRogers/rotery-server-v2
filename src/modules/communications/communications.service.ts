@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailHelpRequestType } from "utils/constants";
+import { EmailHelpRequestType } from "@/utils/constants";
 import { EmailsService } from "../emails/emails.service";
 import { UsersService } from "../users/users.service";
 import { CreateHelpRequestDto } from "./dto/create-help-request.dto";

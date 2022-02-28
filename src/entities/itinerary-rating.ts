@@ -1,3 +1,4 @@
+import { itineraryOwnerFileSerializer } from '@/utils/serializers';
 import {
   BigIntType,
   Entity,
@@ -5,6 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+
 import { Itinerary } from './itinerary.entity';
 
 @Entity()
@@ -27,7 +29,13 @@ export class ItineraryRating {
   @Property({ nullable: true })
   description: string;
 
-  @ManyToOne({ entity: () => Itinerary, onDelete: 'cascade' })
+  @ManyToOne(
+    { 
+      entity: () => Itinerary, 
+      onDelete: 'cascade',
+      serializer: (value: Itinerary) => 
+      itineraryOwnerFileSerializer(value),
+    })
   itinerary!: Itinerary;
 
   @Property()

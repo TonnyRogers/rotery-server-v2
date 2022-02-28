@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, RequestUser } from 'utils/types';
+import { ParamId, RequestUser } from '@/utils//types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';

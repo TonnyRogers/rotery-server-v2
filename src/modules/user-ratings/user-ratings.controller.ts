@@ -6,7 +6,8 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId } from 'utils/types';
+
+import { ParamId } from '@/utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUserRatingDto } from './dto/create-user-rating.dto';
 import { UserRatingsService } from './user-ratings.service';

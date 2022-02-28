@@ -10,7 +10,7 @@ import {
   PaymentDetailsReponse,
   PaymentRefundResponse,
   ProcessPaymentType,
-} from '../../../utils/types';
+} from '@/utils/types';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from '../../entities/user.entity';
 import { EntityRepository } from '@mikro-orm/postgresql';

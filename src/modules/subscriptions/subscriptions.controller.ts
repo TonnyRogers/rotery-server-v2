@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
-import { ParamId, RequestUser } from "utils/types";
+import { ParamId, RequestUser } from "@/utils/types";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { ChangeSubscriptionCardDto } from "./dto/change-subscription-card.dto";
 import { CreatePlanDto } from "./dto/create-plan.dto";

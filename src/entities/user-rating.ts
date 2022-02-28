@@ -1,3 +1,4 @@
+import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   BigIntType,
   Entity,
@@ -28,7 +29,11 @@ export class UserRating {
   @Property({ nullable: true })
   description: string;
 
-  @ManyToOne({ entity: () => User, onDelete: 'cascade' })
+  @ManyToOne({ 
+    entity: () => User, 
+    onDelete: 'cascade',  
+    serializer: (value: User) => userProfileFileSerializer(value) 
+  })
   user!: User;
 
   @Property()

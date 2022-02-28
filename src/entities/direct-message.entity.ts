@@ -1,3 +1,4 @@
+import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   Entity,
   Enum,
@@ -38,10 +39,16 @@ export class DirectMessage {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(
+    () => User,
+    { serializer: (value: User) => userProfileFileSerializer(value) }
+  )
   sender!: User;
 
-  @ManyToOne(() => User)
+  @ManyToOne(
+    () => User,
+    { serializer: (value: User) => userProfileFileSerializer(value) }
+  )
   receiver!: User;
 
   @OneToOne({ nullable: true })

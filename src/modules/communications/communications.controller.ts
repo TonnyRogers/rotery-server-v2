@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, Post, Req, UseGuards } from "@nestjs/common";
-import { RequestUser } from "utils/types";
+import { RequestUser } from "@/utils/types";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CommunicationsService } from "./communications.service";
 import { CreateHelpRequestDto } from "./dto/create-help-request.dto";

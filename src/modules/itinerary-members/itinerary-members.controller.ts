@@ -9,7 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, RequestUser } from 'utils/types';
+import { ParamId, RequestUser } from '@/utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AcceptMemberDto } from './dto/accept-member.dto';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';

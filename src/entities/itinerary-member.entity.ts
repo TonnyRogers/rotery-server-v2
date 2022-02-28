@@ -1,3 +1,4 @@
+import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   BigIntType,
   Entity,
@@ -36,10 +37,22 @@ export class ItineraryMember {
   @Property({ type: 'boolean', default: false })
   isAccepted!: boolean;
 
-  @ManyToOne(() => Itinerary, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => Itinerary, 
+    { 
+      onDelete: 'cascade', 
+      serializer: (value: Itinerary) => value.id
+    }
+  )
   itinerary!: Itinerary;
 
-  @ManyToOne(() => User, { onDelete: 'cascade' })
+  @ManyToOne(
+    () => User, 
+    { 
+      onDelete: 'cascade', 
+      serializer: (value: User) => userProfileFileSerializer(value),
+    }
+  )
   user!: User;
 
   @Property({ type: 'string', nullable: true, lazy: true })
