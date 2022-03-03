@@ -1,6 +1,7 @@
 import {
   forwardRef, 
   HttpException, 
+  HttpStatus, 
   Inject, 
   Injectable, 
 } from '@nestjs/common';
@@ -27,6 +28,8 @@ import { ItineraryActivityRepository } from './repositories/itinerary-activity.r
 import { ItineraryLodgingRepository } from './repositories/itinerary-lodging.repository';
 import { ItineraryPhotoRepository } from './repositories/itinerary-photo.repository';
 import { ItineraryRepository } from './repositories/itineraries.repository';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { SubscriptionStatus } from '@/entities/subscription.entity';
 
 @Injectable()
 export class ItinerariesService {
@@ -42,6 +45,8 @@ export class ItinerariesService {
     private readonly notificationsService: NotificationsService,
     @Inject(DirectMessagesService)
     private readonly directMessagesService: DirectMessagesService,
+    @Inject(SubscriptionsService)
+    private readonly subscriptionsService: SubscriptionsService,
     @Inject(forwardRef(() =>  ItineraryMembersService))
     private readonly itineraryMemberService: ItineraryMembersService,
   ) {}
@@ -369,13 +374,24 @@ export class ItinerariesService {
           status: { $nin: [ ItineraryStatus.FINISHED, ItineraryStatus.CANCELLED ] },
         });
 
-      if(countItineraries === 3) {
-        return { allowed: false, count: countItineraries, limit: 3  };
+      const userSubcription = await this.subscriptionsService.getSubscription(authUserId);
+
+      if(userSubcription?.status === SubscriptionStatus.AUTHORIZED) {
+        return { 
+          allowed: true, 
+          count: countItineraries, 
+          limit: 999  
+        };
       }
 
-      return { allowed: true, count: countItineraries, limit: 3  };
+
+      return { 
+        allowed: countItineraries >= 3 ? false : true, 
+        count: countItineraries, 
+        limit: 3  
+      };
     } catch (error) {
-      throw error;
+      throw new HttpException('Error on validade creation try again.',HttpStatus.INTERNAL_SERVER_ERROR);
     }
   } 
 }
