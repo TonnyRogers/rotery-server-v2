@@ -29,7 +29,8 @@ import { ItineraryLodgingRepository } from './repositories/itinerary-lodging.rep
 import { ItineraryPhotoRepository } from './repositories/itinerary-photo.repository';
 import { ItineraryRepository } from './repositories/itineraries.repository';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
-import { SubscriptionStatus } from '@/entities/subscription.entity';
+import { EmailsService } from '../emails/emails.service';
+import { dayjsPlugins } from '@/providers/dayjs-config';
 
 @Injectable()
 export class ItinerariesService {
@@ -47,6 +48,8 @@ export class ItinerariesService {
     private readonly directMessagesService: DirectMessagesService,
     @Inject(SubscriptionsService)
     private readonly subscriptionsService: SubscriptionsService,
+    @Inject(EmailsService)
+    private readonly emailsService: EmailsService,
     @Inject(forwardRef(() =>  ItineraryMembersService))
     private readonly itineraryMemberService: ItineraryMembersService,
   ) {}
@@ -54,6 +57,7 @@ export class ItinerariesService {
   async create(authUserId: number, createItineraryDto: CreateItineraryDto) {
     try {
       const authUser = await this.usersService.findOne({ id: authUserId });
+      const userSubcription = await this.subscriptionsService.isValid(authUserId);      
 
       const {
         name,
@@ -82,7 +86,7 @@ export class ItinerariesService {
         location,
         locationJson,
         isPrivate,
-        requestPayment: true,
+        requestPayment: userSubcription?.allowed ? true : false,
       });
 
       activities &&
@@ -198,6 +202,7 @@ export class ItinerariesService {
       const formatedLodgings = updateItineraryDto.lodgings.map(item => ({ ...item, itinerary: itineraryId }));
       const formatedPhotos = updateItineraryDto.photos.map(item => ({ ...item, itinerary: itineraryId }));
 
+      // mudar para promise.all
       await this.itineraryTransportRepository.insertJoinTable({ itinerary: itineraryId },formatedTransports);
       await this.itineraryActivityRepository.insertJoinTable({ itinerary: itineraryId },formatedActivities);
       await this.itineraryLodgingRepository.insertJoinTable({ itinerary: itineraryId },formatedLodgings);
@@ -217,7 +222,7 @@ export class ItinerariesService {
 
       await this.itineraryRepository.flush();
 
-      itinerary.members.getItems().forEach(async (member) => {
+      for (const member of itinerary.members.getItems()) {
         if (member.isAccepted === true) {
           const notificationPayload: CreateNotificationPayload = {
             alias: NotificationAlias.ITINERARY_UPDATED,
@@ -225,7 +230,7 @@ export class ItinerariesService {
             content: `${itinerary.name}`,
             jsonData: { ...itinerary },
           };
-
+  
           await this.notificationsService.create(
             member.user.id,
             notificationPayload,
@@ -234,8 +239,9 @@ export class ItinerariesService {
             true,
             { id: itinerary.id },
           );
-        }
-      });      
+        }        
+      }
+   
 
       const updated = await this.show(itineraryId);
       
@@ -260,7 +266,7 @@ export class ItinerariesService {
 
       await this.itineraryRepository.flush();
 
-      itinerary.members.getItems().forEach(async (member) => {
+      for (const member of itinerary.members.getItems()) {
         if (member.isAccepted === true) {
           const notificationPayload: CreateNotificationPayload = {
             alias: NotificationAlias.ITINERARY_DELETED,
@@ -268,16 +274,17 @@ export class ItinerariesService {
             content: `${itinerary.name}`,
             jsonData: { id: itinerary.id },
           };
-
+    
           await this.notificationsService.create(
             member.user.id,
             notificationPayload,
           );
-
-          await this.itineraryMemberService.paymentRefund(member)
-
+            
+          if(itinerary.status !== ItineraryStatus.CANCELLED) {
+            await this.itineraryMemberService.paymentRefund(member);
+          }
         }
-      });
+      }
 
       return;
     } catch (error) {
@@ -337,27 +344,45 @@ export class ItinerariesService {
         deletedAt: null,
       });
 
-      await this.itineraryRepository.populate(itinerary, ['members'], {
-        members: { deletedAt: null },
+      await this.itineraryRepository.populate(itinerary, ['owner','members','members.user.email','members.paymentAmount'], {
+        members: { deletedAt: null, isAccepted: true },
       });
 
       itinerary.status = ItineraryStatus.FINISHED;
 
       await this.itineraryRepository.flush();
 
-      itinerary.members.getItems().forEach(async (member) => {
+      for (const member of itinerary.members.getItems()) {
         const notificationPayload: CreateNotificationPayload = {
           alias: NotificationAlias.ITINERARY_RATE,
           subject: NotificationSubject.itineraryRate,
           content: `${itinerary.name}`,
           jsonData: { id: itinerary.id },
         };
-
+  
         await this.notificationsService.create(
           member.user.id,
           notificationPayload,
         );
-      });
+
+        await this.emailsService.send({
+          to: member.user.email,
+          type: 'itinerary-finish',
+          content: {
+            name: member.user.username,
+            itineraryDescription: member.itinerary.description,
+            data: {
+              Nome: member.itinerary.name,
+              Ida: dayjsPlugins(member.itinerary.begin).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + ' (Horário de Brasília)',
+              Volta: dayjsPlugins(member.itinerary.end).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + ' (Horário de Brasília)',
+              Local: member.itinerary.location,
+              Host: member.itinerary.owner.username,
+              Total: member.paymentAmount,
+            }
+          }
+        });
+        
+      }
 
       return;
     } catch (error) {
@@ -374,9 +399,9 @@ export class ItinerariesService {
           status: { $nin: [ ItineraryStatus.FINISHED, ItineraryStatus.CANCELLED ] },
         });
 
-      const userSubcription = await this.subscriptionsService.getSubscription(authUserId);
+      const userSubcription = await this.subscriptionsService.isValid(authUserId);
 
-      if(userSubcription?.status === SubscriptionStatus.AUTHORIZED) {
+      if(userSubcription?.allowed) {
         return { 
           allowed: true, 
           count: countItineraries, 

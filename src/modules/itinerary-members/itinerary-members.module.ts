@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { ItineraryMembersController } from './itinerary-members.controller';
 import { ItineraryMembersService } from './itinerary-members.service';
 import { PaymentModule } from '../payments/payments.module';
+import { EmailsModule } from '../emails/emails.module';
 
 @Module({
   controllers: [ItineraryMembersController],
@@ -18,6 +19,7 @@ import { PaymentModule } from '../payments/payments.module';
     UsersModule,
     NotificationsModule,
     PaymentModule,
+    EmailsModule,
   ],
   exports: [ItineraryMembersService],
 })

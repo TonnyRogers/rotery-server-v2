@@ -1,0 +1,20 @@
+Ola <%= it.name %>, muito bem!
+
+Você acaba de explorar mais um pouco do nosso país e este é o resumo do seu roteiro.
+
+Dados do roteiro
+
+<% Object.entries(it.data).map(([key,val]) => { %>
+    <%= key %>:	<%= val %>
+<% })%>
+
+Descrição:
+<%= it.itineraryDescription %>
+
+O pagamento desta viagem foi feita via cartão de crédito.
+
+Não esqueça de avaliar o Host no app, também avalie o roteiro para ajudar outros usuários.
+
+Esperamos que tenha gostado, mas se houve algum problema não esqueça de relatar para a gente.
+
+Até uma proxima aventureiro(a), marque a gente nas suas fotos la no instagram, grande abraço.💙💚

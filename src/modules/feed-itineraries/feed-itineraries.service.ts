@@ -1,12 +1,12 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { HttpException, Injectable } from '@nestjs/common';
-import momentTimezone from 'moment-timezone';
 
 import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { itineraryRelations } from '@/utils/constants';
 import { PaginatedResponse } from '@/utils/types';
 import { QueryFilter } from './interfaces/feed-filter';
+import { dayjsPlugins } from '@/providers/dayjs-config';
 
 @Injectable()
 export class FeedItinerariesService {
@@ -30,14 +30,14 @@ export class FeedItinerariesService {
         switch (key) {
           case 'begin':
             dynamicFilter.begin = {
-              $gte: momentTimezone(value).startOf('day').toISOString(),
-              $lte: momentTimezone(value).endOf('day').toISOString(),
+              $gte: dayjsPlugins(value).subtract(1,'day').startOf('day').toISOString(),
+              $lte: dayjsPlugins(value).add(1,'day').endOf('day').toISOString(),
             };
             break;
           case 'end':
             dynamicFilter.end = {
-              $gte: momentTimezone(value).startOf('day').toISOString(),
-              $lte: momentTimezone(value).endOf('day').toISOString(),
+              $gte: dayjsPlugins(value).subtract(1,'day').startOf('day').toISOString(),
+              $lte: dayjsPlugins(value).add(1,'day').endOf('day').toISOString(),
             };
             break;
           case 'city':
@@ -66,7 +66,7 @@ export class FeedItinerariesService {
           $not: { owner: auuthUserId },
           deletedAt: null,
         },
-        { offset, limit },
+        { offset, limit, orderBy: { 'begin': 'ASC' } },
       );
 
       await this.feedItinerariesRepository.populate(items, itineraryRelations, {

@@ -1,3 +1,5 @@
+import { PaymentStatus } from "@/entities/itinerary-member.entity";
+
 export const itineraryRelations = [
   'owner.profile.file',
   'photos.file',
@@ -13,6 +15,10 @@ export const EmailSubject = {
   'user-recover-password': 'Recuperação de senha',
   'user-new-password': 'Senha atualizada',
   'user-request-help': 'Ajuda Solicitada 🖐',
+  'itinerary-payment-updates': 'Atualização de pagamento do roteiro.',
+  'itinerary-finish': 'Oba! Roteiro Finalizado 📌.',
+  'welcome-user-subscription': '👏 Bem-vindo(a) a assinatura ✨',
+  'subscription-payment-updates': 'Atualização de pagamento da assinatura ✨',
   accredited: 'Muito bem, pagamento foi aprovado!',
   partially_refunded: 'Fizemos a devolução parcial do seu pagamento.',
   refunded: 'Fizemos a devolução do seu pagamento.',
@@ -44,8 +50,10 @@ export const EmailSectionTitle = {
   'user-recover-password': 'Seu código é " *code* "',
   'user-new-password': 'Sua senha foi alterada',
   'user-request-help': 'Alguém precisa de ajuda',
+  'itinerary-finish': 'Roteiro Finalizado',
   'itinerary-payment-updates':
-    'Atualização do seu pagamento em " *itineraryName* "',
+    'Atualização do seu pagamento em " *code* "',
+  'welcome-user-subscription': 'Bem-vindo(a) assinante',
   'subscription-payment-updates': 'Atualizações de pagamento do seu plano',
 };
 
@@ -54,6 +62,10 @@ export const EmailTypes = {
   recover: 'user-recover-password',
   password: 'user-new-password',
   'help-request': 'user-request-help',
+  'itinerary-payment': 'itinerary-payment-updates',
+  'itinerary-finish': 'itinerary-finish',
+  'welcome-subscription': 'welcome-user-subscription',
+  'subscription-payment': 'subscription-payment-updates',
 };
 
 export const EmailHelpRequestType = {
@@ -64,3 +76,38 @@ export const EmailHelpRequestType = {
 }
 
 export const Email = {};
+
+export const AppColors = {
+  white: '#FFF',
+  appBackground: '#f9f9f9',
+  appBackgroundDarker: '#ebebeb',
+  green: '#3dc77b',
+  greenTransparent: 'rgba(61, 199, 123, 0.2)',
+  blue: '#4885fd',
+  blueTransparent: 'rgba(72, 133, 253, 0.2)',
+  blueDark: '#3e44c7',
+  red: '#f57373',
+  orange: '#f5ca73',
+  yellow: '#f5df73',
+  disabled: '#ECECEC',
+  primaryText: '#262626',
+  secondaryText: '#7a7a7a',
+  disabledText: '#BEBEBE',
+  darketText: '#0D0D0D',
+  borderBottom: '#cfcfcf',
+  transparent: 'transparent',
+};
+
+export const paymentStatusColor = {
+  [PaymentStatus.PAID]: AppColors.green,
+  [PaymentStatus.PENDING]: AppColors.orange,
+  [PaymentStatus.REFUNDED]: AppColors.blue,
+  [PaymentStatus.REFUSED]: AppColors.red,
+};
+
+export const paymentStatusRole = {
+  [PaymentStatus.PAID]: 'Processado',
+  [PaymentStatus.PENDING]: 'Em andamento',
+  [PaymentStatus.REFUNDED]: 'Estornado',
+  [PaymentStatus.REFUSED]: 'Recusado',
+};

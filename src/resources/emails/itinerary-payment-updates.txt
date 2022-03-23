@@ -1,0 +1,18 @@
+
+Ola <%= it.name %>, este e-mail é sobre o status de pagamento de roteiro que você esta participando: 
+
+Dados do roteiro
+
+<% Object.entries(it.data).map(([key,val]) => { %>
+    <%= key %>:	<%= val %>
+<% })%>
+
+Cartão (<%= it.cardBrand %>) **** **** **** <%= it.cardLastNumbers %>
+
+O pagamento via cartão de crédito esta com status: <b style="color:<%= it.paymentStatusColor %>"><%= it.paymentStatus %></b> 
+
+Se tudo der certo, prepare suas malas 🧳 🗺
+
+Caso tenha algum problema com o pagamento não deixe de entrar com contato com a gente pelo app no menu de ajuda.
+
+Grande abraço.

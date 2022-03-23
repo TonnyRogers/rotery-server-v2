@@ -13,6 +13,7 @@ import { ItinerariesService } from './itineraries.service';
 import { ItineraryMembersModule } from '../itinerary-members/itinerary-members.module';
 import { Subscription } from '@/entities/subscription.entity';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { EmailsModule } from '../emails/emails.module';
 
 @Module({
   controllers: [ItinerariesController],
@@ -30,6 +31,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
     DirectMessagesModule,
     forwardRef(() => ItineraryMembersModule),
     SubscriptionsModule,
+    EmailsModule,
   ],
   exports: [ItinerariesService],
 })

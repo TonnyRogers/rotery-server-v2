@@ -40,6 +40,7 @@ export class WebhooksController {
                 member.id,
                 PaymentStatus.PAID,
                 res,
+                payment,
               );
             }
   
@@ -48,6 +49,7 @@ export class WebhooksController {
                 member.id,
                 PaymentStatus.REFUNDED,
                 res,
+                payment,
               );
             }
           }
@@ -61,6 +63,7 @@ export class WebhooksController {
               member.id,
               PaymentStatus.PENDING,
               res,
+              payment,
             );
           }
   
@@ -73,6 +76,7 @@ export class WebhooksController {
               member.id,
               PaymentStatus.REFUSED,
               res,
+              payment,
             );
           }
   
@@ -85,6 +89,7 @@ export class WebhooksController {
               member.id,
               PaymentStatus.REFUNDED,
               res,
+              payment,
             );
           }
   
@@ -97,6 +102,7 @@ export class WebhooksController {
               member.id,
               PaymentStatus.REFUNDED,
               res,
+              payment,
             );
           }
         } else {
@@ -104,7 +110,8 @@ export class WebhooksController {
             return await this.subscriptionsService.updateSubscriptionStatusByWebhook(
               payment.payer.email,
               SubscriptionStatus.AUTHORIZED,
-              res
+              res,
+              payment,
             );
           }
     
@@ -112,7 +119,8 @@ export class WebhooksController {
             return await this.subscriptionsService.updateSubscriptionStatusByWebhook(
               payment.payer.email,
               SubscriptionStatus.NO_PAYMENT,
-              res
+              res,
+              payment,
             );
           }
     
@@ -120,19 +128,14 @@ export class WebhooksController {
             return await this.subscriptionsService.updateSubscriptionStatusByWebhook(
               payment.payer.email,
               SubscriptionStatus.PENDING,
-              res
+              res,
+              payment,
             );
           }
         }
         break;
-      case 'subscription_preapproval':
-        break;
-      case 'subscription_authorized_payment': 
-        break;
-      case 'subscription_preapproval_plan': 
-        break;
-
       default:
+        return res.status(200).send();
         break;
     }
   }

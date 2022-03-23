@@ -1,0 +1,46 @@
+<% layout('../template/default-email.eta') %>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Ola <%= it.name %>, muito bem!
+</mj-text>
+
+<mj-image align="left" width="300px" src="https://media.giphy.com/media/l4KibOaou932EC7Dy/giphy.gif" />
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  Você acaba de explorar mais um pouco do nosso país e este é o resumo do seu roteiro.
+</mj-text>
+
+<mj-table container-background-color="rgba(61, 199, 123, 0.2)" cellpadding="8px" table-layout="auto" font-family="Roboto,sans-serif" font-size="18px" line-height="30px">
+    <tr style="padding:15px 0;">
+        <td >Dados do roteiro</td>
+    </tr>
+    <% Object.entries(it.data).map(([key,val]) => { %> 
+        <tr>
+            <td style="font-weight: bold;">
+                <%= key %>:								
+            </td>
+            <td ><%= val %></td>
+        </tr>
+    <% })%>
+</mj-table>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  <b>Descrição:<br></b>
+  <%= it.itineraryDescription %>
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  O pagamento desta viagem foi feita via cartão de crédito.
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  Não esqueça de avaliar o Host no app, também avalie o roteiro para ajudar outros usuários.
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  Esperamos que tenha gostado, mas se houve algum problema não esqueça de relatar para a gente.
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+  Até uma proxima aventureiro(a), marque a gente nas suas fotos la no instagram, grande abraço.💙💚
+</mj-text>

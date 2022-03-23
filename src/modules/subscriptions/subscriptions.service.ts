@@ -11,6 +11,7 @@ import {
     CreatePlanResponse, 
     CreateSubscriptionResponse, 
     MLPaginatedResponse, 
+    PaymentDetailsReponse, 
     SearchSubscriptionResult 
 } from "@/utils/types";
 import { UsersService } from "../users/users.service";
@@ -19,6 +20,9 @@ import { CreatePlanDto } from "./dto/create-plan.dto";
 import { CreateSubscriptionDto } from "./dto/create-subscriptions.dto";
 import { UpdatePlanDto } from "./dto/update-plan.dto";
 import { SubscriptionsGateway } from "./subscriptions.gateway";
+import { EmailsService } from "../emails/emails.service";
+import { paymentStatusColor, paymentStatusRole } from "@/utils/constants";
+import { axiosErrorHandler } from "@/utils/axios-error";
 
 const api = axios.create({
     baseURL: paymentApiOptions.plan_url,
@@ -28,6 +32,8 @@ const api = axios.create({
       Accept: 'application/json',
     },
   });
+
+api.interceptors.response.use((response) => response, axiosErrorHandler)
 
 interface ChangeCardRequestPayload {
     application_id: number;
@@ -49,6 +55,8 @@ export class SubscriptionsService {
         private usersService: UsersService,
         @Inject(SubscriptionsGateway)
         private subscriptionGateway: SubscriptionsGateway,
+        @Inject(EmailsService)
+        private emailsService: EmailsService,
     ) {}
 
     async createPlan(createPlanDto: CreatePlanDto) {
@@ -123,21 +131,7 @@ export class SubscriptionsService {
             const response: AxiosResponse<MLPaginatedResponse<SearchSubscriptionResult>> = await api.get(`/preapproval/search?id=${referenceId}`);
 
             return response.data.results;
-        } catch (error) {
-            if(error.response.status) {
-                switch (error.response.status) {
-                    case 500:
-                    throw new HttpException(
-                        'Error on get subscription reference.',
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                    );
-                    default:
-                    throw new HttpException(
-                        error.response.data.message || 'Unknow error.',
-                        error.response.status,
-                    );
-                }  
-            }     
+        } catch (error) {    
             throw error;   
         }
     }
@@ -147,7 +141,7 @@ export class SubscriptionsService {
             const { planId, ...rest } = createSubscriptionDto;
             
             const subscription = await this.subscriptionRespository.findOne({ user: authUserId, deletedAt: null });
-            const user = await this.usersService.findOne({ id: authUserId });
+            const user = await this.usersService.findOneWithEmail({ id: authUserId });
             const plan = await this.planRespository.findOne({ id: planId });            
 
             if(subscription) {
@@ -173,36 +167,54 @@ export class SubscriptionsService {
 
             await this.subscriptionRespository.persistAndFlush(newSubscription);
 
+            await this.emailsService.send({
+                type: 'welcome-user-subscription',
+                content: {
+                    name: user.username,
+                    data: {
+                        [plan.name]: plan.amount,
+                        'Duração': `${plan.repetitions} meses`,
+                    }
+                },
+                to: user.email,
+            });
+
             return response.data;
-        } catch (error) {
-            if(error.response.status) {
-                switch (error.response.status) {
-                    case 500:
-                    throw new HttpException(
-                        'Error on process subscription payment.',
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                    );
-                    default:
-                    throw new HttpException(
-                        error.response.data.message || 'Unknow error.',
-                        error.response.status,
-                    );
-                }  
-            }     
+        } catch (error) {  
             throw error;   
         }
     }
 
-    async updateSubscriptionStatusByWebhook(userEmail: string, subscriptionStatus: SubscriptionStatus, res: Response) {
+    async updateSubscriptionStatusByWebhook(userEmail: string, subscriptionStatus: SubscriptionStatus, res: Response, payment?: PaymentDetailsReponse,) {
         try {
             const user = await this.usersService.findOneWithEmail({ email: userEmail });
-            const subscription = await this.subscriptionRespository.findOneOrFail({ user, deletedAt: null });
+            const subscription = await this.subscriptionRespository.findOneOrFail({ user, deletedAt: null },['plan']);
             
             if(subscription.status !== SubscriptionStatus.CANCELLED) {
+
                 subscription.status = subscriptionStatus;
                 await this.subscriptionRespository.flush();
 
                 await this.subscriptionGateway.send(user.id,subscription);
+            }
+
+            if(payment) {
+                await this.emailsService.send({
+                    type: 'subscription-payment-updates',
+                    content: {
+                        name: user.username,
+                        cardBrand: payment.payment_method_id,
+                        cardBrandImage: `https://rotery-filestore.nyc3.digitaloceanspaces.com/card-brands/${payment.payment_method_id}.png`,
+                        cardLastNumbers: payment.card.last_four_digits,
+                        paymentStatus: paymentStatusRole[payment.status],
+                        paymentStatusColor: paymentStatusColor[payment.status],
+                        data: {
+                            [subscription.plan.name]: subscription.plan.amount,
+                            'Duração': `${subscription.plan.repetitions} meses`,
+                        }
+                    },
+                    to: user.email,
+                });
             }
 
             return res.status(200).send();
@@ -263,22 +275,27 @@ export class SubscriptionsService {
             await api.put(`/preapproval/${subscription.referenceId}`,changeCardPayload);
 
             return { message: 'Well done.', statusCode: 200 };
-        } catch (error) {
-            if(error.response?.status) {
-                switch (error.response.status) {
-                    case 500:
-                    throw new HttpException(
-                        'Error on process subscription payment.',
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                    );
-                    default:
-                    throw new HttpException(
-                        error.response.data.message || 'Unknow error.',
-                        error.response.status,
-                    );
-                }  
-            }                 
+        } catch (error) {              
             throw error;   
+        }
+    }
+
+    async isValid(authUserId: number) {
+        try {
+            const subscription = await this.subscriptionRespository
+                .findOne({
+                     user: authUserId, 
+                     deletedAt: null, 
+                     status: SubscriptionStatus.AUTHORIZED 
+                });
+                
+            if(!subscription) {
+                return { allowed: false, statusCode: 401 };
+            }
+
+            return { allowed: true, statusCode: 200 };
+        } catch (error) {
+            throw error;
         }
     }
 

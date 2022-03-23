@@ -1,0 +1,65 @@
+<% layout('../template/default-email.eta') %>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Ola <%= it.name %>, você escolheu as vantagens que podemos oferecer, esse é um passo 
+    a mais para o turismo consciente e sustentavel aqui no Brasil.
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Aqui vão alguns dos detalhes sobre sua assinatura atual:
+</mj-text>
+
+<mj-table container-background-color="rgba(61, 199, 123, 0.2)" cellpadding="8px" table-layout="auto" font-family="Roboto,sans-serif" font-size="18px" line-height="30px">
+    <tr style="padding:15px 0;">
+        <td>Dados da assinatura</td>
+    </tr>
+    <% Object.entries(it.data).map(([key,val]) => { %> 
+        <tr>
+            <td style="font-weight: bold;">
+                <%= key %>:								
+            </td>
+            <td ><%= val %></td>
+        </tr>
+    <% })%>
+</mj-table>
+
+<mj-text font-size="32px" color="#000" font-family="roboto">
+    Vantagens 🎁
+</mj-text>
+
+<mj-divider border-width="1px" border-style="solid" border-color="#E1E1E1" />
+
+<mj-text font-weight="bold" font-size="24px" color="#000" font-family="roboto">
+    Pagamento pelo app:
+</mj-text>
+
+<mj-image align="left" src="https://rotery-filestore.nyc3.digitaloceanspaces.com/hero-pagamento-no-app-square.webp" />
+
+<mj-text font-weight="bold" font-size="24px" color="#000" font-family="roboto">
+    Gestão de ganhos:
+</mj-text>
+
+<mj-image align="left" src="https://rotery-filestore.nyc3.digitaloceanspaces.com/hero-gestao-no-app-square.webp" />
+
+<mj-text font-weight="bold" font-size="24px" color="#000" font-family="roboto">
+    Roteiros ilimitados:
+</mj-text>
+
+<mj-image align="left" src="https://rotery-filestore.nyc3.digitaloceanspaces.com/hero-roteiros-no-app-square.webp" />
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Estamos trabalhando em outras vantagens para os assinantes, vamos te notificar assim que 
+    elas chegarem e então ja salva o nosso e-mail como favorito pra ficar informado(a).
+</mj-text>
+
+<mj-image align="left" src="https://media.giphy.com/media/8OJdqYqN1Nii3UTD6l/giphy.gif" />
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Lembre sempre de manter a natureza limpa, leve seu lixo e daqueles que te acompanham, 
+    você é responsável pelo impacto que causa, contamos com sua colaboração para preservar 
+    a natureza e ajudar a ter um mundo mais sustentavel 👊🍃
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Grande abraço e sucesso.
+</mj-text>

@@ -1,7 +1,6 @@
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import moment from 'moment-timezone';
 
 import { ResetPassword } from '../../entities/reset-password.entity';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -9,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
 import { EmailTypes } from '@/utils/constants';
+import { dayjsPlugins } from '@/providers/dayjs-config';
 
 @Injectable()
 export class ResetPasswordsService {
@@ -37,7 +37,7 @@ export class ResetPasswordsService {
         const newReset = new ResetPassword({
           user: user,
           code: String(Math.floor(100000 + Math.random() * 900000)),
-          dateLimit: moment().add(1, 'hour').toDate(),
+          dateLimit: dayjsPlugins().add(1, 'hour').toDate(),
         });
 
         await this.resetPasswordsRepository.persistAndFlush(newReset);
@@ -49,7 +49,7 @@ export class ResetPasswordsService {
 
   async findOne(code: number, returnEntity = false) {
     try {
-      const dateNow = moment().valueOf();
+      const dateNow = dayjsPlugins().valueOf();
 
       const findReset = await this.resetPasswordsRepository.findOne({
         code: String(code),
@@ -59,7 +59,7 @@ export class ResetPasswordsService {
         throw new HttpException('Invalid reset code.', 400);
       }
 
-      const resetDate = moment(findReset.dateLimit).valueOf();
+      const resetDate = dayjsPlugins(findReset.dateLimit).valueOf();
 
       if (dateNow > resetDate) {
         throw new HttpException('Reset code expired request other.', 400);

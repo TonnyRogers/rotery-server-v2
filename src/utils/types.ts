@@ -459,3 +459,5 @@ export interface MLPaginatedResponse<T> {
   },
   results: T[];
 }
+
+export type MLPaymentMethods = 'visa' | 'master' | 'hipercard' | 'amex' | 'elo';

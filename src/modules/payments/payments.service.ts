@@ -16,6 +16,7 @@ import { User } from '../../entities/user.entity';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { RefundPaymentDto } from './dto/refund-payment.dto';
+import { axiosErrorHandler } from '@/utils/axios-error';
 
 const api = axios.create({
   baseURL: paymentApiOptions.url,
@@ -25,6 +26,9 @@ const api = axios.create({
     Accept: 'application/json',
   },
 });
+
+api.interceptors.response.use((response) => response, axiosErrorHandler);
+
 @Injectable()
 export class PaymentService {
   constructor(
@@ -48,20 +52,7 @@ export class PaymentService {
       await this.usersRepository.flush();
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on create customer.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -70,17 +61,7 @@ export class PaymentService {
       const response = await api.get(`/customers/${id}`);
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 404:
-          throw new HttpException('Customer not foud.', HttpStatus.NOT_FOUND);
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -94,17 +75,7 @@ export class PaymentService {
       });
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 404:
-          throw new HttpException('Customer not foud.', HttpStatus.NOT_FOUND);
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -115,20 +86,7 @@ export class PaymentService {
       });
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on add card.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -139,20 +97,7 @@ export class PaymentService {
       );
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on add card.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -178,20 +123,7 @@ export class PaymentService {
         return response.data;
       }
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on make payment.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -206,20 +138,7 @@ export class PaymentService {
 
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on refund payment.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -231,20 +150,7 @@ export class PaymentService {
 
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on get payment refunds.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -260,20 +166,7 @@ export class PaymentService {
 
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on update a payment.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 
@@ -285,20 +178,7 @@ export class PaymentService {
 
       return response.data;
     } catch (error) {
-      switch (error.response.status) {
-        case 500:
-          throw new HttpException(
-            'Error on get payment details.',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-          break;
-        default:
-          throw new HttpException(
-            error.response.data.cause[0].description,
-            error.response.status,
-          );
-          break;
-      }
+      throw error;
     }
   }
 }

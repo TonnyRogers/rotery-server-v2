@@ -57,9 +57,12 @@ export class ItineraryMember {
 
   @Property({ type: 'string', nullable: true, lazy: true })
   paymentId: string;
-
+  
   @Enum({ items: () => PaymentStatus, default: PaymentStatus.FREE })
   paymentStatus: PaymentStatus;
+
+  @Property({ columnType: 'decimal(8,2)', nullable: true, lazy: true })
+  paymentAmount: string;
 
   @Property()
   createdAt: Date = new Date();

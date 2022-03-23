@@ -1,0 +1,15 @@
+Ola <%= it.name %>, este e-mail é sobre o status de pagamento da sua assinatura deste mês: 
+
+Dados da assinatura
+
+<% Object.entries(it.data).map(([key,val]) => { %> 
+    <%= key %>:	<%= val %>
+<% })%>
+
+Cartão (<%= it.cardBrand %>) **** **** **** <%= it.cardLastNumbers %>
+
+O pagamento via cartão de crédito esta com status: <%= it.paymentStatus %>
+
+Caso tenha algum problema com o pagamento você pode trocar de cartão na tela de assinatura no app.
+
+Grande abraço.

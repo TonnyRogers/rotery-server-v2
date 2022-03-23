@@ -14,18 +14,21 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { DemoteMemberDto } from './dto/demote-member.dto';
 import { PromoteMemberDto } from './dto/promote-member.dto';
 import { RefuseMemberDto } from './dto/refuse-member.dto';
-import { itineraryRelations } from '@/utils/constants';
+import { AppColors, itineraryRelations, paymentStatusColor, paymentStatusRole } from '@/utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationAlias } from '../../entities/notification.entity';
 import {
   MemberWithPaymentResponse,
   NotificationSubject,
+  PaymentDetailsReponse,
   PaymentRefundResponse,
   ProcessPaymentType,
 } from '@/utils/types';
 import { PaymentService } from '../payments/payments.service';
 import { Response } from 'express';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
+import { EmailsService } from '../emails/emails.service';
+import { dayjsPlugins } from '@/providers/dayjs-config';
 
 @Injectable()
 export class ItineraryMembersService {
@@ -42,6 +45,8 @@ export class ItineraryMembersService {
     private notificationsService: NotificationsService,
     @Inject(PaymentService)
     private paymentService: PaymentService,
+    @Inject(EmailsService)
+    private emailsService: EmailsService,
   ) {}
 
   async paymentRefund(itineraryMember: ItineraryMember) {
@@ -143,11 +148,13 @@ export class ItineraryMembersService {
     itineraryMemberId: string,
     status: PaymentStatus,
     res: Response,
+    payment?: PaymentDetailsReponse,
   ) {
     try {
       const member = await this.itineraryMemberRepository.findOne({
         id: itineraryMemberId,
-      });
+        deletedAt: null,
+      },['user','user.email','itinerary.owner']);
 
       member.paymentStatus = status;
 
@@ -166,6 +173,27 @@ export class ItineraryMembersService {
           jsonData: selectedMember,
         });
       }
+
+      await this.emailsService.send({
+        to: member.user.email,
+        type: 'itinerary-payment-updates',
+        content: {
+          name: member.user.username,
+          paymentStatus: paymentStatusRole[status],
+          paymentStatusColor: paymentStatusColor[status],
+          cardBrand: payment.payment_method_id,
+          cardBrandImage: `https://rotery-filestore.nyc3.digitaloceanspaces.com/card-brands/${payment.payment_method_id}.png`,
+          cardLastNumbers: payment.card.last_four_digits,
+          data: {
+            Nome: member.itinerary.name,
+            Ida: dayjsPlugins(member.itinerary.begin).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + '(Horário de Brasília)',
+            Volta: dayjsPlugins(member.itinerary.end).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + '(Horário de Brasília)',
+            Local: member.itinerary.location,
+            Host: member.itinerary.owner.username,
+            Total: status === PaymentStatus.REFUNDED ? payment.transaction_amount_refunded :payment.transaction_amount,
+          }
+        }
+      });
 
       return res.status(200).send();
     } catch (error) {
@@ -382,7 +410,7 @@ export class ItineraryMembersService {
         );
       }
 
-      const user = await this.usersService.findOne({ id: authUserId });
+      const user = await this.usersService.findOneWithEmail({ id: authUserId });
       const paymentResponse = await this.paymentService.pay(
         {
           ...createMemberWithPaymentDto.payment,
@@ -403,6 +431,7 @@ export class ItineraryMembersService {
 
         newMember.paymentStatus = PaymentStatus.PENDING;
         newMember.paymentId = String(paymentResponse.id);
+        newMember.paymentAmount = String(createMemberWithPaymentDto.payment.transaction_amount);
 
         await this.itineraryMemberRepository.persistAndFlush(newMember);
 
@@ -432,7 +461,7 @@ export class ItineraryMembersService {
           user: authUserId,
           $not: { paymentId: null },
         },
-        { populate: ['paymentId'] },
+        { populate: ['paymentId','user'] },
       );
 
       const memberWithPayment: MemberWithPaymentResponse[] = [];
@@ -442,11 +471,14 @@ export class ItineraryMembersService {
           const payment = await this.paymentService.getPaymentDetails(
             Number(item.paymentId),
           );
-          memberWithPayment.push({
-            ...item,
-            payment,
-            itinerary: item.itinerary.id,
-          });
+
+          if(payment) {
+            memberWithPayment.push({
+              ...item,
+              payment,
+              itinerary: item.itinerary.id,
+            });
+          }
         }),
       );
 
@@ -521,7 +553,7 @@ export class ItineraryMembersService {
           id: item.id,
           member: {
             username: item.user.username,
-            avatar: item.user.profile.file.url,
+            avatar: item.user.profile.file?.url,
           },
           itinerary: {
             id: item.itinerary.id,

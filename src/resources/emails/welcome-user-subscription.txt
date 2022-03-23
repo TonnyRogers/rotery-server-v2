@@ -1,0 +1,27 @@
+Ola <%= it.name %>, você escolheu as vantagens que podemos oferecer, esse é um passo 
+a mais para o turismo consciente e sustentavel aqui no Brasil.
+
+Aqui vão alguns dos detalhes sobre sua assinatura atual:
+
+Dados da assinatura
+
+<% Object.entries(it.data).map(([key,val]) => { %> 
+    <%= key %>  <%= val %>
+<% })%>
+
+Vantagens 🎁
+
+Pagamento pelo app:
+
+Gestão de ganhos:
+
+Roteiros ilimitados:
+
+Estamos trabalhando em outras vantagens para os assinantes, vamos te notificar assim que 
+elas chegarem e então ja salva o nosso e-mail como favorito pra ficar informado(a).
+
+Lembre sempre de manter a natureza limpa, leve seu lixo e daqueles que te acompanham, 
+você é responsável pelo impacto que causa, contamos com sua colaboração para preservar 
+a natureza e ajudar a ter um mundo mais sustentavel 👊🍃
+
+Grande abraço e sucesso.

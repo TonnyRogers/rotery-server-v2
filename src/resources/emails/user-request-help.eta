@@ -4,7 +4,7 @@
     Ola, <%= it.name %> solicitou ajuda com um algo relacionado a um <%= it.type %>, abaixo tem mais detalhes:
 </mj-text>
             
-<mj-table font-family="Roboto,sans-serif" font-size="18px"  line-height="30px" >
+<mj-table container-background-color="rgba(61, 199, 123, 0.2)" cellpadding="8px" table-layout="auto" font-family="Roboto,sans-serif" font-size="18px" line-height="30px">
     <tr style="padding:15px 0;">
         <td >Dados</td>
     </tr>

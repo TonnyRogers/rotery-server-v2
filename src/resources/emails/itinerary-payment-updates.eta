@@ -1,0 +1,52 @@
+<% layout('../template/default-email.eta') %>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Ola <%= it.name %>, este e-mail é sobre o status de pagamento de roteiro que você esta participando: 
+</mj-text>
+         
+<mj-table container-background-color="rgba(61, 199, 123, 0.2)" cellpadding="8px" table-layout="auto" font-family="Roboto,sans-serif" font-size="18px" line-height="30px">
+    <tr style="padding:15px 0;">
+        <td >Dados do roteiro</td>
+    </tr>
+    <% Object.entries(it.data).map(([key,val]) => { %>
+        <tr>
+            <td style="font-weight: bold;">
+                <%= key %>:								
+            </td>
+            <td ><%= val %></td>
+        </tr>
+    <% })%>
+</mj-table>
+
+<mj-section background-color="rgba(61, 199, 123, 0.1)" padding-bottom="0px" padding-top="0">
+    <mj-column width="20%">
+        <mj-text padding-left="33px" font-family="roboto" font-weight="bold" font-size="18px">
+        Cartão
+        </mj-text>
+    </mj-column>
+    <mj-column width="30%"></mj-column>
+    <mj-column width="50%">
+        <mj-image src="<%= it.cardBrandImage %>" alt="Cartão <%= it.cardBrand %> " width="50px"></mj-image>
+        <mj-text font-family="roboto" font-size="18px">
+            **** **** **** <%= it.cardLastNumbers %>
+        </mj-text>
+    </mj-column>
+</mj-section>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    O pagamento via cartão de crédito esta com status: <b style="color:<%= it.paymentStatusColor %>"><%= it.paymentStatus %></b> 
+</mj-text>
+
+<mj-image align="left" width="250px" src="https://media.giphy.com/media/14wXMGbHjXK2k0/giphy-downsized-large.gif" />
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+    Se tudo der certo, prepare suas malas 🧳 🗺
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+   Caso tenha algum problema com o pagamento não deixe de entrar com contato com a gente pelo app no menu de ajuda.
+</mj-text>
+
+<mj-text font-weight="regular" font-size="18px" color="#000" font-family="roboto">
+   Grande abraço.
+</mj-text>

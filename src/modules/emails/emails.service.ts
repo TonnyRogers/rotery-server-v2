@@ -9,6 +9,10 @@ export type EmailType =
   | 'welcome-user'
   | 'user-recover-password'
   | 'user-request-help'
+  | 'itinerary-payment-updates'
+  | 'itinerary-finish'
+  | 'welcome-user-subscription'
+  | 'subscription-payment-updates'
   | 'user-new-password';
 
 export interface EmailParams {
@@ -21,6 +25,13 @@ export interface EmailParams {
   message?: string;
   data?: Record<string, any>;
   userEmail?: string;
+  paymentStatusColor?: string;
+  paymentStatus?: string;
+  itineraryName?: string;
+  itineraryDescription?: string;
+  cardBrandImage?: string;
+  cardBrand?: string;
+  cardLastNumbers?: string;
 }
 
 export interface SendEmailParams {
@@ -31,7 +42,7 @@ export interface SendEmailParams {
 
 @Injectable()
 export class EmailsService {
-  async renderContent(template = 'welcome-user', params: EmailParams) {
+  private async renderContent(template = 'welcome-user', params: EmailParams) {
     try {
       const htmlRender = await Eta.renderFile(
         path.resolve(`./src/resources/emails/${template}.eta`),
