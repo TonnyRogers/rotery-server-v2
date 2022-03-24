@@ -7,6 +7,8 @@ const envFile = `.env`;
 config({ path: envFile });
 
 const REQUIRED_ENV_VARS = [
+  'PORT',
+  'HOST',
   'NODE_ENV',
   'DB_HOST',
   'DB_PORT',
@@ -33,6 +35,11 @@ REQUIRED_ENV_VARS.forEach((envVar) => {
     throw new Error(`Required ENV VAR not set: ${envVar}`);
   }
 });
+
+export const appConfig = {
+  port: process.env.PORT,
+  host: process.env.HOST,
+};
 
 export const postgresql = {
   host: process.env.DB_HOST,
@@ -77,10 +84,11 @@ export const paymentApiOptions = {
   token: process.env.PAYMENT_API_TOKEN,
   url: process.env.PAYMENT_API_URL,
   plan_url: process.env.PAYMENT_PLAN_API_URL,
-  webhook: process.env.PAYMENT_WEBHOOK,
+  webhook: `https://${appConfig.host}:${appConfig.port}/hooks/payment`,
 };
 
 export const rabbitmqConfig = {
   host: `amqp://${process.env.RABBITMQ_HOST}:5672`,
   sendMailQueue: process.env.SEND_MAIL_QUEUE,
 };
+

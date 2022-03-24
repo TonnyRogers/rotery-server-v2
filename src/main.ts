@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { json } from 'express';
 import { AppModule } from './app.module';
+import { appConfig } from './config';
 import { RabbitMQMailPubSubServer } from './transporter/rabbit-send-email.strategy';
 
 async function bootstrap() {
@@ -33,6 +34,6 @@ async function bootstrap() {
 
   app.startAllMicroservices();
 
-  await app.listen(3333);
+  await app.listen(appConfig.port);
 }
 bootstrap();

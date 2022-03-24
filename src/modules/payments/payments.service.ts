@@ -112,7 +112,7 @@ export class PaymentService {
           {
             ...processPaymentDto,
             notification_url:
-              'https://webhook.site/24b44434-b38c-4c77-9ba8-5a280d32b426?source_news=webhooks&validator=checkout',
+              paymentApiOptions.webhook,
             metadata: {
               ...processPaymentDto?.metadata,
               payment_validator: 'checkout',
