@@ -23,7 +23,7 @@ import { Plan } from './entities/plan.entity';
 import { Subscription } from './entities/subscription.entity';
 
 export default {
-  entities: ['./dist/src/entities'],
+  entities: ['./dist/entities'],
   entitiesTs: [
     User,
     File,
