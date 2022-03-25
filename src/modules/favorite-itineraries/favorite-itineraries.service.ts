@@ -31,10 +31,12 @@ export class FavoriteItinerariesService {
           'favoriteItineraries.lodgings',
         ],
         {
-          favoriteItineraries: {
-            deletedAt: null,
-            members: { deletedAt: null },
-          },
+          where: {
+            favoriteItineraries: {
+              deletedAt: null,
+              members: { deletedAt: null },
+            },
+          }
         },
       );
 
@@ -60,9 +62,9 @@ export class FavoriteItinerariesService {
 
   async remove(authUserId: number, itineraryId: number) {
     try {
-      const user = await this.userRepository.findOneOrFail({ id: authUserId }, [
+      const user = await this.userRepository.findOneOrFail({ id: authUserId }, { populate: [
         'favoriteItineraries',
-      ]);
+      ] });
       const itinerary = await this.itinerariesService.show(itineraryId);
 
       user.favoriteItineraries.remove(itinerary);

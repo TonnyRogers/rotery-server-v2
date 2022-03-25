@@ -31,7 +31,7 @@ export class ItineraryQuestionsService {
     try {
       return this.itineraryQuestionRepository.find(
         { itinerary: { id: itineraryId, deletedAt: null } },
-        ['owner.profile.file', 'itinerary'],
+        { populate: ['owner.profile.file', 'itinerary'] },
       );
     } catch (error) {
       throw new HttpException("Can't find any question", 400);
@@ -42,7 +42,7 @@ export class ItineraryQuestionsService {
     try {
       return this.itineraryQuestionRepository.findOneOrFail(
         { id: itineraryQuestionId },
-        ['owner.profile.file'],
+        { populate: ['owner.profile.file'] },
       );
     } catch (error) {
       throw new HttpException("Can't find any question", 400);

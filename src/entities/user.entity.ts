@@ -78,6 +78,7 @@ export class User {
   @OneToOne(
     () => BankAccount, 
     (bankAccount) => bankAccount.user,
+    { lazy: true }
   )
   bankAccount!: BankAccount;
 

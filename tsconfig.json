@@ -21,8 +21,9 @@
     "moduleResolution": "node",
     "lib": ["ESNext"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@config": ["src/config"]
     }
   },
-  "include": ["src", "decs.d.ts","@types/**/*.d.ts",".eslintrc.js"]
+  "include": ["src", "migrations","decs.d.ts","@types/**/*.d.ts",".eslintrc.js"]
 }

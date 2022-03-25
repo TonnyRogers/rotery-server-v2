@@ -3,7 +3,7 @@ import { ItineraryLodging } from '@/entities/itinerary-lodging.entity';
 import { ItineraryTransport } from '@/entities/itinerary-transport.entity';
 import { Itinerary } from '@/entities/itinerary.entity';
 import { User } from '@/entities/user.entity';
-import { Collection } from '@mikro-orm/core';
+import { Collection, EntityDTO } from '@mikro-orm/core';
 
 export const userProfileFileSerializer = (value: User) => ({
     id: value.id,
@@ -35,7 +35,7 @@ export const itineraryOwnerFileSerializer = (value: Itinerary) => ({
 
 export const itineraryActivityCollectionSerializer = (value: Collection<ItineraryActivity>) => value
   .toArray()
-  .map(({ capacity,price,description,isFree, itinerary, activity }: ItineraryActivity) => ({
+  .map(({ capacity,price,description,isFree, itinerary, activity }: EntityDTO<ItineraryActivity>) => ({
     itinerary,
     activity: {
       id: activity.id,
@@ -45,12 +45,12 @@ export const itineraryActivityCollectionSerializer = (value: Collection<Itinerar
     capacity,
     price,
     description,
-    isFree,
+    isFree,    
   }));
 
 export const itineraryTransportCollectionSerializer = (value: Collection<ItineraryTransport>) => value
   .toArray()
-  .map(({ capacity,price,description,isFree, itinerary, transport }: ItineraryTransport) => ({
+  .map(({ capacity,price,description,isFree, itinerary, transport }: EntityDTO<ItineraryTransport>) => ({
     itinerary,
     transport: {
       id: transport.id,
@@ -65,7 +65,7 @@ export const itineraryTransportCollectionSerializer = (value: Collection<Itinera
 
 export const itineraryLodgingCollectionSerializer = (value: Collection<ItineraryLodging>) => value
   .toArray()
-  .map(({ capacity,price,description,isFree, itinerary, lodging }: ItineraryLodging) => ({
+  .map(({ capacity,price,description,isFree, itinerary, lodging }: EntityDTO<ItineraryLodging>) => ({
     itinerary,
     lodging: {
       id: lodging.id,

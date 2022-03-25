@@ -91,7 +91,8 @@ export class UsersService {
         }
       });
 
-      return await this.usersRepository.findOne(findOptions,['email']);
+      return await this.usersRepository
+        .findOne(findOptions,{ populate: ['email'] });
     } catch (error) {
       throw error;
     }
@@ -99,9 +100,11 @@ export class UsersService {
 
   async findWithDeviceToken(id: number): Promise<User> {
     try {
-      return await this.usersRepository.findOne({ id, isActive: true }, [
-        'deviceToken',
-      ]);
+      return await this.usersRepository
+      .findOne(
+        { id, isActive: true }, 
+        { populate: ['deviceToken'] 
+      });
     } catch (error) {
       throw error;
     }
@@ -163,9 +166,9 @@ export class UsersService {
     }
   }
 
-  async findAndPopulate(id: number, populate: string[]) {
+  async findAndPopulate(id: number, populate: any[]) {
     try {
-      return await this.usersRepository.findOneOrFail({ id }, populate);
+      return await this.usersRepository.findOneOrFail({ id }, { populate });
     } catch (error) {
       throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
     }

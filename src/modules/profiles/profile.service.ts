@@ -12,7 +12,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Profile } from '../../entities/profile.entity';
 import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
 
-const profilePopulate = [
+const profilePopulate: any = [
   'user',
   'user.email',
   'user.customerId',
@@ -41,7 +41,7 @@ export class ProfileService {
     try {
       const profilePayload = await this.profileRepository.findOneOrFail(
         { user: { id } },
-        ['user', 'file', 'user.ratings'],
+        { populate: ['user', 'file', 'user.ratings'] },
       );
 
       delete profilePayload.user.id;
@@ -57,7 +57,7 @@ export class ProfileService {
     try {
       const profile = await this.profileRepository.findOneOrFail(
         { user: { id: authUserId } },
-        profilePopulate,
+        { populate: profilePopulate },
       );
 
       return profile;
@@ -75,7 +75,7 @@ export class ProfileService {
 
       const profile = await this.profileRepository.findOneOrFail(
         { user: { id } },
-        profilePopulate,
+        { populate: profilePopulate },
       );
 
       return profile;
@@ -93,7 +93,7 @@ export class ProfileService {
 
       const profile = await this.profileRepository.findOneOrFail(
         { user: { id } },
-        ['user', 'file'],
+        { populate: ['user', 'file'] },
       );
 
       return profile;

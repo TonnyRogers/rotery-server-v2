@@ -77,7 +77,9 @@ export class ItineraryMembersService {
           itinerary: { deletedAt: null },
           deletedAt: null,
         },
-        ['user.profile.file'],
+        {
+          populate: ['user.profile.file']
+        },
       );
     } catch (error) {
       throw error;
@@ -154,7 +156,9 @@ export class ItineraryMembersService {
       const member = await this.itineraryMemberRepository.findOne({
         id: itineraryMemberId,
         deletedAt: null,
-      },['user','user.email','itinerary.owner']);
+      },{
+        populate: ['user','user.email','itinerary.owner']
+      });
 
       member.paymentStatus = status;
 
@@ -205,7 +209,7 @@ export class ItineraryMembersService {
     try {
       return this.itineraryRepository.find(
         { members: { user: authUserId, deletedAt: null }, deletedAt: null },
-        itineraryRelations,
+        { populate: itineraryRelations },
       );
     } catch (error) {
       throw new HttpException("Can't find member itineraries", 400);
@@ -224,7 +228,7 @@ export class ItineraryMembersService {
           itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
           deletedAt: null,
         },
-        ['itinerary.owner'],
+        { populate: ['itinerary.owner'] },
       );
 
       member.isAccepted = true;
@@ -262,7 +266,7 @@ export class ItineraryMembersService {
           user: refuseMemberDto.userId,
           deletedAt: null,
         },
-        ['itinerary.owner', 'user','paymentId'],
+        { populate: ['itinerary.owner', 'user','paymentId'] },
       );
 
       await this.paymentRefund(member);
@@ -302,7 +306,7 @@ export class ItineraryMembersService {
           user: promoteMemberDto.userId,
           deletedAt: null,
         },
-        ['itinerary.owner', 'user'],
+        { populate:['itinerary.owner', 'user'] },
       );
 
       member.isAdmin = true;
@@ -340,7 +344,7 @@ export class ItineraryMembersService {
           itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
           deletedAt: null,
         },
-        ['itinerary.owner', 'user'],
+        { populate:['itinerary.owner', 'user'] },
       );
 
       member.isAdmin = false;
@@ -373,7 +377,7 @@ export class ItineraryMembersService {
           itinerary: { id: itineraryId, deletedAt: null },
           deletedAt: null,
           user: authUserId,
-        },['paymentId','itinerary']);
+        }, { populate: ['paymentId','itinerary'] });
 
         await this.paymentRefund(itineraryMember);
 
@@ -496,7 +500,7 @@ export class ItineraryMembersService {
         {
           id: itineraryMemberId,
         },
-        ['paymentId', 'itinerary'],
+        { populate: ['paymentId', 'itinerary'] },
       );
 
       if (member.itinerary.status !== ItineraryStatus.ACTIVE || member.user.id !== authUserId) {

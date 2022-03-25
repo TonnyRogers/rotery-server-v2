@@ -1,6 +1,6 @@
 import { PaymentStatus } from "@/entities/itinerary-member.entity";
 
-export const itineraryRelations = [
+export const itineraryRelations: any = [
   'owner.profile.file',
   'photos.file',
   'activities.activity',

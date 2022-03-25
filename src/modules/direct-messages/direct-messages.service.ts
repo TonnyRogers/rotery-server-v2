@@ -6,7 +6,7 @@ import { CreateDirectMessageDto } from './dto/create-message.dto';
 import { DirectMessage } from '../../entities/direct-message.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 
-const messagePopulate = [
+const messagePopulate: any[] = [
   'sender.profile.file',
   'receiver.profile.file',
   'file',
@@ -27,12 +27,16 @@ export class DirectMessagesService {
     const last = (offset - 1) * limit;
     try {
       return this.directMessageRepository.find(
-        { receiver: authUser },
-        messagePopulate,
-        undefined,
-        limit,
-        last,
+        {
+          receiver: authUser
+        },
+        {
+          limit,
+          offset: last,
+          populate: messagePopulate,
+        }
       );
+
     } catch (error) {
       throw new HttpException("Can't find messages.", 404);
     }
@@ -66,7 +70,9 @@ export class DirectMessagesService {
     try {
       return this.directMessageRepository.findOneOrFail(
         { id },
-        messagePopulate,
+        {
+          populate: messagePopulate,
+        }
       );
     } catch (error) {
       throw new HttpException("Can't find this message.", 404);
@@ -82,8 +88,10 @@ export class DirectMessagesService {
             { sender: authUserId, receiver: receiverId },
           ],
         },
-        messagePopulate,
-        { createdAt: -1 },
+        {
+          populate: messagePopulate,
+          orderBy: { createdAt: -1 },
+        }
       );
 
       directMessages.forEach((message) => {

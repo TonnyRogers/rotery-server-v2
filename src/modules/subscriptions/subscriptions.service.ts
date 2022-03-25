@@ -188,7 +188,13 @@ export class SubscriptionsService {
     async updateSubscriptionStatusByWebhook(userEmail: string, subscriptionStatus: SubscriptionStatus, res: Response, payment?: PaymentDetailsReponse,) {
         try {
             const user = await this.usersService.findOneWithEmail({ email: userEmail });
-            const subscription = await this.subscriptionRespository.findOneOrFail({ user, deletedAt: null },['plan']);
+            const subscription = await this.subscriptionRespository
+                .findOneOrFail(
+                    { 
+                        user, 
+                        deletedAt: null 
+                    }, 
+                    { populate:['plan'] });
             
             if(subscription.status !== SubscriptionStatus.CANCELLED) {
 
@@ -258,7 +264,14 @@ export class SubscriptionsService {
 
     async changeSubscriptionCard(authUserId: number, subscriptionId: number, changeSubscriptionCardDto: ChangeSubscriptionCardDto, hasPayment = false) {
         try {
-            const subscription = await this.subscriptionRespository.findOneOrFail({ id: subscriptionId, user: authUserId, deletedAt: null },['plan']);
+            const subscription = await this.subscriptionRespository
+                .findOneOrFail(
+                    { 
+                        id: subscriptionId, 
+                        user: authUserId, 
+                        deletedAt: null 
+                    },
+                    { populate: ['plan'] });
 
             const changeCardPayload: ChangeCardRequestPayload = {
                 ...changeSubscriptionCardDto,

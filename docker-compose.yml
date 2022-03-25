@@ -5,9 +5,7 @@ services:
     env_file: .env
     build:
       context: .
-      dockerfile: Dockerfile-dev
-      args:
-        - NODE_ENV=development
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres
     ports:

@@ -145,7 +145,7 @@ export class ItinerariesService {
       });
 
       await this.itineraryRepository.populate(itineraries, itineraryRelations, {
-        members: { deletedAt: null },
+        where: { members: { deletedAt: null } },
       });
 
       return itineraries;
@@ -178,7 +178,7 @@ export class ItinerariesService {
       });
 
       await this.itineraryRepository.populate(itinerary, itineraryRelations, {
-        members: { deletedAt: null },
+        where: { members: { deletedAt: null } },
       });
 
       if (!itinerary) {
@@ -259,7 +259,7 @@ export class ItinerariesService {
       });
 
       await this.itineraryRepository.populate(itinerary, ['members.user','members.paymentId'], {
-        members: { deletedAt: null },
+        where: { members: { deletedAt: null } },
       });
 
       itinerary.deletedAt = new Date(Date.now());
@@ -345,7 +345,7 @@ export class ItinerariesService {
       });
 
       await this.itineraryRepository.populate(itinerary, ['owner','members','members.user.email','members.paymentAmount'], {
-        members: { deletedAt: null, isAccepted: true },
+        where: { members: { deletedAt: null, isAccepted: true } },
       });
 
       itinerary.status = ItineraryStatus.FINISHED;

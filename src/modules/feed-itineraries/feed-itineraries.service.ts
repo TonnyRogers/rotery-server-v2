@@ -70,7 +70,8 @@ export class FeedItinerariesService {
       );
 
       await this.feedItinerariesRepository.populate(items, itineraryRelations, {
-        members: { deletedAt: null },
+        where: { members: { deletedAt: null } },
+        orderBy: { begin: -1 }
       });
 
       const totalRecords = await this.feedItinerariesRepository.count({
@@ -106,7 +107,7 @@ export class FeedItinerariesService {
         feedFind,
         itineraryRelations,
         {
-          members: { deletedAt: null },
+          where: { members: { deletedAt: null } },
         },
       );
 

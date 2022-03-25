@@ -15,7 +15,7 @@ export interface ConnectionReponse {
   invites: UserConnection[];
 }
 
-const connectionPopulate = ['owner.profile.file', 'target.profile.file'];
+const connectionPopulate: any = ['owner.profile.file', 'target.profile.file'];
 @Injectable()
 export class UserConnectionService {
   constructor(
@@ -95,13 +95,13 @@ export class UserConnectionService {
         {
           owner: authUserId,
         },
-        connectionPopulate,
+        { populate: connectionPopulate },
       );
       const invites = await this.userConnectionRepository.find(
         {
           target: authUserId,
         },
-        connectionPopulate,
+        { populate: connectionPopulate },
       );
 
       return {
@@ -117,7 +117,7 @@ export class UserConnectionService {
     try {
       const selectedConnection = await this.userConnectionRepository.findOne(
         { id: connectionId },
-        connectionPopulate,
+        { populate: connectionPopulate },
       );
 
       return selectedConnection;
@@ -137,7 +137,7 @@ export class UserConnectionService {
           target: connectionUserId,
           owner: authUserId,
         },
-        connectionPopulate,
+        { populate: connectionPopulate },
       );
 
       connection.isBlocked = updateConnectionDto.isBlocked;
