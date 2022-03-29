@@ -1,22 +1,43 @@
-version: '3.8'
+version: '3.9'
 services:
-  app:
+  dev:
     container_name: rotery_server
     env_file: .env
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      target: development
+      dockerfile: Dockerfile
+    command: yarn start:dev
     depends_on:
       - postgres
+      - rabbitmq
     ports:
       - 3333:3333
     volumes:
-      - .:/user/src/app/
-      - /user/src/app/node_modules
+      - .:/home/app
+      - /home/app/node_modules
     networks:
       - rotery-services
-    restart: always
-
+    restart: unless-stopped
+  prod:
+    container_name: rotery_server
+    env_file: .env
+    build:
+      context: .
+      target: production
+      dockerfile: Dockerfile
+    command: yarn start:prod
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - 3333:3333
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+    networks:
+      - rotery-services
+    restart: unless-stopped
   rabbitmq:
     image: rabbitmq:3.9-management
     container_name: rabbitmq1
@@ -26,7 +47,7 @@ services:
       - 15672:15672
     networks:
       - rotery-services
-    restart: always
+    restart: unless-stopped
   postgres:
     image: postgres
     env_file: .env
@@ -37,7 +58,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
     volumes:
       - db_data:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
     ports:
       - 5432:5432
     networks:

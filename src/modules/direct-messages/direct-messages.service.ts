@@ -62,7 +62,7 @@ export class DirectMessagesService {
 
       return message;
     } catch (error) {
-      throw new HttpException('Error on send message.', 400);
+      throw new HttpException({ message: 'Error on send message.', error}, 400);
     }
   }
 

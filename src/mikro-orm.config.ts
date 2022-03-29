@@ -27,4 +27,5 @@ export default {
   tsNode: true,
   timezone: 'UTC',
   logger: logger.log.bind(logger),
+  allowGlobalContext: true,
 } as MikroOrmModuleOptions;
