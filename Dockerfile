@@ -4,11 +4,11 @@
 
 FROM node:14.17 as development
 
-WORKDIR /home/app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --only=development
+RUN yarn install
 
 COPY . .
 
@@ -19,14 +19,14 @@ FROM node:14.17-alpine3.14 as production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /home/app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --only=production
+RUN yarn install --production
 
 COPY . .
 
-COPY --from=development /home/app/dist ./dist
+COPY --from=development /usr/src/app/dist ./dist
 
 CMD node ./dist/src/main.js
