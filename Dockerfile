@@ -2,17 +2,19 @@
 # RUN npm install pm2 -g
 # CMD ["pm2-runtime","dist/src/main.js"]
 
-FROM node:14.17 as development
+FROM node:14.17 as dev
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install
+RUN npm install
+
+RUN npm install glob rimraf
 
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 FROM node:14.17-alpine3.14 as production
 
@@ -23,10 +25,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --production
+RUN npm install --production
 
 COPY . .
 
-COPY --from=development /usr/src/app/dist ./dist
+COPY --from=dev /usr/src/app/dist ./dist
 
-CMD node ./dist/src/main.js
+CMD ["node", "dist/src/main"]
