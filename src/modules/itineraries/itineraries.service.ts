@@ -157,7 +157,11 @@ export class ItinerariesService {
   async show(id: number) {
     try {
       const itinerary = await this.itineraryRepository
-        .findOneQB({ id, deletedAt: null },itineraryRelations);
+        .findOneQB(
+          { id, deletedAt: null },
+          itineraryRelations, 
+          { members: { deletedAt: null } 
+        });
 
       return itinerary;
     } catch (error) {      

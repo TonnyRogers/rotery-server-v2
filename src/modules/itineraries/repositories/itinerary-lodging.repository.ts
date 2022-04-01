@@ -5,6 +5,8 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 export class ItineraryLodgingRepository extends EntityRepository<ItineraryLodging> {
 
     public async insertJoinTable(deleteWhere: FilterQuery<ItineraryLodging>,data: EntityData<ItineraryLodging>[]) {
+        if(!data.length) return;
+
         const queryBuilder = this._em.createQueryBuilder(ItineraryLodging);
 
 

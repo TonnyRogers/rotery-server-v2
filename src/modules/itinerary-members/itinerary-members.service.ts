@@ -207,10 +207,17 @@ export class ItineraryMembersService {
 
   async itineraries(authUserId: number) {
     try {
-      return this.itineraryRepository.find(
+      const memberItineraries = await this.itineraryRepository.find(
         { members: { user: authUserId, deletedAt: null }, deletedAt: null },
-        { populate: itineraryRelations },
       );
+
+      await this.itineraryRepository.
+        populate(memberItineraries, itineraryRelations, {
+           where: { members: { deletedAt : null } } 
+        });
+
+      return memberItineraries;
+
     } catch (error) {
       throw new HttpException("Can't find member itineraries", 400);
     }
