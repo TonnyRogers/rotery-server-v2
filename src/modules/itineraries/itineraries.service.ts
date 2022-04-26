@@ -89,7 +89,7 @@ export class ItinerariesService {
         requestPayment: userSubcription?.allowed ? true : false,
       });
 
-      activities &&
+      activities?.length &&
         activities.forEach(async (activity) => {
           const newActivity = new ItineraryActivity({
             itinerary: newItinerary,
@@ -98,7 +98,7 @@ export class ItinerariesService {
           this.itineraryActivityRepository.persist(newActivity);
         });
 
-      transports &&
+      transports?.length &&
         transports.forEach(async (transport) => {
           const newTransport = new ItineraryTransport({
             itinerary: newItinerary,
@@ -107,7 +107,7 @@ export class ItinerariesService {
           this.itineraryTransportRepository.persist(newTransport);
         });
 
-      lodgings &&
+      lodgings?.length &&
         lodgings.forEach(async (lodging) => {
           const newLodging = new ItineraryLodging({
             itinerary: newItinerary,
@@ -116,7 +116,7 @@ export class ItinerariesService {
           this.itineraryLodgingRepository.persist(newLodging);
         });
 
-      photos &&
+      photos?.length &&
         photos.forEach(async (photo) => {
           const newPhoto = new ItineraryPhoto({
             itinerary: newItinerary,
@@ -125,13 +125,13 @@ export class ItinerariesService {
           this.itineraryPhotoRepository.persist(newPhoto);
         });
 
-      await this.itineraryRepository.flush();
+      await this.itineraryRepository.persistAndFlush(newItinerary);
       await this.itineraryActivityRepository.flush();
       await this.itineraryLodgingRepository.flush();
       await this.itineraryTransportRepository.flush();
       await this.itineraryPhotoRepository.flush();
 
-      return this.show(newItinerary.id);
+      return await this.show(newItinerary.id);
     } catch (error) {
       throw error;
     }
@@ -189,6 +189,10 @@ export class ItinerariesService {
         return new HttpException('Cant find this itinerary.', 404);
       }
 
+      if (itinerary.members.length > updateItineraryDto.capacity) {
+        throw new HttpException("Can't set capacity less than members list.", HttpStatus.UNAUTHORIZED);
+      }
+
       const {
         name,
         begin,
@@ -226,13 +230,15 @@ export class ItinerariesService {
 
       await this.itineraryRepository.flush();
 
+      const updated = await this.show(itineraryId);
+
       for (const member of itinerary.members.getItems()) {
         if (member.isAccepted === true) {
           const notificationPayload: CreateNotificationPayload = {
             alias: NotificationAlias.ITINERARY_UPDATED,
             subject: NotificationSubject.itineraryUpdated,
             content: `${itinerary.name}`,
-            jsonData: { ...itinerary },
+            jsonData: { ...updated },
           };
   
           await this.notificationsService.create(
@@ -245,9 +251,7 @@ export class ItinerariesService {
           );
         }        
       }
-   
-
-      const updated = await this.show(itineraryId);
+  
       
       return updated;
     } catch (error) {
