@@ -51,8 +51,7 @@ export const EmailSectionTitle = {
   'user-new-password': 'Sua senha foi alterada',
   'user-request-help': 'Alguém precisa de ajuda',
   'itinerary-finish': 'Roteiro Finalizado',
-  'itinerary-payment-updates':
-    'Atualização do seu pagamento em " *code* "',
+  'itinerary-payment-updates': 'Atualização do seu pagamento',
   'welcome-user-subscription': 'Bem-vindo(a) assinante',
   'subscription-payment-updates': 'Atualizações de pagamento do seu plano',
 };
