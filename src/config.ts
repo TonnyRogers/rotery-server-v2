@@ -9,6 +9,7 @@ config({ path: envFile });
 const REQUIRED_ENV_VARS = [
   'PORT',
   'HOST',
+  'URL_HOST',
   'NODE_ENV',
   'DB_HOST',
   'DB_PORT',
@@ -39,6 +40,7 @@ REQUIRED_ENV_VARS.forEach((envVar) => {
 export const appConfig = {
   port: process.env.PORT,
   host: process.env.HOST,
+  url: process.env.URL_HOST,
 };
 
 export const postgresql = {
@@ -84,7 +86,7 @@ export const paymentApiOptions = {
   token: process.env.PAYMENT_API_TOKEN,
   url: process.env.PAYMENT_API_URL,
   plan_url: process.env.PAYMENT_PLAN_API_URL,
-  webhook: `https://${appConfig.host}:${appConfig.port}/hooks/payment`,
+  webhook: `https://${appConfig.url}.rotery.com.br/hooks/payment`,
 };
 
 export const rabbitmqConfig = {
