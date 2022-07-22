@@ -112,6 +112,21 @@ export class User {
   @Property()
   updatedAt: Date = new Date();
 
+  @Property({ persist: false })
+  get ratingAvg() {
+    if(this.ratings?.isInitialized()) {
+      let totalRatings = 0;
+      let ratingCount = 0;
+
+      this.ratings.getItems().forEach((rating) => {
+        totalRatings += rating.rate;
+        ratingCount++;
+      });
+
+      return totalRatings / ratingCount;
+    }
+  }
+
   @AfterCreate()
   async afterCreate() {
     const { email, username } = this;

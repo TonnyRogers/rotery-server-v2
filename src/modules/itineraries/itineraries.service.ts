@@ -413,7 +413,7 @@ export class ItinerariesService {
         return { 
           allowed: true, 
           count: countItineraries, 
-          limit: 999  
+          limit: 999999  
         };
       }
 

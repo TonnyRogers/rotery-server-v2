@@ -56,7 +56,7 @@ export class UsersService {
     try {
       return await this.usersRepository.find(
         {
-          username: { $like: '%' + username + '%' },
+          username: { $like: '%' + (username || '') + '%' },
         },
         { populate: ['profile.file'] },
       );

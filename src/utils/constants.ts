@@ -1,6 +1,7 @@
 import { PaymentStatus } from "@/entities/itinerary-member.entity";
 
 export const itineraryRelations: any = [
+  'owner.ratings',
   'owner.profile.file',
   'photos.file',
   'activities.activity',

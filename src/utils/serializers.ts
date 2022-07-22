@@ -8,6 +8,7 @@ import { Collection, EntityDTO } from '@mikro-orm/core';
 export const userProfileFileSerializer = (value: User) => ({
     id: value.id,
     username: value.username,
+    ratingAvg: value.ratingAvg,
     profile: {
       file: {
         url: value.profile?.file?.url,
@@ -24,6 +25,7 @@ export const itineraryOwnerFileSerializer = (value: Itinerary) => ({
   owner: {
     id: value.owner.id,
     username: value.owner.username,
+    ratingAvg: value.owner.ratingAvg,
     profile: {
       file: {
         url: value.owner.profile.file.url,

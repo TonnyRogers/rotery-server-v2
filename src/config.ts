@@ -25,7 +25,7 @@ const REQUIRED_ENV_VARS = [
   'FIREBASE_DB_URL',
   'RABBITMQ_HOST',
   'SEND_MAIL_QUEUE',
-  'PAYMENT_API_TOKEN',
+  'PAYMENT_API_TOKEN_PROD',
   'PAYMENT_API_URL',
   'PAYMENT_PLAN_API_URL',
 ];
@@ -83,7 +83,10 @@ export const redisConfig = {
 };
 
 export const paymentApiOptions = {
-  token: process.env.PAYMENT_API_TOKEN,
+  token: 
+    process.env.NODE_ENV === 'production' 
+      ? process.env.PAYMENT_API_TOKEN_PROD 
+      : process.env.PAYMENT_API_TOKEN_DEV,
   url: process.env.PAYMENT_API_URL,
   plan_url: process.env.PAYMENT_PLAN_API_URL,
   webhook: `https://${appConfig.url}.rotery.com.br/hooks/payment`,
