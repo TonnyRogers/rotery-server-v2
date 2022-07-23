@@ -29,6 +29,7 @@ import { RevenuesModule } from './modules/revenues/revenues.module';
 import { CommunicationsModule } from './modules/communications/communications.module';
 import { BankAccountsModule } from './modules/bank-accounts/bank-accounts.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { LocationsModule } from './modules/locations/locations.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
     CommunicationsModule,
     BankAccountsModule,
     SubscriptionsModule,
+    LocationsModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',

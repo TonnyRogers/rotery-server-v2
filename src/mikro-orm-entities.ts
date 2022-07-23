@@ -21,10 +21,11 @@ import { ResetPassword } from './entities/reset-password.entity';
 import { BankAccount } from './entities/bank-account.entity';
 import { Plan } from './entities/plan.entity';
 import { Subscription } from './entities/subscription.entity';
+import { Location } from './entities/location.entity';
+import { LocationDetailing } from './entities/location-detailing.entity';
 
 export default {
-  entities: ['./dist/entities'],
-  entitiesTs: [
+  entities: [
     User,
     File,
     Profile,
@@ -47,5 +48,7 @@ export default {
     BankAccount,
     Plan,
     Subscription,
+    Location,
+    LocationDetailing,
   ],
 } as MikroOrmModuleOptions;
