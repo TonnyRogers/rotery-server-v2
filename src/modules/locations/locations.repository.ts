@@ -19,12 +19,11 @@ export class LocationsRepository implements LocationsRepositoryInterface {
   }
 
   async findOne(filters: FindOneLocationRepositoryFilter): Promise<Location> {
-    const { id, location, name } = filters;
+    const { id, location, name, alias } = filters;
     return this.locationsRepository.findOne({
-      $or: [
-        {id},
-        { $and: [ {location, name} ]}
-      ]
+        ...( id ? {id} : {}),
+        ...(alias ? { alias } : {}),
+        ...( location && name ? { $and: [ {location, name} ]} : {})
     });
   }
 
