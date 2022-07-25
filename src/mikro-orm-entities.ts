@@ -1,28 +1,33 @@
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
-import { File } from './entities/file.entity';
-import { Profile } from './entities/profile.entity';
-import { User } from './entities/user.entity';
-import { DirectMessage } from './entities/direct-message.entity';
-import { UserConnection } from './entities/user-connection.entity';
+
 import { Activity } from './entities/activity.entity';
-import { Lodging } from './entities/lodging.entity';
-import { Transport } from './entities/transport.entity';
-import { Itinerary } from './entities/itinerary.entity';
+import { BankAccount } from './entities/bank-account.entity';
+import { DirectMessage } from './entities/direct-message.entity';
+import { File } from './entities/file.entity';
 import { ItineraryActivity } from './entities/itinerary-activity.entity';
 import { ItineraryLodging } from './entities/itinerary-lodging.entity';
-import { ItineraryTransport } from './entities/itinerary-transport.entity';
+import { ItineraryMember } from './entities/itinerary-member.entity';
 import { ItineraryPhoto } from './entities/itinerary-photo.entity';
 import { ItineraryQuestion } from './entities/itinerary-question.entity';
-import { ItineraryMember } from './entities/itinerary-member.entity';
-import { Notification } from './entities/notification.entity';
-import { UserRating } from './entities/user-rating';
 import { ItineraryRating } from './entities/itinerary-rating';
-import { ResetPassword } from './entities/reset-password.entity';
-import { BankAccount } from './entities/bank-account.entity';
-import { Plan } from './entities/plan.entity';
-import { Subscription } from './entities/subscription.entity';
-import { Location } from './entities/location.entity';
+import { ItineraryTransport } from './entities/itinerary-transport.entity';
+import { Itinerary } from './entities/itinerary.entity';
+import { LocationActivity } from './entities/location-activity.entity';
 import { LocationDetailing } from './entities/location-detailing.entity';
+import { LocationLodging } from './entities/location-lodging.entity';
+import { LocationPhoto } from './entities/location-photo.entity';
+import { LocationTransport } from './entities/location-transport.entity';
+import { Location } from './entities/location.entity';
+import { Lodging } from './entities/lodging.entity';
+import { Notification } from './entities/notification.entity';
+import { Plan } from './entities/plan.entity';
+import { Profile } from './entities/profile.entity';
+import { ResetPassword } from './entities/reset-password.entity';
+import { Subscription } from './entities/subscription.entity';
+import { Transport } from './entities/transport.entity';
+import { UserConnection } from './entities/user-connection.entity';
+import { UserRating } from './entities/user-rating';
+import { User } from './entities/user.entity';
 
 export default {
   entities: [
@@ -50,5 +55,9 @@ export default {
     Subscription,
     Location,
     LocationDetailing,
+    LocationActivity,
+    LocationLodging,
+    LocationPhoto,
+    LocationTransport,
   ],
 } as MikroOrmModuleOptions;

@@ -1,6 +1,12 @@
-import { LocationType } from "@/entities/location.entity";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+
+import { LocationActivity } from '@/entities/location-activity.entity';
+import { LocationLodging } from '@/entities/location-lodging.entity';
+import { LocationPhoto } from '@/entities/location-photo.entity';
+import { LocationTransport } from '@/entities/location-transport.entity';
+import { LocationType } from '@/entities/location.entity';
 
 export class CreateLocationDto {
   @ApiProperty()
@@ -24,4 +30,16 @@ export class CreateLocationDto {
   @ApiProperty()
   @IsEnum(LocationType)
   type: LocationType;
+
+  @ApiProperty()
+  photos: LocationPhoto[];
+
+  @ApiProperty()
+  activities: LocationActivity[];
+
+  @ApiProperty()
+  lodgings: LocationLodging[];
+
+  @ApiProperty()
+  transports: LocationTransport[];
 }

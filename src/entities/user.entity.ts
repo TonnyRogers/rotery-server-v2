@@ -9,17 +9,19 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { UserConnection } from './user-connection.entity';
+
+import { EmailTypes } from '@/utils/constants';
+
+import { RabbitMQPublisher } from '../providers/rabbit-publisher';
+import { BankAccount } from './bank-account.entity';
 import { DirectMessage } from './direct-message.entity';
-import { Profile } from './profile.entity';
+import { ItineraryMember } from './itinerary-member.entity';
 import { Itinerary } from './itinerary.entity';
 import { Notification } from './notification.entity';
-import { UserRating } from './user-rating';
-import { RabbitMQPublisher } from '../providers/rabbit-publisher';
-import { EmailTypes } from '@/utils/constants';
-import { ItineraryMember } from './itinerary-member.entity';
-import { BankAccount } from './bank-account.entity';
+import { Profile } from './profile.entity';
 import { Subscription } from './subscription.entity';
+import { UserConnection } from './user-connection.entity';
+import { UserRating } from './user-rating';
 
 export enum UserRole {
   MASTER = 'master',
@@ -75,11 +77,9 @@ export class User {
   @OneToMany(() => Subscription, (subscription) => subscription.user)
   subscription = new Collection<Subscription>(this);
 
-  @OneToOne(
-    () => BankAccount, 
-    (bankAccount) => bankAccount.user,
-    { lazy: true }
-  )
+  @OneToOne(() => BankAccount, (bankAccount) => bankAccount.user, {
+    lazy: true,
+  })
   bankAccount!: BankAccount;
 
   @OneToMany(() => DirectMessage, (directMessage) => directMessage.receiver)
@@ -117,7 +117,7 @@ export class User {
 
   @Property({ persist: false })
   get ratingAvg() {
-    if(this.ratings?.isInitialized()) {
+    if (this.ratings?.isInitialized()) {
       let totalRatings = 0;
       let ratingCount = 0;
 

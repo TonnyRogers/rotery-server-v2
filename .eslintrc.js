@@ -6,7 +6,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint/eslint-plugin',
-    'import',
+    'eslint-plugin-import',
     'import-helpers',
     'unused-imports',
     'prettier',
@@ -30,12 +30,11 @@ module.exports = {
     'import-helpers/order-imports': [
       'warn',
       {
-        // example configuration
         newlinesBetween: 'always',
         // groups: ['module', '/^@shared/', ['parent', 'sibling', 'index']],
         groups: [
           '/^@nestjs/',
-          '/^(.*)typeorm(.*)/',
+          '/^(.*)mikro-orm(.*)/',
           'module',
           '/^(.*)service/',
           '/^@\\//',

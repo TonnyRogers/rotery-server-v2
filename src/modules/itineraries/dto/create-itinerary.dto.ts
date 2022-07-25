@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { IsBoolean, IsDateString, IsNotEmpty } from 'class-validator';
+
 import { ItineraryActivity } from '../../../entities/itinerary-activity.entity';
 import { ItineraryLodging } from '../../../entities/itinerary-lodging.entity';
 import { ItineraryPhoto } from '../../../entities/itinerary-photo.entity';

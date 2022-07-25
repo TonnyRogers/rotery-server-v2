@@ -1,16 +1,32 @@
-import { Location } from "@/entities/location.entity";
-import { ParamId } from "@/utils/types";
-import { Body, Controller, Get, Inject, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { ApiOkResponse } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { CreateLocationDto } from "./dto/create-location.dto";
-import { UpdateLocationDto } from "./dto/update-location.dto";
-import { LocationsProvider } from "./enums/locations-provider.enum";
-import { GetLocationQueryFilter, LocationsServiceInterface } from "./interfaces/service-interface";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
+
+import {
+  GetLocationQueryFilter,
+  LocationsServiceInterface,
+} from './interfaces/service-interface';
+
+import { Location } from '@/entities/location.entity';
+import { ParamId } from '@/utils/types';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateLocationDto } from './dto/create-location.dto';
+import { UpdateLocationDto } from './dto/update-location.dto';
+import { LocationsProvider } from './enums/locations-provider.enum';
 
 @Controller('locations')
 export class LocationsController {
-
   constructor(
     @Inject(LocationsProvider.LOCATION_SERVICE)
     private readonly locationsService: LocationsServiceInterface,
@@ -33,8 +49,16 @@ export class LocationsController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: Location, isArray: false })
   @Put(':id')
-  updateLocation(@Param() param: ParamId, @Body() updateLocationDto: UpdateLocationDto) {
-    return this.locationsService.update(param.id,updateLocationDto);
+  updateLocation(
+    @Param() param: ParamId,
+    @Body() updateLocationDto: UpdateLocationDto,
+  ) {
+    return this.locationsService.update(param.id, updateLocationDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  removeLocation(@Param() param: ParamId) {
+    return this.locationsService.remove(param.id);
+  }
 }

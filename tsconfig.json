@@ -25,9 +25,5 @@
       "@config": ["src/config"]
     }
   },
-  "include": ["src", "migrations","decs.d.ts","@types/**/*.d.ts",".eslintrc.js"],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "include": ["src", "migrations","test",".eslintrc.js"],
 }

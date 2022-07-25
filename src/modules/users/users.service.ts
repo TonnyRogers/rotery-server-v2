@@ -1,12 +1,15 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { EntityRepository } from '@mikro-orm/postgresql';
+
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
+import { ProfileService } from '../profiles/profile.service';
+
+import { hashPassword } from '@/utils/password';
 
 import { User } from '../../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hashPassword } from '@/utils/password';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ProfileService } from '../profiles/profile.service';
 
 interface FindAllAttrs {
   id?: number;
@@ -91,8 +94,9 @@ export class UsersService {
         }
       });
 
-      return await this.usersRepository
-        .findOne(findOptions,{ populate: ['email'] });
+      return await this.usersRepository.findOne(findOptions, {
+        populate: ['email'],
+      });
     } catch (error) {
       throw error;
     }
@@ -100,11 +104,10 @@ export class UsersService {
 
   async findWithDeviceToken(id: number): Promise<User> {
     try {
-      return await this.usersRepository
-      .findOne(
-        { id, isActive: true }, 
-        { populate: ['deviceToken'] 
-      });
+      return await this.usersRepository.findOne(
+        { id, isActive: true },
+        { populate: ['deviceToken'] },
+      );
     } catch (error) {
       throw error;
     }
@@ -129,7 +132,7 @@ export class UsersService {
     try {
       await this.validateEmail(createUserDto);
       await this.validateUsername(createUserDto);
-      
+
       createUserDto.password = await hashPassword(createUserDto.password);
       const newUser = new User(createUserDto);
       newUser.activationCode = String(
@@ -199,13 +202,13 @@ export class UsersService {
         );
       }
 
-      await this.usersRepository
-        .nativeUpdate(
-          { id: user.id },
-          { 
-            activationCode: null,
-            isActive: true 
-          });
+      await this.usersRepository.nativeUpdate(
+        { id: user.id },
+        {
+          activationCode: null,
+          isActive: true,
+        },
+      );
 
       return { message: 'User activated.', statusCode: HttpStatus.OK };
     } catch (error) {

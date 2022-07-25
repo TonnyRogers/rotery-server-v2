@@ -158,7 +158,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "string"
         },
         "variant_text": {
@@ -167,7 +167,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "string"
         },
         "created_at": {
@@ -415,6 +415,110 @@
     },
     {
       "columns": {
+        "location_id": {
+          "name": "location_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "lodging_id": {
+          "name": "lodging_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "capacity": {
+          "name": "capacity",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "price": {
+          "name": "price",
+          "type": "decimal(8,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 8,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "is_free": {
+          "name": "is_free",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        }
+      },
+      "name": "location_lodging",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "location_lodging_pkey",
+          "columnNames": [
+            "location_id",
+            "lodging_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "location_lodging_location_id_foreign": {
+          "constraintName": "location_lodging_location_id_foreign",
+          "columnNames": [
+            "location_id"
+          ],
+          "localTableName": "public.location_lodging",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.location",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "location_lodging_lodging_id_foreign": {
+          "constraintName": "location_lodging_lodging_id_foreign",
+          "columnNames": [
+            "lodging_id"
+          ],
+          "localTableName": "public.location_lodging",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.lodging",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
         "id": {
           "name": "id",
           "type": "serial",
@@ -481,6 +585,110 @@
     },
     {
       "columns": {
+        "location_id": {
+          "name": "location_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "transport_id": {
+          "name": "transport_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "capacity": {
+          "name": "capacity",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "price": {
+          "name": "price",
+          "type": "decimal(8,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 8,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "is_free": {
+          "name": "is_free",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        }
+      },
+      "name": "location_transport",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "location_transport_pkey",
+          "columnNames": [
+            "location_id",
+            "transport_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "location_transport_location_id_foreign": {
+          "constraintName": "location_transport_location_id_foreign",
+          "columnNames": [
+            "location_id"
+          ],
+          "localTableName": "public.location_transport",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.location",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "location_transport_transport_id_foreign": {
+          "constraintName": "location_transport_transport_id_foreign",
+          "columnNames": [
+            "transport_id"
+          ],
+          "localTableName": "public.location_transport",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.transport",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
         "id": {
           "name": "id",
           "type": "serial",
@@ -544,6 +752,110 @@
       ],
       "checks": [],
       "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "location_id": {
+          "name": "location_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "activity_id": {
+          "name": "activity_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "capacity": {
+          "name": "capacity",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "price": {
+          "name": "price",
+          "type": "decimal(8,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 8,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "is_free": {
+          "name": "is_free",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        }
+      },
+      "name": "location_activity",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "location_activity_pkey",
+          "columnNames": [
+            "location_id",
+            "activity_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "location_activity_location_id_foreign": {
+          "constraintName": "location_activity_location_id_foreign",
+          "columnNames": [
+            "location_id"
+          ],
+          "localTableName": "public.location_activity",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.location",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "location_activity_activity_id_foreign": {
+          "constraintName": "location_activity_activity_id_foreign",
+          "columnNames": [
+            "activity_id"
+          ],
+          "localTableName": "public.location_activity",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.activity",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
     },
     {
       "columns": {
@@ -628,6 +940,71 @@
       ],
       "checks": [],
       "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "location_id": {
+          "name": "location_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "file_id": {
+          "name": "file_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        }
+      },
+      "name": "location_photo",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "location_photo_pkey",
+          "columnNames": [
+            "location_id",
+            "file_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "location_photo_location_id_foreign": {
+          "constraintName": "location_photo_location_id_foreign",
+          "columnNames": [
+            "location_id"
+          ],
+          "localTableName": "public.location_photo",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.location",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "location_photo_file_id_foreign": {
+          "constraintName": "location_photo_file_id_foreign",
+          "columnNames": [
+            "file_id"
+          ],
+          "localTableName": "public.location_photo",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.file",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
     },
     {
       "columns": {

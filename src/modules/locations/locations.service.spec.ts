@@ -1,28 +1,63 @@
-import { HttpStatus} from "@nestjs/common";
+import { HttpStatus, UnprocessableEntityException } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 
-import { GetLocationQueryFilter, LocationsServiceInterface } from './interfaces/service-interface';
-import { LocationsRepositoryInterface } from './interfaces/repository-interface';
-import { LocationRepositoryFake, fakeLocations } from './fakes/locations-repository.fake';
+import {
+  GetLocationQueryFilter,
+  LocationsServiceInterface,
+} from './interfaces/service-interface';
 import { LocationsService } from './locations.service';
+
+import { Location, LocationType } from '../../entities/location.entity';
 import { CreateLocationDto } from './dto/create-location.dto';
-import { LocationType } from '../../entities/location.entity';
+import { LocationsProvider } from './enums/locations-provider.enum';
+import { fakeLocations } from './fakes/locations-repository.fake';
 
 describe('LocationsService', () => {
   let locationsService: LocationsServiceInterface;
-  let locationsRepository: LocationsRepositoryInterface;
 
-  beforeEach(() => {
-    locationsRepository = new LocationRepositoryFake();
-    locationsService = new LocationsService(locationsRepository);
-  })
+  const mockLocationRepo = {
+    findAll: jest.fn().mockImplementation(() => {
+      return Promise.resolve(fakeLocations);
+    }),
+    findOne: jest.fn().mockImplementation(() => {
+      return Promise.resolve(fakeLocations[0]);
+    }),
+    count: jest.fn().mockImplementation(() => {
+      return Promise.resolve(0);
+    }),
+    create: jest.fn().mockImplementation((entity: Location) => {
+      return Promise.resolve({ ...entity, id: 5 });
+    }),
+    update: jest.fn().mockImplementation((entity: Location) => {
+      return Promise.resolve({ ...entity, id: 8 });
+    }),
+    delete: jest.fn().mockImplementation(),
+  };
+
+  beforeEach(async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        LocationsService,
+        {
+          provide: LocationsProvider.LOCATION_REPOSITORY,
+          useValue: mockLocationRepo,
+        },
+      ],
+    }).compile();
+
+    locationsService =
+      moduleRef.get<LocationsServiceInterface>(LocationsService);
+  });
 
   it('should be able to get all locations by filter', async () => {
     const data = await locationsService.getAll({} as GetLocationQueryFilter);
-    
+
     expect(data).toHaveLength(1);
   });
 
   it('should be able to create new location', async () => {
+    mockLocationRepo.findOne.mockResolvedValueOnce(null);
+
     const data = await locationsService.add({
       description: 'New created location',
       location: 'New location 123',
@@ -30,79 +65,87 @@ describe('LocationsService', () => {
       type: LocationType.PLACE,
     } as CreateLocationDto);
 
-    expect(data).toMatchObject(expect.objectContaining({
-      description: expect.any(String),
-    }))
+    expect(data).toMatchObject(
+      expect.objectContaining({
+        description: expect.any(String),
+      }),
+    );
   });
 
   it('should not be able to create new location with same name and location', async () => {
     try {
       const data = await locationsService.add({
         description: 'New Location ',
-        location: fakeLocations[0].location,
-        name: fakeLocations[0].name,
+        location: 'New location 123',
+        name: 'New Location',
         type: LocationType.PLACE,
       } as CreateLocationDto);
 
       expect(data).toBeCalled();
-    } catch (error) {      
+    } catch (error) {
       expect(error.status).toBe(HttpStatus.CONFLICT);
     }
   });
 
-
   it('should be able to update location', async () => {
-    const data = await locationsService.update(fakeLocations[0].id,{
+    // need to follow the order of requisitions to mock that right
+    mockLocationRepo.findOne.mockResolvedValueOnce(fakeLocations[0]);
+    mockLocationRepo.findOne.mockResolvedValueOnce(null);
+    const data = await locationsService.update(fakeLocations[0].id, {
       description: 'Updated created location',
       location: 'Updated location 123',
       name: 'Updated Location',
       type: LocationType.PLACE,
     } as CreateLocationDto);
 
-    expect(data).toMatchObject(expect.objectContaining({
-      description: expect.any(String),
-    }))
+    expect(data).toMatchObject(
+      expect.objectContaining({
+        description: expect.any(String),
+      }),
+    );
   });
 
   it('should not be able to update location with an existing one', async () => {
-    const newData = await locationsService.add({
-      description: 'New 2 created location',
-      location: 'New 2 location 123',
-      name: 'New 2 Location',
-      type: LocationType.PLACE,
-    } as CreateLocationDto);
-
-    expect(newData).toBeTruthy();    
-
-    try {
-    const data = await locationsService.update(newData.id,{
+    const updatedPayload = {
       description: 'Updated created location',
-      location: fakeLocations[0].location,
-      name: fakeLocations[0].name,
+      location: 'Updated location',
+      name: 'Updated location name',
       type: LocationType.PLACE,
-    } as CreateLocationDto);    
+    };
 
-    expect(data).toBeCalled();
-    } catch (error) {      
+    mockLocationRepo.findOne.mockResolvedValueOnce(fakeLocations[0]);
+    mockLocationRepo.findOne.mockResolvedValueOnce({
+      ...fakeLocations[0],
+      ...updatedPayload,
+    });
+    try {
+      const data = await locationsService.update(
+        1,
+        updatedPayload as CreateLocationDto,
+      );
+
+      expect(data).toBeCalled();
+    } catch (error) {
       expect(error.status).toBe(HttpStatus.CONFLICT);
     }
   });
 
   it('should be able to remove location', async () => {
-    const newData = await locationsService.add({
-      description: 'New 3 created location',
-      location: 'New 3 location 123',
-      name: 'New 3 Location',
-      type: LocationType.PLACE,
-    } as CreateLocationDto);
-
-    expect(newData).toBeTruthy();    
-
-    await locationsService.remove(newData.id);
-
-    const data = await locationsService.getAll({} as GetLocationQueryFilter);
-    
-    expect(data).toHaveLength(3);
+    const remove = await locationsService.remove(1);
+    expect(remove).toBe(undefined);
   });
 
+  it('should not be able to remove unknow location', async () => {
+    mockLocationRepo.delete.mockRejectedValue(
+      new UnprocessableEntityException("Can't find this location."),
+    );
+
+    try {
+      const data = await locationsService.remove(2);
+
+      expect(data).toBeCalled();
+    } catch (error) {
+      expect(error.status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  });
 });

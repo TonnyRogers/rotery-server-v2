@@ -1,4 +1,25 @@
-import { Entity, Enum, JsonType, PrimaryKey, Property } from "@mikro-orm/core";
+import {
+  Collection,
+  Entity,
+  Enum,
+  JsonType,
+  OneToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+
+import {
+  locationActivityCollectionSerializer,
+  locationDetailingCollectionSerializer,
+  locationLodgingCollectionSerializer,
+  locationTransportCollectionSerializer,
+} from '@/utils/serializers';
+
+import { LocationActivity } from './location-activity.entity';
+import { LocationDetailing } from './location-detailing.entity';
+import { LocationLodging } from './location-lodging.entity';
+import { LocationPhoto } from './location-photo.entity';
+import { LocationTransport } from './location-transport.entity';
 
 export enum LocationType {
   BEACH = 'beach',
@@ -18,7 +39,17 @@ export class Location {
     locationJson,
     alias,
     type,
-  }: Omit<Location, 'id' | 'createdAt' | 'updatedAt'>) {
+  }: Omit<
+    Location,
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'detailings'
+    | 'photos'
+    | 'transports'
+    | 'activities'
+    | 'lodgings'
+  >) {
     this.name = name;
     this.description = description;
     this.location = location;
@@ -45,8 +76,55 @@ export class Location {
   @Property({ nullable: false, type: 'string' })
   alias!: string;
 
-  @Enum({ items: () => LocationType, default: LocationType.PLACE  })
+  @Enum({ items: () => LocationType, default: LocationType.PLACE })
   type!: LocationType;
+
+  @OneToMany(
+    () => LocationDetailing,
+    (locationDetailing) => locationDetailing.location,
+    {
+      serializer: (value: Collection<LocationDetailing>) =>
+        locationDetailingCollectionSerializer(value),
+      nullable: true,
+    },
+  )
+  detailings = new Collection<LocationDetailing>(this);
+
+  @OneToMany(
+    () => LocationTransport,
+    (locationTransport) => locationTransport.location,
+    {
+      serializer: (value: Collection<LocationTransport>) =>
+        locationTransportCollectionSerializer(value),
+      nullable: true,
+    },
+  )
+  transports = new Collection<LocationTransport>(this);
+
+  @OneToMany(
+    () => LocationActivity,
+    (locationActivity) => locationActivity.location,
+    {
+      serializer: (value: Collection<LocationActivity>) =>
+        locationActivityCollectionSerializer(value),
+      nullable: true,
+    },
+  )
+  activities = new Collection<LocationActivity>(this);
+
+  @OneToMany(
+    () => LocationLodging,
+    (locationLodging) => locationLodging.location,
+    {
+      serializer: (value: Collection<LocationLodging>) =>
+        locationLodgingCollectionSerializer(value),
+      nullable: true,
+    },
+  )
+  lodgings = new Collection<LocationLodging>(this);
+
+  @OneToMany(() => LocationPhoto, (locationPhoto) => locationPhoto.location)
+  photos = new Collection<LocationPhoto>(this);
 
   @Property()
   createdAt: Date = new Date();
