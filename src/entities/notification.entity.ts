@@ -7,11 +7,13 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+
 import { User } from './user.entity';
 
 export enum NotificationAlias {
   ITINERARY_RATE = 'rate_itinerary',
   NEW_MESSAGE = 'new_message',
+  NEW_CHAT = 'new_chat',
   ITINERARY_UPDATED = 'itinerary_updated',
   ITINERARY_DELETED = 'itinerary_deleted',
   ITINERARY_MEMBER_REQUEST = 'itinerary_member_request',

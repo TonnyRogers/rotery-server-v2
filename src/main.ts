@@ -1,7 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
+
 import { json } from 'express';
+
 import { AppModule } from './app.module';
 import { appConfig } from './config';
 import { RabbitMQMailPubSubServer } from './transporter/rabbit-send-email.strategy';

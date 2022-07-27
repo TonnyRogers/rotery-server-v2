@@ -1,10 +1,12 @@
+import { HttpException, Inject, Injectable } from '@nestjs/common';
+
 import { EntityRepository } from '@mikro-orm/knex';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+
 import { UsersService } from '../users/users.service';
-import { CreateDirectMessageDto } from './dto/create-message.dto';
+
 import { DirectMessage } from '../../entities/direct-message.entity';
-import { NotificationsService } from '../notifications/notifications.service';
+import { CreateDirectMessageDto } from './dto/create-message.dto';
 
 const messagePopulate: any[] = [
   'sender.profile.file',
@@ -19,8 +21,6 @@ export class DirectMessagesService {
     private directMessageRepository: EntityRepository<DirectMessage>,
     @Inject(UsersService)
     private usersService: UsersService,
-    @Inject(NotificationsService)
-    private notificationsService: NotificationsService,
   ) {}
 
   async findReceived(authUser: number, offset = 1, limit = 10) {
@@ -28,15 +28,14 @@ export class DirectMessagesService {
     try {
       return this.directMessageRepository.find(
         {
-          receiver: authUser
+          receiver: authUser,
         },
         {
           limit,
           offset: last,
           populate: messagePopulate,
-        }
+        },
       );
-
     } catch (error) {
       throw new HttpException("Can't find messages.", 404);
     }
@@ -62,7 +61,10 @@ export class DirectMessagesService {
 
       return message;
     } catch (error) {
-      throw new HttpException({ message: 'Error on send message.', error}, 400);
+      throw new HttpException(
+        { message: 'Error on send message.', error },
+        400,
+      );
     }
   }
 
@@ -72,7 +74,7 @@ export class DirectMessagesService {
         { id },
         {
           populate: messagePopulate,
-        }
+        },
       );
     } catch (error) {
       throw new HttpException("Can't find this message.", 404);
@@ -91,7 +93,7 @@ export class DirectMessagesService {
         {
           populate: messagePopulate,
           orderBy: { createdAt: -1 },
-        }
+        },
       );
 
       directMessages.forEach((message) => {

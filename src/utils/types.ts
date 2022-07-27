@@ -1,9 +1,10 @@
 import { Request } from 'express';
-import { User } from '@/entities/user.entity';
+
 import {
   ItineraryMember,
   PaymentStatus,
 } from '@/entities/itinerary-member.entity';
+import { User } from '@/entities/user.entity';
 
 export interface RequestUser extends Request {
   user: { userId: number };
@@ -36,6 +37,7 @@ export interface CustomMemberResponse
 
 export enum NotificationSubject {
   newMessage = 'Nova Mensagem',
+  newChat = 'Mensagem no Chat',
   itineraryUpdated = 'Roteiro Atualizado',
   itineraryDeleted = 'Roteiro Removido',
   memberRequest = 'Novo Membro',
@@ -170,7 +172,7 @@ export interface PaymentDetailsReponse {
   shipping_amount: number;
   sponsor_id: any;
   statement_descriptor: string;
-  status: 'approved' | 'in_process' | 'rejected' | 'refunded'| 'cancelled';
+  status: 'approved' | 'in_process' | 'rejected' | 'refunded' | 'cancelled';
   status_detail:
     | ApprovedPaymentStatusDetail
     | InProcessPaymentStatusDetail
@@ -288,12 +290,12 @@ export interface PaymentRefundResponse {
   id: number;
   payment_id: number;
   amount: number;
-  metadata: Record<string,unknown>;
+  metadata: Record<string, unknown>;
   source: {
     id: number;
     name: string;
     type: string;
-  }
+  };
   date_created: string;
   unique_sequence_number: string;
   refund_mode: string;
@@ -340,27 +342,26 @@ export interface FindAllMemberRevenuesResponse {
   total: number;
 }
 
-export type EmailHelpRequestTypeTypes = 
-'payment' |
-'itinerary' |
-'revenue' |
-'other';
-
+export type EmailHelpRequestTypeTypes =
+  | 'payment'
+  | 'itinerary'
+  | 'revenue'
+  | 'other';
 
 export interface CreatePlanPayload {
-	back_url?: string;
-	reason: string;
-	auto_recurring:{
-		frequency: string;
-		frequency_type: "months" | "days";
+  back_url?: string;
+  reason: string;
+  auto_recurring: {
+    frequency: string;
+    frequency_type: 'months' | 'days';
     transaction_amount: number;
-		currency_id: "BRL";
-		repetitions: number;
-    free_trial?:{
-			frequency_type: "months" | "days";
-			frequency: string;
-		}
-	}
+    currency_id: 'BRL';
+    repetitions: number;
+    free_trial?: {
+      frequency_type: 'months' | 'days';
+      frequency: string;
+    };
+  };
 }
 
 export interface CreatePlanResponse {
@@ -375,59 +376,58 @@ export interface CreatePlanResponse {
   init_point: string;
   sandbox_init_point: string;
   auto_recurring: {
+    frequency: number;
+    frequency_type: 'months' | 'days';
+    transaction_amount: number;
+    currency_id: 'BRL';
+    repetitions: number;
+    free_trial: {
       frequency: number;
-      frequency_type: "months" | "days";
-      transaction_amount: number;
-      currency_id: "BRL",
-      repetitions: number;
-      free_trial: {
-          frequency: number;
-          frequency_type: "months" | "days";
-      }
-  }
+      frequency_type: 'months' | 'days';
+    };
+  };
 }
 
-export interface CreateSubscriptionResponse 
-  {
-    id: string;
-    payer_id: number;
-    payer_email: string;
-    back_url: string;
-    collector_id: number;
-    application_id: number;
-    status: 'pending' | 'authorized';
-    reason: string;
-    date_created: string;
-    last_modified: string;
-    init_point: string;
-    sandbox_init_point: string;
-    preapproval_plan_id: string;
-    auto_recurring: {
-        frequency: number;
-        frequency_type: "months" | "days",
-        transaction_amount: number;
-        currency_id: string;
-        start_date: string;
-        end_date: string;
-    },
-    payment_method_id: string;
-    card_id: string;
+export interface CreateSubscriptionResponse {
+  id: string;
+  payer_id: number;
+  payer_email: string;
+  back_url: string;
+  collector_id: number;
+  application_id: number;
+  status: 'pending' | 'authorized';
+  reason: string;
+  date_created: string;
+  last_modified: string;
+  init_point: string;
+  sandbox_init_point: string;
+  preapproval_plan_id: string;
+  auto_recurring: {
+    frequency: number;
+    frequency_type: 'months' | 'days';
+    transaction_amount: number;
+    currency_id: string;
+    start_date: string;
+    end_date: string;
+  };
+  payment_method_id: string;
+  card_id: string;
 }
 
 export interface SearchSubscriptionResult {
   id: string;
-  status: "authorized" | "paused" | "pending" | "cancelled";
+  status: 'authorized' | 'paused' | 'pending' | 'cancelled';
   reason: string;
   summarized: {
-      quotas: number;
-      semaphore: string;
-      charged_quantity: number;
-      pending_charge_quantity: number;
-      charged_amount: number;
-      pending_charge_amount: number;
-      last_charged_date: string;
-      last_charged_amount: number;
-  },
+    quotas: number;
+    semaphore: string;
+    charged_quantity: number;
+    pending_charge_quantity: number;
+    charged_amount: number;
+    pending_charge_amount: number;
+    last_charged_date: string;
+    last_charged_amount: number;
+  };
   payer_id: number;
   back_url: string;
   collector_id: number;
@@ -438,15 +438,15 @@ export interface SearchSubscriptionResult {
   sandbox_init_point: string;
   preapproval_plan_id: string;
   auto_recurring: {
-      frequency: number;
-      frequency_type: "months" | "days";
-      transaction_amount: number;
-      currency_id: "BRL";
-      start_date: string;
-      end_date: string;
-  },
+    frequency: number;
+    frequency_type: 'months' | 'days';
+    transaction_amount: number;
+    currency_id: 'BRL';
+    start_date: string;
+    end_date: string;
+  };
   next_payment_date: string;
-  payment_method_id: "master" | "visa" | "amex";
+  payment_method_id: 'master' | 'visa' | 'amex';
   payer_first_name: string;
   payer_last_name: string;
 }
@@ -456,7 +456,7 @@ export interface MLPaginatedResponse<T> {
     offset: number;
     limit: number;
     total: number;
-  },
+  };
   results: T[];
 }
 

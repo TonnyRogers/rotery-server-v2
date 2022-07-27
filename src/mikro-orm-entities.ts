@@ -2,6 +2,7 @@ import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 
 import { Activity } from './entities/activity.entity';
 import { BankAccount } from './entities/bank-account.entity';
+import { Chat } from './entities/chat.entity';
 import { DirectMessage } from './entities/direct-message.entity';
 import { File } from './entities/file.entity';
 import { ItineraryActivity } from './entities/itinerary-activity.entity';
@@ -59,5 +60,6 @@ export default {
     LocationLodging,
     LocationPhoto,
     LocationTransport,
+    Chat,
   ],
 } as MikroOrmModuleOptions;

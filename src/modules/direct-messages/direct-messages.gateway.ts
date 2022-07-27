@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,26 +10,27 @@ import {
 import { Server, Socket } from 'socket.io';
 
 import { NotificationsService } from '../notifications/notifications.service';
-import { ChatServiceInterface } from './interface/chat-service.interface';
+import { DirectMessagesService } from './direct-messages.service';
 
-import { formatChatName } from '@/utils/functions';
+import { formatDMName } from '@/utils/functions';
 import { jwtValidateSocketClient } from '@/utils/jwt-websocket';
 import { NotificationSubject } from '@/utils/types';
 
 import { NotificationAlias } from '../../entities/notification.entity';
+import { WsJwtGuard } from '../auth/ws.guard';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { ChatProvider } from './enums/chat-provider.enum';
+import { CreateDirectMessageDto } from './dto/create-message.dto';
 
-export interface ChatSocketPayload {
+export interface MessageSocketPayload {
   userId: number;
+  ownerId: number;
 }
 
 @WebSocketGateway()
-export class ChatSocketGateway {
+export class MessageSocketGateway {
   constructor(
-    @Inject(ChatProvider.CHAT_SERVICE)
-    private chatService: ChatServiceInterface,
+    @Inject(DirectMessagesService)
+    private directMessagesService: DirectMessagesService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,
   ) {}
@@ -41,30 +42,33 @@ export class ChatSocketGateway {
     return jwtValidateSocketClient(client);
   }
 
-  @SubscribeMessage('joinChat')
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('joinDM')
   async join(
-    @MessageBody() data: ChatSocketPayload,
+    @MessageBody() data: MessageSocketPayload,
     @ConnectedSocket() client: Socket,
   ): Promise<{ message: string; statusCode: number }> {
     await client.join(
-      formatChatName(data.userId, Number(client.handshake.query.userId)),
+      formatDMName(data.userId, Number(client.handshake.query.userId)),
     );
-    return { message: 'Chat joined.', statusCode: 200 };
+    return { message: 'DM joined.', statusCode: 200 };
   }
 
-  @SubscribeMessage('leaveChat')
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('leaveDM')
   async leave(
-    @MessageBody() data: ChatSocketPayload,
+    @MessageBody() data: MessageSocketPayload,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     return await client.leave(
-      formatChatName(data.userId, Number(client.handshake.query.userId)),
+      formatDMName(data.userId, Number(client.handshake.query.userId)),
     );
   }
 
-  @SubscribeMessage('sendChat')
+  @UseGuards(WsJwtGuard)
+  @SubscribeMessage('sendDM')
   async send(
-    @MessageBody() data: CreateChatDto,
+    @MessageBody() data: CreateDirectMessageDto,
     @ConnectedSocket() client: Socket,
   ) {
     try {
@@ -73,15 +77,15 @@ export class ChatSocketGateway {
         throw new Error('Invalid receiver user.');
       }
 
-      const newMessage = await this.chatService.create(
+      const newMessage = await this.directMessagesService.create(
         userId,
         data.receiver.id,
         data,
       );
 
-      const chatName = formatChatName(data.receiver.id, userId);
+      const dmName = formatDMName(data.receiver.id, userId);
 
-      const clients = this.server.sockets.adapter.rooms.get(chatName);
+      const clients = this.server.sockets.adapter.rooms.get(dmName);
 
       const filteredClients = [];
 
@@ -95,12 +99,12 @@ export class ChatSocketGateway {
         filteredClients.includes(userId) &&
         filteredClients.includes(data.receiver.id)
       ) {
-        this.server.emit(chatName, newMessage);
+        this.server.emit(dmName, newMessage);
       } else {
         const newNotification: CreateNotificationPayload = {
-          alias: NotificationAlias.NEW_CHAT,
+          alias: NotificationAlias.NEW_MESSAGE,
           content: `de ${newMessage.sender.username}`,
-          subject: NotificationSubject.newChat,
+          subject: NotificationSubject.newMessage,
           jsonData: newMessage,
         };
 
@@ -110,14 +114,14 @@ export class ChatSocketGateway {
         );
       }
 
-      client.emit(`${chatName}:${userId}sended`, {
-        message: 'Chat message sended.',
+      client.emit(`${dmName}:${userId}sended`, {
+        message: 'Message sended.',
         statusCode: 201,
         payload: newMessage,
       });
 
       return {
-        message: 'Chat message sended.',
+        message: 'Message sended.',
         statusCode: 201,
         payload: newMessage,
       };
