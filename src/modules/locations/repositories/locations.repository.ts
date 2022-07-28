@@ -32,6 +32,7 @@ export class LocationsRepository implements LocationsRepositoryInterface {
           'activities.activity',
           'photos',
           'lodgings.lodging',
+          'ratings.owner.profile',
         ],
       },
     );

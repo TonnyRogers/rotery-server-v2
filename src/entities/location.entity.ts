@@ -19,6 +19,7 @@ import { LocationActivity } from './location-activity.entity';
 import { LocationDetailing } from './location-detailing.entity';
 import { LocationLodging } from './location-lodging.entity';
 import { LocationPhoto } from './location-photo.entity';
+import { LocationRating } from './location-rating';
 import { LocationTransport } from './location-transport.entity';
 
 export enum LocationType {
@@ -39,16 +40,9 @@ export class Location {
     locationJson,
     alias,
     type,
-  }: Omit<
+  }: Pick<
     Location,
-    | 'id'
-    | 'createdAt'
-    | 'updatedAt'
-    | 'detailings'
-    | 'photos'
-    | 'transports'
-    | 'activities'
-    | 'lodgings'
+    'name' | 'description' | 'location' | 'locationJson' | 'alias' | 'type'
   >) {
     this.name = name;
     this.description = description;
@@ -122,6 +116,15 @@ export class Location {
     },
   )
   lodgings = new Collection<LocationLodging>(this);
+
+  @OneToMany(
+    () => LocationRating,
+    (locationRating) => locationRating.location,
+    {
+      nullable: true,
+    },
+  )
+  ratings = new Collection<LocationRating>(this);
 
   @OneToMany(() => LocationPhoto, (locationPhoto) => locationPhoto.location)
   photos = new Collection<LocationPhoto>(this);

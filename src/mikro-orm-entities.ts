@@ -17,6 +17,7 @@ import { LocationActivity } from './entities/location-activity.entity';
 import { LocationDetailing } from './entities/location-detailing.entity';
 import { LocationLodging } from './entities/location-lodging.entity';
 import { LocationPhoto } from './entities/location-photo.entity';
+import { LocationRating } from './entities/location-rating';
 import { LocationTransport } from './entities/location-transport.entity';
 import { Location } from './entities/location.entity';
 import { Lodging } from './entities/lodging.entity';
@@ -61,5 +62,6 @@ export default {
     LocationPhoto,
     LocationTransport,
     Chat,
+    LocationRating,
   ],
 } as MikroOrmModuleOptions;

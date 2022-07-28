@@ -16,5 +16,6 @@ export const fakeLocations: Location[] = [
     lodgings: undefined,
     photos: undefined,
     transports: undefined,
+    ratings: undefined,
   },
 ];
