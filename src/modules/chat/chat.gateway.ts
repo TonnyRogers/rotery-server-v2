@@ -12,6 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ChatServiceInterface } from './interface/chat-service.interface';
 
+import { Chat } from '@/entities/chat.entity';
 import { formatChatName } from '@/utils/functions';
 import { jwtValidateSocketClient } from '@/utils/jwt-websocket';
 import { NotificationSubject } from '@/utils/types';
@@ -124,5 +125,13 @@ export class ChatSocketGateway {
     } catch (error) {
       return error;
     }
+  }
+
+  sendBeginChat(authUserId: number, userId: number, data: Chat) {
+    this.server.emit(`${formatChatName(authUserId, userId)}:begin`, data);
+  }
+
+  sendEndChat(authUserId: number, userId: number, data: Chat) {
+    this.server.emit(`${formatChatName(authUserId, userId)}:end`, data);
   }
 }

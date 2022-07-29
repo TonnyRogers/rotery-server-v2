@@ -7,6 +7,7 @@ import { Chat } from '@/entities/chat.entity';
 
 import {
   ChatQueryFilter,
+  ChatRepositoryFindLastParams,
   ChatRepositoryInterface,
 } from './interface/chat-repository.interface';
 
@@ -91,5 +92,19 @@ export class ChatRepository implements ChatRepositoryInterface {
     } catch (error) {
       throw new UnprocessableEntityException("Can't find this chat.");
     }
+  }
+
+  async findLast(query: ChatRepositoryFindLastParams): Promise<Chat> {
+    const order = query.order === 'ASC' ? 1 : -1;
+
+    return this.chatRepository.findOne(
+      {
+        sender: query.senderId,
+        receiver: query.receiverId,
+      },
+      {
+        orderBy: { createdAt: order },
+      },
+    );
   }
 }

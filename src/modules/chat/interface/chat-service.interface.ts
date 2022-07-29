@@ -1,6 +1,12 @@
 import { Chat } from '@/entities/chat.entity';
 
+import { BeginChatDto } from '../dto/begin-chat.dto';
 import { CreateChatDto } from '../dto/create-chat.dto';
+
+export interface ChatServiceBeginChartParams {
+  authUserId: number;
+  receiverId: number;
+}
 
 export interface ChatServiceInterface {
   findReceived(
@@ -15,4 +21,9 @@ export interface ChatServiceInterface {
   ): Promise<Chat>;
   findOne(id: number): Promise<Chat>;
   conversation(authUserId: number, receiverId: number): Promise<Chat[]>;
+  beginChat(
+    params: ChatServiceBeginChartParams,
+    beginDto: BeginChatDto,
+  ): Promise<Chat>;
+  endChat(params: ChatServiceBeginChartParams): Promise<Chat>;
 }

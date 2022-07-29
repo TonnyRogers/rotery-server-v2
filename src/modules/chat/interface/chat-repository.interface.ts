@@ -8,6 +8,12 @@ export interface ChatQueryFilter {
   limit: number;
 }
 
+export interface ChatRepositoryFindLastParams {
+  order: 'DESC' | 'ASC';
+  senderId: number;
+  receiverId: number;
+}
+
 export interface ChatRepositoryInterface {
   create(entity: Chat): Promise<Chat>;
   findOne(query: Pick<ChatQueryFilter, 'id'>): Promise<Chat>;
@@ -17,4 +23,5 @@ export interface ChatRepositoryInterface {
   findReceived(
     query: Pick<ChatQueryFilter, 'authUserId' | 'offset' | 'limit'>,
   ): Promise<Chat[]>;
+  findLast(query: ChatRepositoryFindLastParams): Promise<Chat>;
 }

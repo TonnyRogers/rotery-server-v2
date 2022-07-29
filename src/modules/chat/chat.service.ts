@@ -1,10 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
-import { ChatServiceInterface } from './interface/chat-service.interface';
+import {
+  ChatServiceBeginChartParams,
+  ChatServiceInterface,
+} from './interface/chat-service.interface';
 
-import { Chat } from '@/entities/chat.entity';
+import { Chat, ChatType } from '@/entities/chat.entity';
 
+import { BeginChatDto } from './dto/begin-chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatProvider } from './enums/chat-provider.enum';
 import { ChatRepositoryInterface } from './interface/chat-repository.interface';
@@ -55,5 +65,79 @@ export class ChatService implements ChatServiceInterface {
       authUserId,
       receiverId,
     });
+  }
+
+  async beginChat(
+    { authUserId, receiverId }: ChatServiceBeginChartParams,
+    { locationCityState, locationName }: BeginChatDto,
+  ): Promise<Chat> {
+    if (authUserId === receiverId) {
+      throw new HttpException(
+        "Can't start chat with yourselfe.",
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const user = await this.usersService.findOne({ id: authUserId });
+    const guideUser = await this.usersService.findOne({ id: receiverId });
+
+    if (!user || !guideUser) {
+      throw new UnprocessableEntityException("Can't find this user.");
+    }
+
+    if (!guideUser.isHost) {
+      throw new HttpException(
+        "Can't begin chat with this user.",
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const chatBegin = new Chat({
+      receiver: guideUser,
+      sender: user,
+      message: `Novo chat iniciado: ${user.username} solicitou ajuda sobre ${locationName} (${locationCityState}).`,
+      type: ChatType.BEGIN,
+    });
+
+    return chatBegin;
+  }
+
+  async endChat({
+    authUserId,
+    receiverId,
+  }: ChatServiceBeginChartParams): Promise<Chat> {
+    if (authUserId === receiverId) {
+      throw new HttpException(
+        "Can't end this invalid chat.",
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const authUser = await this.usersService.findOne({ id: authUserId });
+    const user = await this.usersService.findOne({ id: receiverId });
+
+    if (!user || !authUser) {
+      throw new UnprocessableEntityException("Can't find this user.");
+    }
+
+    const lastChat = await this.chatRepository.findLast({
+      order: 'DESC',
+      receiverId: user.id,
+      senderId: authUser.id,
+    });
+
+    if (lastChat.type === ChatType.END)
+      throw new HttpException('Chat already ended.', HttpStatus.BAD_REQUEST);
+
+    const chatFinished = new Chat({
+      receiver: user,
+      sender: authUser,
+      message: `Chat finalizado: ${authUser.username} finalizou o chat.`,
+      type: ChatType.END,
+    });
+
+    const newEndChat = await this.chatRepository.create(chatFinished);
+
+    return newEndChat;
   }
 }
