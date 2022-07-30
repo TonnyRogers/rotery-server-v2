@@ -2640,6 +2640,7 @@
           "nullable": false,
           "enumItems": [
             "rate_itinerary",
+            "rate_location",
             "new_message",
             "new_chat",
             "itinerary_updated",

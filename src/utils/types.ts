@@ -38,6 +38,7 @@ export interface CustomMemberResponse
 export enum NotificationSubject {
   newMessage = 'Nova Mensagem',
   newChat = 'Mensagem no Chat',
+  locationRate = 'Avaliar Chat',
   itineraryUpdated = 'Roteiro Atualizado',
   itineraryDeleted = 'Roteiro Removido',
   memberRequest = 'Novo Membro',

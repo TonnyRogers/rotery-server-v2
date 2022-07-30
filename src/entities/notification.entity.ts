@@ -12,6 +12,7 @@ import { User } from './user.entity';
 
 export enum NotificationAlias {
   ITINERARY_RATE = 'rate_itinerary',
+  LOCATION_RATE = 'rate_location',
   NEW_MESSAGE = 'new_message',
   NEW_CHAT = 'new_chat',
   ITINERARY_UPDATED = 'itinerary_updated',

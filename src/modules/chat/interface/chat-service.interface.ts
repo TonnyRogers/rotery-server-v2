@@ -25,5 +25,8 @@ export interface ChatServiceInterface {
     params: ChatServiceBeginChartParams,
     beginDto: BeginChatDto,
   ): Promise<Chat>;
-  endChat(params: ChatServiceBeginChartParams): Promise<Chat>;
+  endChat(
+    params: ChatServiceBeginChartParams,
+    endDto: BeginChatDto,
+  ): Promise<Chat>;
 }

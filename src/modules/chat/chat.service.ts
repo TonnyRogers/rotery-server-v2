@@ -6,6 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
+import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import {
   ChatServiceBeginChartParams,
@@ -13,7 +14,10 @@ import {
 } from './interface/chat-service.interface';
 
 import { Chat, ChatType } from '@/entities/chat.entity';
+import { NotificationAlias } from '@/entities/notification.entity';
+import { NotificationSubject } from '@/utils/types';
 
+import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { BeginChatDto } from './dto/begin-chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatProvider } from './enums/chat-provider.enum';
@@ -26,6 +30,8 @@ export class ChatService implements ChatServiceInterface {
     private readonly chatRepository: ChatRepositoryInterface,
     @Inject(UsersService)
     private readonly usersService: UsersService,
+    @Inject(NotificationsService)
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async findReceived(
@@ -102,10 +108,10 @@ export class ChatService implements ChatServiceInterface {
     return chatBegin;
   }
 
-  async endChat({
-    authUserId,
-    receiverId,
-  }: ChatServiceBeginChartParams): Promise<Chat> {
+  async endChat(
+    { authUserId, receiverId }: ChatServiceBeginChartParams,
+    { locationCityState, locationName }: BeginChatDto,
+  ): Promise<Chat> {
     if (authUserId === receiverId) {
       throw new HttpException(
         "Can't end this invalid chat.",
@@ -137,6 +143,28 @@ export class ChatService implements ChatServiceInterface {
     });
 
     const newEndChat = await this.chatRepository.create(chatFinished);
+
+    if (authUser.isHost) {
+      const notificationPayload: CreateNotificationPayload = {
+        alias: NotificationAlias.LOCATION_RATE,
+        subject: NotificationSubject.locationRate,
+        content: `com ${authUser.username}`,
+        jsonData: {
+          user: {
+            id: authUser.id,
+            username: authUser.username,
+            createdAt: authUser.createdAt,
+            profile: authUser.profile,
+          },
+          location: {
+            name: locationName,
+            location: locationCityState,
+          },
+        },
+      };
+
+      await this.notificationsService.create(user.id, notificationPayload);
+    }
 
     return newEndChat;
   }

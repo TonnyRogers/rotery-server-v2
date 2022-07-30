@@ -89,11 +89,18 @@ export class ChatController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/end')
-  async endChat(@Param() params: { id: number }, @Req() request: RequestUser) {
-    const endChatItem = await this.chatService.endChat({
-      authUserId: request.user.userId,
-      receiverId: params.id,
-    });
+  async endChat(
+    @Param() params: { id: number },
+    @Req() request: RequestUser,
+    @Body() body: BeginChatDto,
+  ) {
+    const endChatItem = await this.chatService.endChat(
+      {
+        authUserId: request.user.userId,
+        receiverId: params.id,
+      },
+      body,
+    );
 
     this.chatSocketGateway.sendEndChat(
       request.user.userId,
