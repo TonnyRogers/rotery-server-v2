@@ -1,3 +1,5 @@
+import { stateRegionList } from './state-region';
+
 export function formatChatName(userId: number, ownerId: number) {
   const idsArr = [userId, ownerId];
   const sortedArr = idsArr.sort();
@@ -8,4 +10,9 @@ export function formatDMName(userId: number, ownerId: number) {
   const idsArr = [userId, ownerId];
   const sortedArr = idsArr.sort();
   return `dm:${sortedArr[0]}and${sortedArr[1]}`;
+}
+
+export function findRegionByState(state: string) {
+  if (!state) return 'unknow';
+  return stateRegionList.find((item) => item.state === state).region;
 }

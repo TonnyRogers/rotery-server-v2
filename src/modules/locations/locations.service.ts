@@ -10,8 +10,11 @@ import { LocationLodging } from '@/entities/location-lodging.entity';
 import { LocationPhoto } from '@/entities/location-photo.entity';
 import { LocationTransport } from '@/entities/location-transport.entity';
 import { Location } from '@/entities/location.entity';
+import { findRegionByState } from '@/utils/functions';
+import { PaginatedResponse } from '@/utils/types';
 
 import { CreateLocationDto } from './dto/create-location.dto';
+import { GetLocationFeedQueryFilter } from './dto/get-feed-query-filter.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { LocationsProvider } from './enums/locations-provider.enum';
 import {
@@ -73,6 +76,12 @@ export class LocationsService implements LocationsServiceInterface {
     const newLocation = new Location({
       ...restDto,
       alias: this.sanetizedAlias(`${restDto.name} ${restDto.location}`),
+      locationJson: restDto.locationJson
+        ? {
+            ...restDto.locationJson,
+            region: findRegionByState(String(restDto.locationJson.state)),
+          }
+        : null,
     });
 
     const location = await this.locationsRepository.create(newLocation);
@@ -164,6 +173,12 @@ export class LocationsService implements LocationsServiceInterface {
       ...location,
       ...restDto,
       alias: this.sanetizedAlias(`${restDto.name} ${restDto.location}`),
+      locationJson: restDto.locationJson
+        ? {
+            ...restDto.locationJson,
+            region: findRegionByState(String(restDto.locationJson.state)),
+          }
+        : null,
     });
 
     const activityEntityList: LocationActivity[] = [];
@@ -232,5 +247,11 @@ export class LocationsService implements LocationsServiceInterface {
 
   async remove(id: number): Promise<void> {
     return this.locationsRepository.delete(id);
+  }
+
+  async getFeed(
+    params: GetLocationFeedQueryFilter,
+  ): Promise<PaginatedResponse<Location>> {
+    return await this.locationsRepository.findAsFeed(params);
   }
 }

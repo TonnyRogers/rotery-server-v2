@@ -6,12 +6,22 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { GetLocationQueryFilter } from '../interfaces/service-interface';
 
 import { Location } from '@/entities/location.entity';
+import { PaginatedResponse } from '@/utils/types';
 
+import { GetLocationFeedQueryFilter } from '../dto/get-feed-query-filter.dto';
 import {
   FindOneLocationRepositoryFilter,
   LocationsRepositoryInterface,
 } from '../interfaces/repository-interface';
 
+const populateRelations: any = [
+  'detailings',
+  'transports.transport',
+  'activities.activity',
+  'photos',
+  'lodgings.lodging',
+  'ratings.owner.profile',
+];
 export class LocationsRepository implements LocationsRepositoryInterface {
   constructor(
     @InjectRepository(Location)
@@ -26,14 +36,7 @@ export class LocationsRepository implements LocationsRepositoryInterface {
         ...(city || state ? { locationJson: { city, state } } : {}),
       },
       {
-        populate: [
-          'detailings',
-          'transports.transport',
-          'activities.activity',
-          'photos',
-          'lodgings.lodging',
-          'ratings.owner.profile',
-        ],
+        populate: populateRelations,
       },
     );
   }
@@ -66,5 +69,75 @@ export class LocationsRepository implements LocationsRepositoryInterface {
     } catch (err) {
       throw new UnprocessableEntityException("Can't find this location.");
     }
+  }
+
+  async findAsFeed({
+    page = 1,
+    limit = 10,
+    ...restFilters
+  }: GetLocationFeedQueryFilter): Promise<PaginatedResponse<Location>> {
+    const offset = (page - 1) * limit;
+
+    const dynamicFilter: any = {};
+
+    if (restFilters.city || restFilters.state || restFilters.region) {
+      dynamicFilter.locationJson = {};
+    }
+
+    Object.entries(restFilters).forEach(([key, value]) => {
+      switch (key) {
+        case 'city':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'state':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'region':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'type':
+          dynamicFilter[key] = value;
+          break;
+        case 'activity':
+          dynamicFilter.activities = {
+            activity: {
+              id: value,
+            },
+          };
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    const items = await this.locationsRepository.find(
+      {
+        ...dynamicFilter,
+      },
+      {
+        populate: populateRelations,
+        limit,
+        offset,
+        orderBy: { name: 1 },
+      },
+    );
+
+    const totalItems = await this.locationsRepository.count({
+      ...dynamicFilter,
+    });
+
+    const meta = {
+      currentPage: page,
+      itemCount: items.length,
+      itemsPerPage: limit,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limit),
+    };
+
+    return {
+      meta,
+      items,
+    };
   }
 }

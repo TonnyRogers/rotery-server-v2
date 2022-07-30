@@ -4,8 +4,10 @@ import { IsOptional, IsString } from 'class-validator';
 
 import { Location } from '@/entities/location.entity';
 import { QueryPagination } from '@/utils/interfaces/query-pagination';
+import { PaginatedResponse } from '@/utils/types';
 
 import { CreateLocationDto } from '../dto/create-location.dto';
+import { GetLocationFeedQueryFilter } from '../dto/get-feed-query-filter.dto';
 import { UpdateLocationDto } from '../dto/update-location.dto';
 
 export class GetLocationQueryFilter extends QueryPagination {
@@ -25,4 +27,7 @@ export interface LocationsServiceInterface {
   add(createLocationDto: CreateLocationDto): Promise<Location>;
   update(id: number, updateLocationDto: UpdateLocationDto): Promise<Location>;
   remove(id: number): Promise<void>;
+  getFeed(
+    params: GetLocationFeedQueryFilter,
+  ): Promise<PaginatedResponse<Location>>;
 }

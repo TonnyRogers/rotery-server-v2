@@ -22,6 +22,7 @@ import { ParamId } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLocationDto } from './dto/create-location.dto';
+import { GetLocationFeedQueryFilter } from './dto/get-feed-query-filter.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { LocationsProvider } from './enums/locations-provider.enum';
 
@@ -35,7 +36,7 @@ export class LocationsController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: Location, isArray: true })
   @Get()
-  getAllLocations(@Query() query: GetLocationQueryFilter) {
+  allLocations(@Query() query: GetLocationQueryFilter) {
     return this.locationsService.getAll(query);
   }
 
@@ -60,5 +61,11 @@ export class LocationsController {
   @Delete(':id')
   removeLocation(@Param() param: ParamId) {
     return this.locationsService.remove(param.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/feed')
+  locationsFeed(@Query() query: GetLocationFeedQueryFilter) {
+    return this.locationsService.getFeed(query);
   }
 }
