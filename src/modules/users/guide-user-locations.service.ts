@@ -94,10 +94,13 @@ export class GuideUserLocationsService
   }
 
   async findAll(alias: string): Promise<User[]> {
-    return await this.usersRepository.find({
-      locationAliasArray: { $contains: [alias] },
-      isHost: true,
-      isActive: true,
-    });
+    return await this.usersRepository.find(
+      {
+        locationAliasArray: { $contains: [alias] },
+        isHost: true,
+        isActive: true,
+      },
+      { populate: ['profile.file', 'ratings'] },
+    );
   }
 }

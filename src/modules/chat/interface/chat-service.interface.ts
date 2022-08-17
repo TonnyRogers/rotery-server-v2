@@ -29,4 +29,5 @@ export interface ChatServiceInterface {
     params: ChatServiceBeginChartParams,
     endDto: BeginChatDto,
   ): Promise<Chat>;
+  lastChat(authUser: number, receiverId: number): Promise<Chat>;
 }

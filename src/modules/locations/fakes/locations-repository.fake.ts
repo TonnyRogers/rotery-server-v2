@@ -17,5 +17,6 @@ export const fakeLocations: Location[] = [
     photos: undefined,
     transports: undefined,
     ratings: undefined,
+    ratingAvg: undefined,
   },
 ];

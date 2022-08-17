@@ -16,4 +16,5 @@ export interface LocationRatingsServiceInterface {
     locationId: number,
     updateDto: UpdateLocationRatingDto,
   ): Promise<LocationRating>;
+  findAllByOwner(authUserId: number): Promise<LocationRating[]>;
 }

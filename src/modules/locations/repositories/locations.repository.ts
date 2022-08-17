@@ -18,9 +18,9 @@ const populateRelations: any = [
   'detailings',
   'transports.transport',
   'activities.activity',
-  'photos',
+  'photos.file',
   'lodgings.lodging',
-  'ratings.owner.profile',
+  'ratings.owner.profile.file',
 ];
 export class LocationsRepository implements LocationsRepositoryInterface {
   constructor(
@@ -57,9 +57,9 @@ export class LocationsRepository implements LocationsRepositoryInterface {
     return newLocation;
   }
 
-  async update(entity: Location): Promise<Location> {
-    await this.locationsRepository.nativeUpdate({ id: entity.id }, entity);
-    return this.findOne({ id: entity.id });
+  async update(entity: Partial<Location>, id: number): Promise<Location> {
+    await this.locationsRepository.nativeUpdate({ id: id }, entity);
+    return this.findOne({ id: id });
   }
 
   async delete(id: number): Promise<void> {
@@ -139,5 +139,53 @@ export class LocationsRepository implements LocationsRepositoryInterface {
       meta,
       items,
     };
+  }
+
+  async findFeedFilters(
+    filters: GetLocationFeedQueryFilter,
+  ): Promise<{ activity_id: number; activity_name: string }[]> {
+    const dynamicFilter: any = {};
+
+    if (filters.city || filters.state || filters.region) {
+      dynamicFilter.locationJson = {};
+    }
+
+    Object.entries(filters).forEach(([key, value]) => {
+      switch (key) {
+        case 'city':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'state':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'region':
+          dynamicFilter.locationJson[key] = value;
+          break;
+        case 'type':
+          dynamicFilter[key] = value;
+          break;
+        case 'activity':
+          dynamicFilter.activities = {
+            activity: {
+              id: value,
+            },
+          };
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    return await this.locationsRepository
+      .createQueryBuilder('lc')
+      .select(['ac.id as activity_id', 'ac.name as activity_name'])
+      .leftJoin('lc.activities', 'lac')
+      .leftJoin('lac.activity', 'ac')
+      .where({
+        ...dynamicFilter,
+      })
+      .groupBy(['ac.id'])
+      .execute<{ activity_id: number; activity_name: string }[]>();
   }
 }

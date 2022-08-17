@@ -42,13 +42,28 @@ export class LocationRatingsService implements LocationRatingsServiceInterface {
     if (!location)
       throw new UnprocessableEntityException("Can't find this location.");
 
+    const locationRating = await this.locationRatingsRepository.findOne({
+      locationId,
+      ownerId: authUserId,
+    });
+
     const newLocationRating = new LocationRating({
       ...creatDto,
       owner,
       location,
     });
 
-    return this.locationRatingsRepository.create(newLocationRating);
+    if (locationRating) {
+      return this.locationRatingsRepository.update(
+        {
+          locationId,
+          ownerId: authUserId,
+        },
+        creatDto,
+      );
+    } else {
+      return this.locationRatingsRepository.create(newLocationRating);
+    }
   }
 
   async getOne({
@@ -83,5 +98,9 @@ export class LocationRatingsService implements LocationRatingsServiceInterface {
       },
       updateDto,
     );
+  }
+
+  async findAllByOwner(authUserId: number): Promise<LocationRating[]> {
+    return await this.locationRatingsRepository.findAll({ owner: authUserId });
   }
 }

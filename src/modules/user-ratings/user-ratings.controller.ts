@@ -1,30 +1,44 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Param,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 
-import { ParamId } from '@/utils/types';
+import { ParamId, RequestUser } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUserRatingDto } from './dto/create-user-rating.dto';
-import { UserRatingsService } from './user-ratings.service';
+import { UserRatingsProvider } from './enums/user-ratings-providers.enum';
+import { UserRatingsServiceInterface } from './interfaces/user-ratings-repository.interface';
 
 @UseGuards(JwtAuthGuard)
-@Controller('users')
+@Controller('user-ratings')
 export class UserRatingsController {
   constructor(
-    @Inject(UserRatingsService)
-    private userRatingService: UserRatingsService,
+    @Inject(UserRatingsProvider.USER_RATINGS_SERVICE)
+    private userRatingService: UserRatingsServiceInterface,
   ) {}
 
-  @Post('/:id/rate')
+  @Post('/:id')
   async rateUser(
+    @Req() request: RequestUser,
     @Param() params: ParamId,
     @Body() createRatingDto: CreateUserRatingDto,
   ) {
-    return this.userRatingService.create(params.id, createRatingDto);
+    return this.userRatingService.create(
+      request.user.userId,
+      params.id,
+      createRatingDto,
+    );
+  }
+
+  @Get('/by-owner')
+  async ratingsByOwner(@Req() request: RequestUser) {
+    return this.userRatingService.findAllByOwner(request.user.userId);
   }
 }

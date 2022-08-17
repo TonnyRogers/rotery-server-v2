@@ -43,6 +43,7 @@ export class LocationRating {
     entity: () => Location,
     onDelete: 'cascade',
     primary: true,
+    serializer: (value) => value.id,
   })
   location!: Location;
 

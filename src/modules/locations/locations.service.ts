@@ -1,5 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
+import { EntityData } from '@mikro-orm/core';
+
 import {
   GetLocationQueryFilter,
   LocationsServiceInterface,
@@ -169,77 +171,68 @@ export class LocationsService implements LocationsServiceInterface {
       });
     }
 
-    const locationUpdated = this.locationsRepository.update({
-      ...location,
-      ...restDto,
-      alias: this.sanetizedAlias(`${restDto.name} ${restDto.location}`),
-      locationJson: restDto.locationJson
-        ? {
-            ...restDto.locationJson,
-            region: findRegionByState(String(restDto.locationJson.state)),
-          }
-        : null,
-    });
+    const locationUpdated = this.locationsRepository.update(
+      {
+        ...restDto,
+        alias: this.sanetizedAlias(`${restDto.name} ${restDto.location}`),
+        locationJson: restDto.locationJson
+          ? {
+              ...restDto.locationJson,
+              region: findRegionByState(String(restDto.locationJson.state)),
+            }
+          : null,
+      },
+      id,
+    );
 
-    const activityEntityList: LocationActivity[] = [];
-    const lodgingEntityList: LocationLodging[] = [];
-    const photoEntityList: LocationPhoto[] = [];
-    const transportEntityList: LocationTransport[] = [];
+    const activityEntityList: EntityData<LocationActivity>[] = [];
+    const lodgingEntityList: EntityData<LocationLodging>[] = [];
+    const photoEntityList: EntityData<LocationPhoto>[] = [];
+    const transportEntityList: EntityData<LocationTransport>[] = [];
 
     activities?.length &&
       activities.forEach(async (activity) => {
-        activityEntityList.push(
-          new LocationActivity({
-            ...activity,
-            location,
-          }),
-        );
+        activityEntityList.push({
+          ...activity,
+          location: location.id,
+        });
       });
 
     lodgings?.length &&
       lodgings.forEach(async (lodging) => {
-        lodgingEntityList.push(
-          new LocationLodging({
-            ...lodging,
-            location,
-          }),
-        );
+        lodgingEntityList.push({
+          ...lodging,
+          location: location.id,
+        });
       });
 
     photos?.length &&
       photos.forEach(async (photo) => {
-        photoEntityList.push(
-          new LocationPhoto({
-            ...photo,
-            location,
-          }),
-        );
+        photoEntityList.push({
+          ...photo,
+          location: location.id,
+        });
       });
 
     transports?.length &&
       transports.forEach(async (transport) => {
-        transportEntityList.push(
-          new LocationTransport({
-            ...transport,
-            location,
-          }),
-        );
+        transportEntityList.push({
+          ...transport,
+          location: location.id,
+        });
       });
 
     await Promise.all([
-      this.locationsActivityRepository.insertJoinTable(
-        activityEntityList,
-        undefined,
-      ),
-      this.locationsLodgingRepository.insertJoinTable(
-        lodgingEntityList,
-        undefined,
-      ),
+      this.locationsActivityRepository.insertJoinTable(activityEntityList, {
+        location: id,
+      }),
+      this.locationsLodgingRepository.insertJoinTable(lodgingEntityList, {
+        location: id,
+      }),
       this.locationsPhotoRepository.insertJoinTable(photoEntityList, undefined),
-      this.locationsTransportRepository.insertJoinTable(
-        transportEntityList,
-        undefined,
-      ),
+      this.locationsTransportRepository.insertJoinTable(transportEntityList, {
+        location: id,
+      }),
     ]);
 
     return locationUpdated;

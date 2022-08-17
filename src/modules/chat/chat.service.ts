@@ -45,6 +45,7 @@ export class ChatService implements ChatServiceInterface {
       offset,
     });
   }
+
   async create(
     authUser: number,
     receiverId: number,
@@ -75,7 +76,7 @@ export class ChatService implements ChatServiceInterface {
 
   async beginChat(
     { authUserId, receiverId }: ChatServiceBeginChartParams,
-    { locationCityState, locationName }: BeginChatDto,
+    { locationCityState, locationName, locationId }: BeginChatDto,
   ): Promise<Chat> {
     if (authUserId === receiverId) {
       throw new HttpException(
@@ -103,14 +104,28 @@ export class ChatService implements ChatServiceInterface {
       sender: user,
       message: `Novo chat iniciado: ${user.username} solicitou ajuda sobre ${locationName} (${locationCityState}).`,
       type: ChatType.BEGIN,
+      jsonData: { locationId, locationName, locationCityState },
     });
+
+    await this.chatRepository.create(chatBegin);
+
+    const notificationPayload: CreateNotificationPayload = {
+      alias: NotificationAlias.NEW_CHAT,
+      subject: NotificationSubject.newChat,
+      content: `chat iniciado com ${user.username}`,
+      jsonData: {
+        ...chatBegin,
+      },
+    };
+
+    await this.notificationsService.create(guideUser.id, notificationPayload);
 
     return chatBegin;
   }
 
   async endChat(
     { authUserId, receiverId }: ChatServiceBeginChartParams,
-    { locationCityState, locationName }: BeginChatDto,
+    { locationCityState, locationName, locationId }: BeginChatDto,
   ): Promise<Chat> {
     if (authUserId === receiverId) {
       throw new HttpException(
@@ -140,6 +155,7 @@ export class ChatService implements ChatServiceInterface {
       sender: authUser,
       message: `Chat finalizado: ${authUser.username} finalizou o chat.`,
       type: ChatType.END,
+      jsonData: { locationId, locationName, locationCityState },
     });
 
     const newEndChat = await this.chatRepository.create(chatFinished);
@@ -150,15 +166,16 @@ export class ChatService implements ChatServiceInterface {
         subject: NotificationSubject.locationRate,
         content: `com ${authUser.username}`,
         jsonData: {
-          user: {
+          guide: {
             id: authUser.id,
             username: authUser.username,
             createdAt: authUser.createdAt,
             profile: authUser.profile,
           },
           location: {
+            id: locationId,
             name: locationName,
-            location: locationCityState,
+            state: locationCityState,
           },
         },
       };
@@ -167,5 +184,13 @@ export class ChatService implements ChatServiceInterface {
     }
 
     return newEndChat;
+  }
+
+  async lastChat(authUser: number, receiverId: number): Promise<Chat> {
+    return await this.chatRepository.findLast({
+      receiverId: authUser,
+      senderId: receiverId,
+      order: 'DESC',
+    });
   }
 }

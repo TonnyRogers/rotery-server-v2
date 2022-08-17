@@ -11,7 +11,5 @@ export const fakeLocationDetailings: LocationDetailing[] = [
     updatedAt: new Date(),
     text: 'fake location detailing',
     type: LocationDetailingType.ANIMAL_PRESENCE,
-    variant: '',
-    variantText: '',
   },
 ];

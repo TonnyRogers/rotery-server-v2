@@ -1,16 +1,21 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   BadRequestException,
   HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+
+import { EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+
+import { validateCPF } from '@/utils/functions';
+
 import { Profile } from '../../entities/profile.entity';
+import { User } from '../../entities/user.entity';
 import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 const profilePopulate: any = [
   'user',
@@ -67,6 +72,19 @@ export class ProfileService {
   }
 
   async update(id: number, updateProfileDto: UpdateProfileDto) {
+    if (!validateCPF(updateProfileDto.document)) {
+      throw new HttpException('Invalid document.', HttpStatus.BAD_REQUEST);
+    }
+
+    const validateDocumentUnique = await this.profileRepository.count({
+      $not: { user: id },
+      document: updateProfileDto.document,
+    });
+
+    if (validateDocumentUnique > 0) {
+      throw new UnprocessableEntityException('Document duplicated.');
+    }
+
     try {
       await this.profileRepository.nativeUpdate(
         { user: { id } },

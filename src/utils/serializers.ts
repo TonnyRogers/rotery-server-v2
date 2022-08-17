@@ -128,7 +128,6 @@ export const locationActivityCollectionSerializer = (
     .toArray()
     .map(
       ({
-        capacity,
         price,
         description,
         isFree,
@@ -141,7 +140,6 @@ export const locationActivityCollectionSerializer = (
           name: activity.name,
           alias: activity.alias,
         },
-        capacity,
         price,
         description,
         isFree,
@@ -155,7 +153,6 @@ export const locationTransportCollectionSerializer = (
     .toArray()
     .map(
       ({
-        capacity,
         price,
         description,
         isFree,
@@ -168,7 +165,6 @@ export const locationTransportCollectionSerializer = (
           name: transport.name,
           alias: transport.alias,
         },
-        capacity,
         price,
         description,
         isFree,
@@ -182,7 +178,6 @@ export const locationLodgingCollectionSerializer = (
     .toArray()
     .map(
       ({
-        capacity,
         price,
         description,
         isFree,
@@ -195,7 +190,6 @@ export const locationLodgingCollectionSerializer = (
           name: lodging.name,
           alias: lodging.alias,
         },
-        capacity,
         price,
         description,
         isFree,
@@ -212,13 +206,17 @@ export const locationDetailingCollectionSerializer = (
         location,
         text,
         type,
-        variant,
-        variantText,
+        level,
+        measure,
+        quantity,
+        validation,
       }: EntityDTO<LocationDetailing>) => ({
         location: location.id,
         text,
         type,
-        variant,
-        variantText,
+        level,
+        measure,
+        quantity,
+        validation,
       }),
     );

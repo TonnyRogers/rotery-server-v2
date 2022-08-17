@@ -1,7 +1,11 @@
-import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { Logger } from '@nestjs/common';
-import { postgresql } from './config';
+
 import mikroormentities from './mikro-orm-entities';
+import { FlushMode } from '@mikro-orm/core';
+import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+
+import { postgresql } from './config';
 
 const { database, host, password, username, port } = postgresql;
 const logger = new Logger('MikroORM');
@@ -21,5 +25,12 @@ export default {
   forceUtcTimezone: true,
   timezone: 'UTC',
   logger: logger.log.bind(logger),
+  // cache: {
+  //   enabled: false,
+  // },
+  // flushMode: FlushMode.ALWAYS,
   allowGlobalContext: true,
+  // autoLoadEntities: false,
+  // registerRequestContext: false,
+  // metadataProvider: TsMorphMetadataProvider,
 } as MikroOrmModuleOptions;

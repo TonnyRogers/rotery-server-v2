@@ -7,6 +7,11 @@ export interface LocationRatingRepositoryQuery {
   locationId: number;
 }
 
+export interface FindAllLocationRatingRepositoryQuery {
+  owner?: number;
+  user?: number;
+}
+
 export interface LocationRatingsRepositoryInterface {
   create(entity: LocationRating): Promise<LocationRating>;
   findOne(filter: LocationRatingRepositoryQuery): Promise<LocationRating>;
@@ -14,4 +19,7 @@ export interface LocationRatingsRepositoryInterface {
     filter: LocationRatingRepositoryQuery,
     updateDto: UpdateLocationRatingDto,
   ): Promise<LocationRating>;
+  findAll(
+    filter: FindAllLocationRatingRepositoryQuery,
+  ): Promise<LocationRating[]>;
 }

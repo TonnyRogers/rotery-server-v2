@@ -34,6 +34,11 @@ export class LocationRatingsController {
     return this.locationRatingsService.getOne(query);
   }
 
+  @Get('/by-owner')
+  async allLocationRatingByOwner(@Req() request: RequestUser) {
+    return this.locationRatingsService.findAllByOwner(request.user.userId);
+  }
+
   @Post(':locationId')
   async newLocationRating(
     @Param() param: { locationId: number },

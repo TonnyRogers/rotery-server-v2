@@ -16,6 +16,7 @@ import { EmailsModule } from './modules/emails/emails.module';
 import { FavoriteItinerariesModule } from './modules/favorite-itineraries/favorite-itineraries.module';
 import { FeedItinerariesModule } from './modules/feed-itineraries/feed-itineraries.module';
 import { FilesModule } from './modules/files/files.module';
+import { FiltersModule } from './modules/filters/filters.module';
 import { ItinerariesModule } from './modules/itineraries/itineraries.module';
 import { ItineraryMembersModule } from './modules/itinerary-members/itinerary-members.module';
 import { ItineraryQuestionsModule } from './modules/itinerary-questions/itinerary-question.module';
@@ -68,6 +69,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     LocationsModule,
     LocationDetailingModule,
     LocationRatingsModule,
+    FiltersModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',

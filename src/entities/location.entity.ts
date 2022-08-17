@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryKey,
   Property,
+  TextType,
 } from '@mikro-orm/core';
 
 import {
@@ -58,8 +59,8 @@ export class Location {
   @Property({ nullable: false, type: 'string' })
   name!: string;
 
-  @Property({ nullable: false, type: 'string' })
-  description!: string;
+  @Property({ nullable: false, type: TextType })
+  description: string;
 
   @Property({ nullable: false, type: 'string' })
   location!: string;
@@ -128,6 +129,21 @@ export class Location {
 
   @OneToMany(() => LocationPhoto, (locationPhoto) => locationPhoto.location)
   photos = new Collection<LocationPhoto>(this);
+
+  @Property({ persist: false })
+  get ratingAvg() {
+    if (this.ratings?.isInitialized()) {
+      let totalRatings = 0;
+      let ratingCount = 0;
+
+      this.ratings.getItems().forEach((rating) => {
+        totalRatings += rating.rate;
+        ratingCount++;
+      });
+
+      return totalRatings / ratingCount;
+    }
+  }
 
   @Property()
   createdAt: Date = new Date();

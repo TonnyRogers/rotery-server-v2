@@ -1,17 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum } from 'class-validator';
+
+import { IsDateString, IsEnum, IsNotEmpty } from 'class-validator';
+
 import { File } from '../../../entities/file.entity';
 import { Gender } from '../../../entities/profile.entity';
 
 export class UpdateProfileDto {
   @ApiProperty({ required: false })
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({ required: false })
   @IsDateString()
   birth: Date;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
   document: string;
 
   @ApiProperty({ required: false })

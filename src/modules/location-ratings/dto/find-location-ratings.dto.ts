@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class FindLocationRatingsDto {
   @ApiProperty()
@@ -13,4 +13,11 @@ export class FindLocationRatingsDto {
   @IsNotEmpty()
   @Type(() => Number)
   locationId: number;
+}
+
+export class FindAllLocationRatingsDto {
+  @ApiProperty()
+  @IsOptional()
+  @Type(() => Number)
+  user: number;
 }

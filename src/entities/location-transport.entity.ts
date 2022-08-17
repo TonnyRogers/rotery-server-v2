@@ -8,14 +8,12 @@ export class LocationTransport {
   constructor({
     location,
     transport,
-    capacity,
     price,
     description,
     isFree,
   }: Omit<LocationTransport, 'id' | 'createdAt' | 'updatedAt'>) {
     this.location = location;
     this.transport = transport;
-    this.capacity = capacity;
     this.price = price;
     this.description = description;
     this.isFree = isFree;
@@ -39,10 +37,7 @@ export class LocationTransport {
   })
   transport!: Transport;
 
-  @Property({ type: 'number', nullable: true })
-  capacity: number;
-
-  @Property({ columnType: 'decimal(8,2)', nullable: true })
+  @Property({ nullable: true })
   price: string;
 
   @Property({ type: 'string', nullable: true })

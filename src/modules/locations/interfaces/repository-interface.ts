@@ -18,11 +18,14 @@ export interface LocationsRepositoryInterface {
   findAll(filters: GetLocationQueryFilter): Promise<Location[] | null>;
   findOne(filters: FindOneLocationRepositoryFilter): Promise<Location | null>;
   create(entity: Location): Promise<Location>;
-  update(entity: Location): Promise<Location>;
+  update(entity: Partial<Location>, id: number): Promise<Location>;
   delete(id: number): Promise<void>;
   findAsFeed(
     filters: GetLocationFeedQueryFilter,
   ): Promise<PaginatedResponse<Location>>;
+  findFeedFilters(
+    filters: GetLocationFeedQueryFilter,
+  ): Promise<{ activity_id: number; activity_name: string }[]>;
 }
 
 export interface LocationBaseRelatedRepositoryInterface<T> {

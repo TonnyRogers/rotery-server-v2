@@ -84,9 +84,10 @@ export class ChatRepository implements ChatRepositoryInterface {
           receiver: authUserId,
         },
         {
-          limit,
-          offset: last,
           populate: chatPopulate,
+          orderBy: {
+            createdAt: -1,
+          },
         },
       );
     } catch (error) {

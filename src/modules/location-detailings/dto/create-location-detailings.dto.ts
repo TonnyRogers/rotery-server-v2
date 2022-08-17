@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { LocationDetailingType } from '@/entities/location-detailing.entity';
+import {
+  LocationDetailingLevel,
+  LocationDetailingType,
+} from '@/entities/location-detailing.entity';
 
 export class CreateLocationDetailingsDto {
   @ApiProperty()
@@ -10,23 +13,24 @@ export class CreateLocationDetailingsDto {
   @IsEnum(LocationDetailingType)
   type!: LocationDetailingType;
 
-  // EX: *$ local para refeição *$$
+  @ApiProperty({ example: '1, 2' })
+  quantity?: number;
+
+  @ApiProperty({ example: 'km, hr, days' })
+  measure?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(LocationDetailingLevel)
+  level?: LocationDetailingLevel;
+
+  @ApiProperty()
+  validation?: boolean;
+
+  // EX: *V* local para refeição (*Q**M*)
+  // Existe local para refeitção (4km)
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   text!: string;
-
-  // EX: Replaced by *$ (Possui)
-  @ApiProperty({
-    description:
-      'indicates de variations of some detailing to be replaced in text',
-    example: '',
-  })
-  @IsString()
-  variant?: string;
-
-  // EX: Replaced by *$$ (4km)
-  @ApiProperty()
-  @IsString()
-  variantText?: string;
 }

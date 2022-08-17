@@ -74,10 +74,18 @@ export class ChatSocketGateway {
         throw new Error('Invalid receiver user.');
       }
 
+      const lastMessage = await this.chatService.lastChat(
+        data.receiver.id,
+        userId,
+      );
+
       const newMessage = await this.chatService.create(
         userId,
         data.receiver.id,
-        data,
+        {
+          ...data,
+          jsonData: lastMessage.jsonData,
+        },
       );
 
       const chatName = formatChatName(data.receiver.id, userId);

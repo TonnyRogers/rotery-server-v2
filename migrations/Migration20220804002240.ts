@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20220725142202 extends Migration {
+export class Migration20220804002240 extends Migration {
   async up(): Promise<void> {
     this.addSql(
       'create table "chat" ("id" serial primary key, "sender_id" int not null, "receiver_id" int not null, "message" varchar(255) not null, "readed" boolean not null default false, "json_data" jsonb null, "type" text check ("type" in (\'message\', \'begin\', \'end\', \'rate\', \'location\')) not null default \'message\', "created_at" timestamptz(0) not null, "updated_at" timestamptz(0) not null);',

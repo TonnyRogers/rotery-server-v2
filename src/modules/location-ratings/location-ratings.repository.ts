@@ -9,6 +9,7 @@ import { UpdateLocationRatingDto } from './dto/update-location-ratings.dto';
 import {
   LocationRatingRepositoryQuery,
   LocationRatingsRepositoryInterface,
+  FindAllLocationRatingRepositoryQuery,
 } from './interfaces/location-ratings-repository.interface';
 
 export class LocationRatingsRepository
@@ -67,5 +68,13 @@ export class LocationRatingsRepository
     );
 
     return locationRatingUpdated;
+  }
+
+  async findAll(
+    filter: FindAllLocationRatingRepositoryQuery,
+  ): Promise<LocationRating[]> {
+    return await this.locationRatingsRepository.find({
+      ...filter,
+    });
   }
 }
