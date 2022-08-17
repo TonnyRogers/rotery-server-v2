@@ -13,15 +13,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { GuideUserLocationsService } from './guide-user-locations.service';
-import { GuideUserLocationsServiceInterface } from './interfaces/guide-user-locations-service.interface';
 import { UsersService } from './users.service';
 
 import { RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GuideUserLocationsJoinDto } from './dto/guide-user-join.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
@@ -29,8 +26,6 @@ export class UsersController {
   constructor(
     @Inject(UsersService)
     private readonly userService: UsersService,
-    @Inject(GuideUserLocationsService)
-    private readonly guideUserLocationsService: GuideUserLocationsServiceInterface,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -77,35 +72,5 @@ export class UsersController {
   @Get('activate/:code')
   async activateUser(@Param() params: { code: string }) {
     return this.userService.activate(params.code);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put('/guides/join-location')
-  @HttpCode(201)
-  async joinLocation(
-    @Req() request: RequestUser,
-    @Body() body: GuideUserLocationsJoinDto,
-  ) {
-    return this.guideUserLocationsService.add(body.alias, request.user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete('/guides/leave-location')
-  @HttpCode(201)
-  async leaveLocation(
-    @Req() request: RequestUser,
-    @Body() body: GuideUserLocationsJoinDto,
-  ) {
-    return this.guideUserLocationsService.remove(
-      body.alias,
-      request.user.userId,
-    );
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/guides/by-location')
-  @HttpCode(201)
-  async findGuidesByLocation(@Query() body: GuideUserLocationsJoinDto) {
-    return this.guideUserLocationsService.findAll(body.alias);
   }
 }

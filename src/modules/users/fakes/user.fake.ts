@@ -26,7 +26,6 @@ export const fakeUsers: User[] = [
     subscription: undefined,
     username: 'fake username',
     deviceToken: undefined,
-    locationAliasArray: ['aaaa'],
     afterCreate: () => Promise.resolve(),
   },
 ];

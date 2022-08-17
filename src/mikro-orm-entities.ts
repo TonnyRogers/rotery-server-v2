@@ -5,6 +5,7 @@ import { BankAccount } from './entities/bank-account.entity';
 import { Chat } from './entities/chat.entity';
 import { DirectMessage } from './entities/direct-message.entity';
 import { File } from './entities/file.entity';
+import { GuideUserLocation } from './entities/guide-user-location.entity';
 import { ItineraryActivity } from './entities/itinerary-activity.entity';
 import { ItineraryLodging } from './entities/itinerary-lodging.entity';
 import { ItineraryMember } from './entities/itinerary-member.entity';
@@ -63,5 +64,6 @@ export default {
     LocationTransport,
     Chat,
     LocationRating,
+    GuideUserLocation,
   ],
 } as MikroOrmModuleOptions;

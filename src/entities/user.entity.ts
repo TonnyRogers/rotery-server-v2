@@ -106,9 +106,6 @@ export class User {
   @Property({ type: 'string', nullable: true, lazy: true })
   customerId!: string;
 
-  @Property({ nullable: true, default: '{}' })
-  locationAliasArray?: string[];
-
   @Property()
   createdAt: Date = new Date();
 

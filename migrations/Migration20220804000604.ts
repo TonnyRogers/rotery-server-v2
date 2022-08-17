@@ -18,10 +18,6 @@ export class Migration20220804000604 extends Migration {
     );
 
     this.addSql(
-      'alter table "user" add column "location_alias_array" text[] null default \'{}\';',
-    );
-
-    this.addSql(
       'alter table "notification" alter column "alias" type text using ("alias"::text);',
     );
     this.addSql(
@@ -42,7 +38,5 @@ export class Migration20220804000604 extends Migration {
     this.addSql(
       "alter table \"notification\" add constraint \"notification_alias_check\" check (\"alias\" in ('rate_itinerary', 'new_message', 'itinerary_updated', 'itinerary_deleted', 'itinerary_member_request', 'itinerary_member_accepted', 'itinerary_member_rejected', 'itinerary_member_promoted', 'itinerary_member_demoted', 'itinerary_question', 'itinerary_answer', 'new_connection_accepted', 'new_connection', 'connection_block', 'connection_unblock'));",
     );
-
-    this.addSql('alter table "user" drop column "location_alias_array";');
   }
 }
