@@ -26,6 +26,7 @@ import { LocationDetailingModule } from './modules/location-detailings/location-
 import { LocationRatingsModule } from './modules/location-ratings/location-ratings.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { LodgingsModule } from './modules/lodgings/lodgings.module';
+import { MetadataModule } from './modules/metadata/metadata.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PaymentModule } from './modules/payments/payments.module';
 import { ProfileModule } from './modules/profiles/profile.module';
@@ -72,6 +73,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     LocationRatingsModule,
     FiltersModule,
     GuideUserLocationsModule,
+    MetadataModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',

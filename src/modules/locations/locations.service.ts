@@ -3,15 +3,21 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { EntityData } from '@mikro-orm/core';
 
 import {
+  FormatedLocationDetailingResponseDto,
   GetLocationQueryFilter,
   LocationsServiceInterface,
 } from './interfaces/service-interface';
 
 import { LocationActivity } from '@/entities/location-activity.entity';
+import {
+  LocationDetailing,
+  LocationDetailingType,
+} from '@/entities/location-detailing.entity';
 import { LocationLodging } from '@/entities/location-lodging.entity';
 import { LocationPhoto } from '@/entities/location-photo.entity';
 import { LocationTransport } from '@/entities/location-transport.entity';
 import { Location } from '@/entities/location.entity';
+import { formatDetailingValidation } from '@/utils/constants';
 import { findRegionByState } from '@/utils/functions';
 import { PaginatedResponse } from '@/utils/types';
 
@@ -56,6 +62,48 @@ export class LocationsService implements LocationsServiceInterface {
         'This location already exists.',
         HttpStatus.CONFLICT,
       );
+  }
+
+  private formatDetailing(detailing: LocationDetailing) {
+    const detailingIcon = {
+      [LocationDetailingType.ANIMAL_PRESENCE]: 'pets',
+      [LocationDetailingType.CHILDREN_ACCESS]: 'child-care',
+      [LocationDetailingType.DURATION]: 'clock-outline',
+      [LocationDetailingType.FOOD_PROXIMITY]: 'food',
+      [LocationDetailingType.GUIDE_REQUESTED]: 'person-pin-circle',
+      [LocationDetailingType.MOBILE_SIGNAL]: 'signal-variant',
+      [LocationDetailingType.MOBILITY_ACCESS]: 'accessible',
+      [LocationDetailingType.WEEKLY_PRESENCE]: 'trending-up',
+    };
+
+    // material: react-native-vector-icons/MaterialIcons
+    // default: react-native-vector-icons/MaterialCommunityIcons
+    const detailingIconType = {
+      [LocationDetailingType.ANIMAL_PRESENCE]: 'material',
+      [LocationDetailingType.CHILDREN_ACCESS]: 'material',
+      [LocationDetailingType.DURATION]: 'default',
+      [LocationDetailingType.FOOD_PROXIMITY]: 'default',
+      [LocationDetailingType.GUIDE_REQUESTED]: 'material',
+      [LocationDetailingType.MOBILE_SIGNAL]: 'default',
+      [LocationDetailingType.MOBILITY_ACCESS]: 'material',
+      [LocationDetailingType.WEEKLY_PRESENCE]: 'default',
+    };
+
+    return {
+      ...detailing,
+      icon: detailingIcon[detailing.type],
+      iconType: detailingIconType[detailing.type],
+      text: detailing.text
+        .replace(
+          '*V*',
+          formatDetailingValidation[detailing.type][
+            detailing.validation ? 0 : 1
+          ],
+        )
+        .replace('*Q*', String(detailing.quantity))
+        .replace('*M*', detailing.measure),
+      location: detailing.location.id,
+    };
   }
 
   private sanetizedAlias(text: string): string {
@@ -244,7 +292,25 @@ export class LocationsService implements LocationsServiceInterface {
 
   async getFeed(
     params: GetLocationFeedQueryFilter,
-  ): Promise<PaginatedResponse<Location>> {
-    return await this.locationsRepository.findAsFeed(params);
+  ): Promise<PaginatedResponse<FormatedLocationDetailingResponseDto>> {
+    const locations = await this.locationsRepository.findAsFeed(params);
+
+    const formattedLocationsDetailings: FormatedLocationDetailingResponseDto[] =
+      locations.items.map((location) => {
+        const formattedDetailings = location.detailings
+          .getItems()
+          .map((detailing) => this.formatDetailing(detailing));
+
+        return {
+          ...location,
+          detailings: formattedDetailings,
+          ratingAvg: location.ratingAvg,
+        } as FormatedLocationDetailingResponseDto;
+      });
+
+    return {
+      items: formattedLocationsDetailings,
+      meta: locations.meta,
+    };
   }
 }

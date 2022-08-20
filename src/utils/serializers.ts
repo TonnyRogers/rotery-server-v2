@@ -19,6 +19,7 @@ export const userProfileFileSerializer = (value: User) => ({
       url: value.profile?.file?.url,
     },
   },
+  createdAt: value.createdAt,
 });
 
 export const itineraryOwnerFileSerializer = (value: Itinerary) => ({

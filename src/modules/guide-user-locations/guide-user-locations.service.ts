@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   UnprocessableEntityException,
@@ -35,6 +37,10 @@ export class GuideUserLocationsService
 
     if (!user) {
       throw new UnprocessableEntityException("Can't find user.");
+    }
+
+    if (!user.isHost) {
+      throw new HttpException("Can't do this.", HttpStatus.UNAUTHORIZED);
     }
 
     const location = await this.locationRepository.findOne({ id: locationId });

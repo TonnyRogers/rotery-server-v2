@@ -46,7 +46,7 @@ export class ProfileService {
     try {
       const profilePayload = await this.profileRepository.findOneOrFail(
         { user: { id } },
-        { populate: ['user', 'file', 'user.ratings'] },
+        { populate: ['user', 'file', 'user.ratings.owner'] },
       );
 
       delete profilePayload.user.id;

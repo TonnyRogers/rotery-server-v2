@@ -1,4 +1,5 @@
-import { PaymentStatus } from "@/entities/itinerary-member.entity";
+import { PaymentStatus } from '@/entities/itinerary-member.entity';
+import { LocationDetailingType } from '@/entities/location-detailing.entity';
 
 export const itineraryRelations: any = [
   'owner.ratings',
@@ -69,11 +70,11 @@ export const EmailTypes = {
 };
 
 export const EmailHelpRequestType = {
-  'payment': 'problema com pagamento',
-  'itinerary': 'problema com roteiro',
-  'revenue': 'problema com faturamento',
-  'other': 'problema no app',
-}
+  payment: 'problema com pagamento',
+  itinerary: 'problema com roteiro',
+  revenue: 'problema com faturamento',
+  other: 'problema no app',
+};
 
 export const Email = {};
 
@@ -110,4 +111,28 @@ export const paymentStatusRole = {
   [PaymentStatus.PENDING]: 'Em andamento',
   [PaymentStatus.REFUNDED]: 'Estornado',
   [PaymentStatus.REFUSED]: 'Recusado',
+};
+
+export const detailingText = {
+  [LocationDetailingType.ANIMAL_PRESENCE]: '*V* animais por perto',
+  [LocationDetailingType.CHILDREN_ACCESS]: '*V* crianças',
+  [LocationDetailingType.DURATION]: 'Aproximadamente *Q* de *M*',
+  [LocationDetailingType.FOOD_PROXIMITY]: '*V* local para refeição (*Q**M*)',
+  [LocationDetailingType.GUIDE_REQUESTED]: 'Guia *V*',
+  [LocationDetailingType.MOBILE_SIGNAL]: '*V* sinal de celular por perto',
+  [LocationDetailingType.MOBILITY_ACCESS]: '*V* acesso para cadeirantes',
+  [LocationDetailingType.WEEKLY_PRESENCE]: 'Maior movimento durante *M*',
+};
+
+export const formatDetailingValidation = {
+  [LocationDetailingType.ANIMAL_PRESENCE]: 'Possui|Não Possui'.split('|'),
+  [LocationDetailingType.CHILDREN_ACCESS]: 'Permitido|Não permitido'.split('|'),
+  [LocationDetailingType.DURATION]: '',
+  [LocationDetailingType.FOOD_PROXIMITY]: 'Possui|Não Possui'.split('|'),
+  [LocationDetailingType.GUIDE_REQUESTED]: 'obrigatório|não obrigatório'.split(
+    '|',
+  ),
+  [LocationDetailingType.MOBILE_SIGNAL]: 'Com|Sem'.split('|'),
+  [LocationDetailingType.MOBILITY_ACCESS]: 'Possui|Não Possui'.split('|'),
+  [LocationDetailingType.WEEKLY_PRESENCE]: '',
 };
