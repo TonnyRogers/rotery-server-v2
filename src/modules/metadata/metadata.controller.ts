@@ -24,4 +24,9 @@ export class MetadataController {
   async getGuideWelcomeData(@Req() request: RequestUser) {
     return await this.metadataService.guideWelcome(request.user.userId);
   }
+
+  @Get('first-steps')
+  async getFirstSteps(@Req() request: RequestUser) {
+    return await this.metadataService.firstSteps(request.user.userId);
+  }
 }

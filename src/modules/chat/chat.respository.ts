@@ -24,11 +24,15 @@ export class ChatRepository implements ChatRepositoryInterface {
     return newChat;
   }
 
-  async findOne({ id }: Pick<ChatQueryFilter, 'id'>): Promise<Chat> {
+  async findOne({
+    id,
+    senderId,
+  }: Pick<ChatQueryFilter, 'id' | 'senderId'>): Promise<Chat> {
     try {
       return await this.chatRepository.findOne(
         {
-          id,
+          ...(id ? { id } : {}),
+          ...(senderId ? { sender: senderId } : {}),
         },
         {
           populate: chatPopulate,

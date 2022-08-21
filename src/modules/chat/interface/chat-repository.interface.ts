@@ -1,9 +1,10 @@
 import { Chat } from '@/entities/chat.entity';
 
 export interface ChatQueryFilter {
-  id: number;
-  authUserId: number;
-  receiverId: number;
+  id?: number;
+  authUserId?: number;
+  receiverId?: number;
+  senderId?: number;
   offset: number;
   limit: number;
 }
@@ -16,7 +17,7 @@ export interface ChatRepositoryFindLastParams {
 
 export interface ChatRepositoryInterface {
   create(entity: Chat): Promise<Chat>;
-  findOne(query: Pick<ChatQueryFilter, 'id'>): Promise<Chat>;
+  findOne(query: Pick<ChatQueryFilter, 'id' | 'senderId'>): Promise<Chat>;
   findConversation(
     query: Pick<ChatQueryFilter, 'authUserId' | 'receiverId'>,
   ): Promise<Chat[]>;

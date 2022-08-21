@@ -6,6 +6,8 @@ import {
 } from '@/entities/itinerary-member.entity';
 import { User } from '@/entities/user.entity';
 
+import { AppRoutes, WelcomeStepListType } from './enums';
+
 export interface RequestUser extends Request {
   user: { userId: number };
 }
@@ -462,3 +464,11 @@ export interface MLPaginatedResponse<T> {
 }
 
 export type MLPaymentMethods = 'visa' | 'master' | 'hipercard' | 'amex' | 'elo';
+
+export type WelcomeStepItem = {
+  type: WelcomeStepListType;
+  title: string;
+  text: string;
+  appNavigationTarget: AppRoutes;
+  done: boolean;
+};
