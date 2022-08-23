@@ -7,17 +7,21 @@ import {
 } from '@nestjs/common';
 
 import { NotificationsService } from '../notifications/notifications.service';
-import { UsersService } from '../users/users.service';
 import {
+  CanBeginChatResponse,
   ChatServiceBeginChartParams,
   ChatServiceInterface,
 } from './interface/chat-service.interface';
 
 import { Chat, ChatType } from '@/entities/chat.entity';
 import { NotificationAlias } from '@/entities/notification.entity';
+import { SubscriptionStatus } from '@/entities/subscription.entity';
+import { dayjsPlugins } from '@/providers/dayjs-config';
 import { NotificationSubject } from '@/utils/types';
 
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
+import { UsersProvider } from '../users/enums/users-provider.enum';
+import { UsersRepositoryInterface } from '../users/interfaces/users-repository.interface';
 import { BeginChatDto } from './dto/begin-chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatProvider } from './enums/chat-provider.enum';
@@ -28,8 +32,8 @@ export class ChatService implements ChatServiceInterface {
   constructor(
     @Inject(ChatProvider.CHAT_REPOSITORY)
     private readonly chatRepository: ChatRepositoryInterface,
-    @Inject(UsersService)
-    private readonly usersService: UsersService,
+    @Inject(UsersProvider.USERS_REPOSITORY)
+    private readonly usersRepository: UsersRepositoryInterface,
     @Inject(NotificationsService)
     private readonly notificationsService: NotificationsService,
   ) {}
@@ -51,8 +55,8 @@ export class ChatService implements ChatServiceInterface {
     receiverId: number,
     createChatDto: CreateChatDto,
   ): Promise<Chat> {
-    const sender = await this.usersService.findOne({ id: authUser });
-    const receiver = await this.usersService.findOne({ id: receiverId });
+    const sender = await this.usersRepository.findOne({ id: authUser });
+    const receiver = await this.usersRepository.findOne({ id: receiverId });
 
     const newChat = new Chat({
       ...createChatDto,
@@ -85,8 +89,8 @@ export class ChatService implements ChatServiceInterface {
       );
     }
 
-    const user = await this.usersService.findOne({ id: authUserId });
-    const guideUser = await this.usersService.findOne({ id: receiverId });
+    const user = await this.usersRepository.findOne({ id: authUserId });
+    const guideUser = await this.usersRepository.findOne({ id: receiverId });
 
     if (!user || !guideUser) {
       throw new UnprocessableEntityException("Can't find this user.");
@@ -134,8 +138,8 @@ export class ChatService implements ChatServiceInterface {
       );
     }
 
-    const authUser = await this.usersService.findOne({ id: authUserId });
-    const user = await this.usersService.findOne({ id: receiverId });
+    const authUser = await this.usersRepository.findOne({ id: authUserId });
+    const user = await this.usersRepository.findOne({ id: receiverId });
 
     if (!user || !authUser) {
       throw new UnprocessableEntityException("Can't find this user.");
@@ -192,5 +196,50 @@ export class ChatService implements ChatServiceInterface {
       senderId: receiverId,
       order: 'DESC',
     });
+  }
+
+  async canBeginChat(authUserId: number): Promise<CanBeginChatResponse> {
+    const user = await this.usersRepository.findOne({ id: authUserId }, [
+      'subscription',
+    ]);
+
+    if (
+      user.subscription
+        .getItems()
+        .some(
+          (subs) =>
+            subs.status === SubscriptionStatus.AUTHORIZED &&
+            subs.deletedAt === null,
+        )
+    ) {
+      return {
+        allowed: true,
+        message: 'Ok',
+      };
+    }
+
+    const lastChaAsOwner = await this.chatRepository.findLast({
+      order: 'DESC',
+      senderId: user.id,
+      type: ChatType.END,
+    });
+
+    const lastChatAsTarget = await this.chatRepository.findLast({
+      order: 'DESC',
+      receiverId: user.id,
+      type: ChatType.END,
+    });
+
+    const todayMonth = dayjsPlugins().month();
+
+    if (
+      dayjsPlugins(lastChaAsOwner.createdAt).month() === todayMonth ||
+      dayjsPlugins(lastChatAsTarget.createdAt).month() === todayMonth
+    ) {
+      return {
+        allowed: false,
+        message: 'Chat limit reached.',
+      };
+    }
   }
 }

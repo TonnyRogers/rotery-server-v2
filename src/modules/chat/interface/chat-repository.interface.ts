@@ -1,4 +1,4 @@
-import { Chat } from '@/entities/chat.entity';
+import { Chat, ChatType } from '@/entities/chat.entity';
 
 export interface ChatQueryFilter {
   id?: number;
@@ -11,8 +11,9 @@ export interface ChatQueryFilter {
 
 export interface ChatRepositoryFindLastParams {
   order: 'DESC' | 'ASC';
-  senderId: number;
-  receiverId: number;
+  senderId?: number;
+  receiverId?: number;
+  type?: ChatType;
 }
 
 export interface ChatRepositoryInterface {

@@ -83,9 +83,9 @@ export const redisConfig = {
 };
 
 export const paymentApiOptions = {
-  token: 
-    process.env.NODE_ENV === 'production' 
-      ? process.env.PAYMENT_API_TOKEN_PROD 
+  token:
+    NODE_ENV === 'production'
+      ? process.env.PAYMENT_API_TOKEN_PROD
       : process.env.PAYMENT_API_TOKEN_DEV,
   url: process.env.PAYMENT_API_URL,
   plan_url: process.env.PAYMENT_PLAN_API_URL,
@@ -96,4 +96,3 @@ export const rabbitmqConfig = {
   host: `amqp://${process.env.RABBITMQ_HOST}:5672`,
   sendMailQueue: process.env.SEND_MAIL_QUEUE,
 };
-

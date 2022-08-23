@@ -19,7 +19,7 @@ import { ChatSocketGateway } from './chat.gateway';
 import { BeginChatDto } from './dto/begin-chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatProvider } from './enums/chat-provider.enum';
-
+@UseGuards(JwtAuthGuard)
 @Controller('chats')
 export class ChatController {
   constructor(
@@ -29,7 +29,6 @@ export class ChatController {
     private readonly chatSocketGateway: ChatSocketGateway,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post(':id')
   sendChatMessage(
     @Param() params: { id: number },
@@ -41,7 +40,6 @@ export class ChatController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   getUserChatMessages(
     @Req() request: RequestUser,
@@ -54,7 +52,6 @@ export class ChatController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/user/:id')
   getChatConversation(
     @Param() params: { id: number },
@@ -63,7 +60,11 @@ export class ChatController {
     return this.chatService.conversation(request.user.userId, params.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Get('begin-validation')
+  getCanBengin(@Req() request: RequestUser) {
+    return this.chatService.canBeginChat(request.user.userId);
+  }
+
   @Post(':id/begin')
   async beginChat(
     @Param() params: { id: number },
@@ -87,7 +88,6 @@ export class ChatController {
     return beginChatItem;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post(':id/end')
   async endChat(
     @Param() params: { id: number },

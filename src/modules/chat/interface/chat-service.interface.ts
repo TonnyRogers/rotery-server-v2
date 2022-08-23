@@ -8,6 +8,11 @@ export interface ChatServiceBeginChartParams {
   receiverId: number;
 }
 
+export type CanBeginChatResponse = {
+  allowed: boolean;
+  message: string;
+};
+
 export interface ChatServiceInterface {
   findReceived(
     authUserId: number,
@@ -30,4 +35,5 @@ export interface ChatServiceInterface {
     endDto: BeginChatDto,
   ): Promise<Chat>;
   lastChat(authUser: number, receiverId: number): Promise<Chat>;
+  canBeginChat(authUserId: number): Promise<CanBeginChatResponse>;
 }

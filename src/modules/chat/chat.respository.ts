@@ -99,13 +99,19 @@ export class ChatRepository implements ChatRepositoryInterface {
     }
   }
 
-  async findLast(query: ChatRepositoryFindLastParams): Promise<Chat> {
+  async findLast({
+    receiverId,
+    senderId,
+    type,
+    ...query
+  }: ChatRepositoryFindLastParams): Promise<Chat> {
     const order = query.order === 'ASC' ? 1 : -1;
 
     return this.chatRepository.findOne(
       {
-        sender: query.senderId,
-        receiver: query.receiverId,
+        ...(senderId ? { sender: senderId } : {}),
+        ...(receiverId ? { receiver: receiverId } : {}),
+        ...(type ? { type: type } : {}),
       },
       {
         orderBy: { createdAt: order },
