@@ -214,7 +214,7 @@ export class ChatService implements ChatServiceInterface {
     ) {
       return {
         allowed: true,
-        message: 'Ok',
+        message: 'Is subscriber',
       };
     }
 
@@ -230,7 +230,7 @@ export class ChatService implements ChatServiceInterface {
       type: ChatType.END,
     });
 
-    const todayMonth = dayjsPlugins().month();
+    const todayMonth = dayjsPlugins().month() + 1;
 
     if (
       dayjsPlugins(lastChaAsOwner.createdAt).month() === todayMonth ||
@@ -241,5 +241,10 @@ export class ChatService implements ChatServiceInterface {
         message: 'Chat limit reached.',
       };
     }
+
+    return {
+      allowed: true,
+      message: 'Ok',
+    };
   }
 }
