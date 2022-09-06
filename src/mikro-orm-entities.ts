@@ -27,6 +27,7 @@ import { Plan } from './entities/plan.entity';
 import { Profile } from './entities/profile.entity';
 import { ResetPassword } from './entities/reset-password.entity';
 import { Subscription } from './entities/subscription.entity';
+import { Tip } from './entities/tip.entity';
 import { Transport } from './entities/transport.entity';
 import { UserConnection } from './entities/user-connection.entity';
 import { UserRating } from './entities/user-rating';
@@ -65,5 +66,6 @@ export default {
     Chat,
     LocationRating,
     GuideUserLocation,
+    Tip,
   ],
 } as MikroOrmModuleOptions;

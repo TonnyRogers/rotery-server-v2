@@ -33,6 +33,7 @@ import { ProfileModule } from './modules/profiles/profile.module';
 import { ResetPasswordsModule } from './modules/reset-passwords/reset-passwords.module';
 import { RevenuesModule } from './modules/revenues/revenues.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { TipsModule } from './modules/tips/tips.module';
 import { TransportsModule } from './modules/transports/transports.module';
 import { UserConnectionModule } from './modules/user-connections/user-connections.module';
 import { UserRatingsModule } from './modules/user-ratings/user-ratings.module';
@@ -74,6 +75,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     FiltersModule,
     GuideUserLocationsModule,
     MetadataModule,
+    TipsModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',
