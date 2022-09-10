@@ -26,7 +26,7 @@ export class Tip {
     paymentId,
     paymentStatus,
     user,
-  }: Omit<Tip, 'createdAt' | 'updatedAt' | 'id'>) {
+  }: Omit<Tip, 'createdAt' | 'updatedAt' | 'id' | 'paidAt'>) {
     this.payer = payer;
     this.paymentAmount = paymentAmount;
     this.paymentId = paymentId;
@@ -65,4 +65,7 @@ export class Tip {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @Property({ nullable: true })
+  paidAt: Date;
 }

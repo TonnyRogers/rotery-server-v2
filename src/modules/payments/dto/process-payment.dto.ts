@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { IsNotEmpty, Max, Min } from 'class-validator';
 
 type AdditionalInfoItem = {
@@ -97,7 +98,7 @@ export class ProcessPaymentDto {
   metadata: Record<string, unknown>;
 
   @ApiProperty()
-  order: {
+  order?: {
     type: 'mercadopago';
   };
 
@@ -106,6 +107,7 @@ export class ProcessPaymentDto {
     id: string;
     entity_type: 'individual';
     type: 'customer';
+    email: string;
     identification?: {
       type: string;
       number: string;

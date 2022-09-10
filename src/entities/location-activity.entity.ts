@@ -33,6 +33,7 @@ export class LocationActivity {
       id: value.id,
       name: value.name,
       alias: value.alias,
+      icon: value.icon,
     }),
   })
   activity!: Activity;

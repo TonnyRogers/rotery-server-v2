@@ -1,19 +1,22 @@
 import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+
+import { ActivitiesServiceInterface } from './interfaces/activities-service.interface';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
+import { ActivitiesProviders } from './enums/activities-provider.enum';
 
 @Controller('activities')
 export class ActivitiesController {
   constructor(
-    @Inject(ActivitiesService)
-    private activitiesService: ActivitiesService,
+    @Inject(ActivitiesProviders.ACTIVITIES_SERVICE)
+    private activitiesService: ActivitiesServiceInterface,
   ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
   async newActivity(@Body() createActivityDto: CreateActivityDto) {
-    return this.activitiesService.create(createActivityDto);
+    return this.activitiesService.add(createActivityDto);
   }
 
   @Get()

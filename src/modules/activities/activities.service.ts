@@ -1,46 +1,35 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
+
+import { ActivitiesServiceInterface } from './interfaces/activities-service.interface';
+
 import { Activity } from '../../entities/activity.entity';
 import { CreateActivityDto } from './dto/create-activity.dto';
+import { ActivitiesProviders } from './enums/activities-provider.enum';
+import { ActivitiesRepositoryInterface } from './interfaces/activities-repository.interface';
 
 @Injectable()
-export class ActivitiesService {
+export class ActivitiesService implements ActivitiesServiceInterface {
   constructor(
-    @InjectRepository(Activity)
-    private activityRepository: EntityRepository<Activity>,
+    @Inject(ActivitiesProviders.ACTIVITIES_REPOSITORY)
+    private activityRepository: ActivitiesRepositoryInterface,
   ) {}
 
-  async create(createActivityDto: CreateActivityDto) {
-    try {
-      const exists = await this.findOne(createActivityDto.name);
+  async add(createActivityDto: CreateActivityDto) {
+    const exists = await this.findOne(createActivityDto.name);
 
-      if (exists) {
-        throw new HttpException('This activity already exists.', 401);
-      }
-
-      const newActivity = new Activity(createActivityDto);
-      await this.activityRepository.persistAndFlush(newActivity);
-
-      return newActivity;
-    } catch (error) {
-      throw new HttpException('Fail on create new activity.', 400);
+    if (exists) {
+      throw new HttpException('This activity already exists.', 401);
     }
+
+    const newActivity = new Activity(createActivityDto);
+    return await this.activityRepository.create(newActivity);
   }
 
   async findAll() {
-    try {
-      return this.activityRepository.findAll();
-    } catch (error) {
-      throw new HttpException('Error on list activities.', 400);
-    }
+    return this.activityRepository.findAll();
   }
 
-  async findOne(languageName: string) {
-    try {
-      return this.activityRepository.findOneOrFail({ name: languageName });
-    } catch (error) {
-      throw new HttpException('Error on list activities.', 400);
-    }
+  async findOne(activityName: string) {
+    return this.activityRepository.findOne({ name: activityName });
   }
 }

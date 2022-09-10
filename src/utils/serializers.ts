@@ -140,6 +140,7 @@ export const locationActivityCollectionSerializer = (
           id: activity.id,
           name: activity.name,
           alias: activity.alias,
+          icon: activity.icon,
         },
         price,
         description,

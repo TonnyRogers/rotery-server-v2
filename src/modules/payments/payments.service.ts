@@ -106,24 +106,21 @@ export class PaymentService {
 
   async pay(
     processPaymentDto: ProcessPaymentDto,
-    paymentType: ProcessPaymentType,
   ): Promise<PaymentDetailsReponse> {
     try {
-      if (paymentType === ProcessPaymentType.ITINERARY) {
-        const response: AxiosResponse<PaymentDetailsReponse> = await api.post(
-          `/payments`,
-          {
-            ...processPaymentDto,
-            notification_url: paymentApiOptions.webhook,
-            metadata: {
-              ...processPaymentDto?.metadata,
-              payment_validator: 'checkout',
-            },
+      const response: AxiosResponse<PaymentDetailsReponse> = await api.post(
+        `/payments`,
+        {
+          ...processPaymentDto,
+          notification_url: paymentApiOptions.webhook,
+          metadata: {
+            ...processPaymentDto?.metadata,
+            payment_validator: 'checkout',
           },
-        );
+        },
+      );
 
-        return response.data;
-      }
+      return response.data;
     } catch (error) {
       throw error;
     }

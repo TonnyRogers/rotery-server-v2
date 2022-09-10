@@ -94,6 +94,13 @@ export interface CustomerAddress {
   street_name: string;
   street_number: string;
 }
+
+export type PaymentDetailStatus =
+  | 'approved'
+  | 'in_process'
+  | 'rejected'
+  | 'refunded'
+  | 'cancelled';
 export interface PaymentDetailsReponse {
   acquirer_reconciliation: [];
   additional_info: {
@@ -175,7 +182,7 @@ export interface PaymentDetailsReponse {
   shipping_amount: number;
   sponsor_id: any;
   statement_descriptor: string;
-  status: 'approved' | 'in_process' | 'rejected' | 'refunded' | 'cancelled';
+  status: PaymentDetailStatus;
   status_detail:
     | ApprovedPaymentStatusDetail
     | InProcessPaymentStatusDetail
@@ -225,6 +232,7 @@ export type RejectedPaymentStatusDetail =
 export enum ProcessPaymentType {
   ITINERARY = 'itinerary',
   SUBSCRIPTION = 'subscription',
+  TIP = 'tip',
 }
 
 export type PaymentWebhookNotificationTypes =

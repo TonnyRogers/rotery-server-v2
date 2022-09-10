@@ -10,7 +10,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, ProcessPaymentType, RequestUser } from '@/utils/types';
+
+import { PaymentService } from './payments.service';
+
+import { ParamId, RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';
@@ -18,7 +21,6 @@ import { ProcessPaymentDto } from './dto/process-payment.dto';
 import { RefundPaymentDto } from './dto/refund-payment.dto';
 import { UpdatePaymentCustomerDto } from './dto/update-payment-client.dto copy';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { PaymentService } from './payments.service';
 
 @Controller()
 export class PaymentController {
@@ -33,10 +35,7 @@ export class PaymentController {
     @Req() request: RequestUser,
     @Body() processPaymentDto: ProcessPaymentDto,
   ) {
-    return this.paymentService.pay(
-      processPaymentDto,
-      ProcessPaymentType.ITINERARY,
-    );
+    return this.paymentService.pay(processPaymentDto);
   }
 
   @UseGuards(JwtAuthGuard)

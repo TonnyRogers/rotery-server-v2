@@ -26,6 +26,7 @@ export class FiltersService implements FiltersServiceInterface {
         activities.push({
           id: filterItem.activity_id,
           name: filterItem.activity_name,
+          icon: filterItem.activity_icon,
         }),
     );
 

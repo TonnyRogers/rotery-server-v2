@@ -25,7 +25,9 @@ export interface LocationsRepositoryInterface {
   ): Promise<PaginatedResponse<Location>>;
   findFeedFilters(
     filters: GetLocationFeedQueryFilter,
-  ): Promise<{ activity_id: number; activity_name: string }[]>;
+  ): Promise<
+    { activity_id: number; activity_name: string; activity_icon: string }[]
+  >;
 }
 
 export interface LocationBaseRelatedRepositoryInterface<T> {

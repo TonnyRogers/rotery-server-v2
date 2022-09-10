@@ -1,9 +1,9 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20220906013124 extends Migration {
+export class Migration20220909151854 extends Migration {
   async up(): Promise<void> {
     this.addSql(
-      'create table "tip" ("id" bigserial primary key, "payer_id" int not null, "user_id" int not null, "payment_id" varchar(255) null, "payment_status" text check ("payment_status" in (\'paid\', \'pending\', \'refunded\', \'refused\')) not null default \'pending\', "payment_amount" decimal(8,2) null, "created_at" timestamptz(0) not null, "updated_at" timestamptz(0) not null);',
+      'create table "tip" ("id" bigserial primary key, "payer_id" int not null, "user_id" int not null, "payment_id" varchar(255) null, "payment_status" text check ("payment_status" in (\'paid\', \'pending\', \'refunded\', \'refused\')) not null default \'pending\', "payment_amount" decimal(8,2) null, "created_at" timestamptz(0) not null, "updated_at" timestamptz(0) not null, "paid_at" timestamptz(0) null);',
     );
 
     this.addSql(

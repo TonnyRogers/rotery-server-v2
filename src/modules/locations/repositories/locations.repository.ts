@@ -143,7 +143,9 @@ export class LocationsRepository implements LocationsRepositoryInterface {
 
   async findFeedFilters(
     filters: GetLocationFeedQueryFilter,
-  ): Promise<{ activity_id: number; activity_name: string }[]> {
+  ): Promise<
+    { activity_id: number; activity_name: string; activity_icon: string }[]
+  > {
     const dynamicFilter: any = {};
 
     if (filters.city || filters.state || filters.region) {
@@ -179,13 +181,19 @@ export class LocationsRepository implements LocationsRepositoryInterface {
 
     return await this.locationsRepository
       .createQueryBuilder('lc')
-      .select(['ac.id as activity_id', 'ac.name as activity_name'])
+      .select([
+        'ac.id as activity_id',
+        'ac.name as activity_name',
+        'ac.icon as activity_icon',
+      ])
       .leftJoin('lc.activities', 'lac')
       .leftJoin('lac.activity', 'ac')
       .where({
         ...dynamicFilter,
       })
       .groupBy(['ac.id'])
-      .execute<{ activity_id: number; activity_name: string }[]>();
+      .execute<
+        { activity_id: number; activity_name: string; activity_icon: string }[]
+      >();
   }
 }

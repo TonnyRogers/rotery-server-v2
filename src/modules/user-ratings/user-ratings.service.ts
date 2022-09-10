@@ -23,14 +23,32 @@ export class UserRatingsService implements UserRatingsServiceInterface {
     createUserRatingDto: CreateUserRatingDto,
   ) {
     try {
-      const ownerUser = await this.usersService.findOne({ id: authUserId });
-      const user = await this.usersService.findOne({ id: userId });
-      const newRating = new UserRating({
-        user: user,
-        owner: ownerUser,
-        ...createUserRatingDto,
+      const existedRating = await this.userRatingsRepository.findOne({
+        owner: authUserId,
+        user: userId,
       });
-      return await this.userRatingsRepository.create(newRating);
+
+      if (existedRating) {
+        await this.userRatingsRepository.update(
+          authUserId,
+          userId,
+          createUserRatingDto,
+        );
+
+        return await this.userRatingsRepository.findOne({
+          owner: authUserId,
+          user: userId,
+        });
+      } else {
+        const ownerUser = await this.usersService.findOne({ id: authUserId });
+        const user = await this.usersService.findOne({ id: userId });
+        const newRating = new UserRating({
+          user: user,
+          owner: ownerUser,
+          ...createUserRatingDto,
+        });
+        return await this.userRatingsRepository.create(newRating);
+      }
     } catch (error) {
       throw error;
     }

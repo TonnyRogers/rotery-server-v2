@@ -1,10 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { TipPaymentStatus } from '@/entities/tip.entity';
 import { User } from '@/entities/user.entity';
 
+class CardInfo {
+  @ApiProperty()
+  @IsString()
+  token!: string;
+
+  @ApiProperty()
+  @IsString()
+  paymentMethod!: string;
+
+  @ApiProperty()
+  @IsString()
+  issuerId!: string;
+}
 export class CreateTipDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -12,13 +24,9 @@ export class CreateTipDto {
 
   @ApiProperty()
   @IsString()
-  paymentId!: string;
-
-  @ApiProperty()
-  @IsEnum(TipPaymentStatus)
-  paymentStatus!: TipPaymentStatus;
-
-  @ApiProperty()
-  @IsString()
   paymentAmount!: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  cardInfo!: CardInfo;
 }
