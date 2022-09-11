@@ -7,9 +7,11 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+
+import { ResetPasswordsService } from './reset-passwords.service';
+
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ResetPasswordsService } from './reset-passwords.service';
 
 @Controller('users')
 export class ResetPasswordsController {

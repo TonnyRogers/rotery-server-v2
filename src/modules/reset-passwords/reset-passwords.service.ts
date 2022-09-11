@@ -1,14 +1,17 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
-import { ResetPassword } from '../../entities/reset-password.entity';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
 import { UsersService } from '../users/users.service';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
-import { EmailTypes } from '@/utils/constants';
+
 import { dayjsPlugins } from '@/providers/dayjs-config';
+import { EmailTypes } from '@/utils/constants';
+
+import { ResetPassword } from '../../entities/reset-password.entity';
+import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
+import { NewPasswordDto } from './dto/new-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class ResetPasswordsService {

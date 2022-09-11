@@ -1,14 +1,16 @@
-import { EntityRepository } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
-import { NotificationAlias } from '../../entities/notification.entity';
-import { NotificationSubject } from '@/utils/types';
-import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
+import { EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+
 import { ItinerariesService } from '../itineraries/itineraries.service';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
+
+import { NotificationSubject } from '@/utils/types';
+
+import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
+import { NotificationAlias } from '../../entities/notification.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { ReplyQuestionDto } from './dto/reply-question.dto';
 
@@ -23,8 +25,6 @@ export class ItineraryQuestionsService {
     private notificationsService: NotificationsService,
     @InjectRepository(ItineraryQuestion)
     private itineraryQuestionRepository: EntityRepository<ItineraryQuestion>,
-    @Inject(NotificationsGateway)
-    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async findAll(itineraryId: number) {

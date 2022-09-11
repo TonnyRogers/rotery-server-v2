@@ -7,9 +7,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ParamId, RequestUser } from '@/utils//types';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 import { FeedItinerariesService } from './feed-itineraries.service';
+
+import { ParamId, RequestUser } from '@/utils//types';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('feed')
 export class FeedItinerariesController {

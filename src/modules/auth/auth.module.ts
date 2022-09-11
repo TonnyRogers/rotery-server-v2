@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from '../users/users.module';
-import { jwtOptions } from '../../config';
 import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
-import { UsersService } from '../users/users.service';
+
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
+
+import { jwtOptions } from '../../config';
 import { User } from '../../entities/user.entity';
 import { ProfileModule } from '../profiles/profile.module';
+import { UsersModule } from '../users/users.module';
+import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './local.strategy';
 
 @Module({
   imports: [

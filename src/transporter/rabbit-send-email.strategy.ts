@@ -1,9 +1,11 @@
 import { CustomTransportStrategy, Server } from '@nestjs/microservices';
+
 import amqp, {
   AmqpConnectionManager,
   ChannelWrapper,
 } from 'amqp-connection-manager';
 import { Channel, ConsumeMessage } from 'amqplib';
+
 import { rabbitmqConfig } from '../config';
 
 const tlExchange = 'TLX_send_email';
@@ -77,7 +79,7 @@ export class RabbitMQMailPubSubServer
 
   private async queueConsumer(msg: ConsumeMessage) {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
+
     try {
       const messageJSON = JSON.parse(msg.content.toString());
 
@@ -140,7 +142,7 @@ export class RabbitMQMailPubSubServer
             console.log('Third attempt at  ' + new Date().toISOString());
           }
         }
-        
+
         if (messageJSON.retrys > 3) {
           if (isDevelopment) {
             console.log(

@@ -9,9 +9,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 import { Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 import { FilesService } from './files.service';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('files')
 export class FilesController {

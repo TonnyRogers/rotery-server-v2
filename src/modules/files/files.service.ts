@@ -1,11 +1,14 @@
+import { HttpException, Injectable } from '@nestjs/common';
+
 import { EntityRepository } from '@mikro-orm/knex';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Injectable } from '@nestjs/common';
+
 import { S3 } from 'aws-sdk';
 import fs from 'fs';
+
 import { digitalSpaces } from '../../config';
-import { s3 } from '../../providers/spaces';
 import { File } from '../../entities/file.entity';
+import { s3 } from '../../providers/spaces';
 
 export type FilePathOption = 'upload' | 'upload/avatar';
 

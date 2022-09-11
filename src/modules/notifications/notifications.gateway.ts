@@ -1,13 +1,6 @@
-import { UseGuards } from '@nestjs/common';
-import {
-  ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { WsJwtGuard } from '../auth/ws.guard';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+
+import { Server } from 'socket.io';
 
 export interface NotificationSocketPayload {
   userId: number;

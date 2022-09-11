@@ -6,10 +6,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+
+import { ItinerariesRatingsService } from './itinerary-ratings.service';
+
 import { ParamId } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateItineraryRatingDto } from './dto/create-itinerary-rating.dto';
-import { ItinerariesRatingsService } from './itinerary-ratings.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('itineraries')

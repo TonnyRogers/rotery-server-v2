@@ -1,12 +1,14 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import { HttpException, Injectable } from '@nestjs/common';
 
-import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
+import { dayjsPlugins } from '@/providers/dayjs-config';
 import { itineraryRelations } from '@/utils/constants';
 import { PaginatedResponse } from '@/utils/types';
+
+import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { QueryFilter } from './interfaces/feed-filter';
-import { dayjsPlugins } from '@/providers/dayjs-config';
 
 @Injectable()
 export class FeedItinerariesService {
@@ -30,14 +32,26 @@ export class FeedItinerariesService {
         switch (key) {
           case 'begin':
             dynamicFilter.begin = {
-              $gte: dayjsPlugins(value).subtract(1,'day').startOf('day').toISOString(),
-              $lte: dayjsPlugins(value).add(1,'day').endOf('day').toISOString(),
+              $gte: dayjsPlugins(value)
+                .subtract(1, 'day')
+                .startOf('day')
+                .toISOString(),
+              $lte: dayjsPlugins(value)
+                .add(1, 'day')
+                .endOf('day')
+                .toISOString(),
             };
             break;
           case 'end':
             dynamicFilter.end = {
-              $gte: dayjsPlugins(value).subtract(1,'day').startOf('day').toISOString(),
-              $lte: dayjsPlugins(value).add(1,'day').endOf('day').toISOString(),
+              $gte: dayjsPlugins(value)
+                .subtract(1, 'day')
+                .startOf('day')
+                .toISOString(),
+              $lte: dayjsPlugins(value)
+                .add(1, 'day')
+                .endOf('day')
+                .toISOString(),
             };
             break;
           case 'city':
@@ -66,12 +80,12 @@ export class FeedItinerariesService {
           $not: { owner: auuthUserId },
           deletedAt: null,
         },
-        { offset, limit, orderBy: { 'begin': 'ASC' } },
+        { offset, limit, orderBy: { begin: 'ASC' } },
       );
 
       await this.feedItinerariesRepository.populate(items, itineraryRelations, {
         where: { members: { deletedAt: null } },
-        orderBy: { begin: -1 }
+        orderBy: { begin: -1 },
       });
 
       const totalRecords = await this.feedItinerariesRepository.count({

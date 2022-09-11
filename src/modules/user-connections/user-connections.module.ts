@@ -1,10 +1,13 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { UsersModule } from '../users/users.module';
-import { UserConnection } from '../../entities/user-connection.entity';
-import { UserConnectionController } from './user-connections.controller';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
 import { UserConnectionService } from './user-connections.service';
+
+import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { UsersModule } from '../users/users.module';
+import { UserConnectionController } from './user-connections.controller';
 
 @Module({
   controllers: [UserConnectionController],

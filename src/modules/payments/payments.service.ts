@@ -10,7 +10,6 @@ import {
   CreateCustomerResponse,
   PaymentDetailsReponse,
   PaymentRefundResponse,
-  ProcessPaymentType,
 } from '@/utils/types';
 
 import { paymentApiOptions } from '../../config';

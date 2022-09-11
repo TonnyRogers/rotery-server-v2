@@ -1,10 +1,12 @@
 import { Controller, Get, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+
 import { AppService } from './app.service';
-import { rabbitmqConfig } from './config';
 import { AuthService } from './modules/auth/auth.service';
-import { LocalAuthGuard } from './modules/auth/local-auth.guard';
 import { EmailsService } from './modules/emails/emails.service';
+
+import { rabbitmqConfig } from './config';
+import { LocalAuthGuard } from './modules/auth/local-auth.guard';
 import { RedisPlublishPayload } from './providers/email.redis';
 @Controller()
 export class AppController {

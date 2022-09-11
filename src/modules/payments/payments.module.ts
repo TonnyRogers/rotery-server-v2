@@ -1,9 +1,12 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
+import { PaymentService } from './payments.service';
+
 import { User } from '../../entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { PaymentController } from './payments.controller';
-import { PaymentService } from './payments.service';
 
 @Module({
   controllers: [PaymentController],

@@ -1,10 +1,13 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
+import { NotificationsService } from './notifications.service';
+
 import { Notification } from '../../entities/notification.entity';
+import { User } from '../../entities/user.entity';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsGateway } from './notifications.gateway';
-import { NotificationsService } from './notifications.service';
 
 @Module({
   controllers: [NotificationsController],

@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+
+import { LodgingsService } from './lodgings.service';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLodgingDto } from './dto/create-lodging.dto';
-import { LodgingsService } from './lodgings.service';
 
 @Controller('lodgings')
 export class LodgingController {

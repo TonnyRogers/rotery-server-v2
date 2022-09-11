@@ -1,9 +1,11 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
+import { LodgingsService } from './lodgings.service';
 
 import { Lodging } from '../../entities/lodging.entity';
 import { LodgingController } from './lodgings.controller';
-import { LodgingsService } from './lodgings.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([Lodging])],

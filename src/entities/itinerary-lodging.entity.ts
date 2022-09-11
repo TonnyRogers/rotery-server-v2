@@ -1,4 +1,3 @@
-import { ItineraryLodgingRepository } from '@/modules/itineraries/repositories/itinerary-lodging.repository';
 import {
   Entity,
   EntityRepositoryType,
@@ -6,6 +5,9 @@ import {
   PrimaryKeyType,
   Property,
 } from '@mikro-orm/core';
+
+import { ItineraryLodgingRepository } from '@/modules/itineraries/repositories/itinerary-lodging.repository';
+
 import { Itinerary } from './itinerary.entity';
 import { Lodging } from './lodging.entity';
 
@@ -26,25 +28,23 @@ export class ItineraryLodging {
     this.description = description;
     this.isFree = isFree;
   }
-  
-  @ManyToOne(
-    () => Itinerary, { 
-      onDelete: 'cascade', 
-      primary: true, 
-      serializer: (value) => value.id 
-    })
+
+  @ManyToOne(() => Itinerary, {
+    onDelete: 'cascade',
+    primary: true,
+    serializer: (value) => value.id,
+  })
   itinerary!: Itinerary;
 
-  @ManyToOne(
-    () => Lodging, { 
-      onDelete: 'cascade', 
-      primary: true, 
-      serializer: (value: Lodging) => ({ 
-        id: value.id, 
-        name: value.name, 
-        alias: value.alias 
-      }) 
-    })
+  @ManyToOne(() => Lodging, {
+    onDelete: 'cascade',
+    primary: true,
+    serializer: (value: Lodging) => ({
+      id: value.id,
+      name: value.name,
+      alias: value.alias,
+    }),
+  })
   lodging!: Lodging;
 
   @Property({ type: 'number', nullable: false })
@@ -59,6 +59,6 @@ export class ItineraryLodging {
   @Property({ type: 'boolean', default: false })
   isFree!: boolean;
 
-  [PrimaryKeyType]?: [number,number];
+  [PrimaryKeyType]?: [number, number];
   [EntityRepositoryType]?: ItineraryLodgingRepository;
 }

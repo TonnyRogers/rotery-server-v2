@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { TipsServiceInterface } from '../tips/interface/tips-service.interface';
 
-import { Tip, TipPaymentStatus } from '@/entities/tip.entity';
+import { TipPaymentStatus } from '@/entities/tip.entity';
 
 import { TipsProvider } from '../tips/enums/tips-providers.enum';
 

@@ -10,11 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
+import { ItinerariesService } from './itineraries.service';
+
 import { ParamId, RequestUser } from '@/utils//types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
-import { ItinerariesService } from './itineraries.service';
 
 @Controller('itineraries')
 export class ItinerariesController {

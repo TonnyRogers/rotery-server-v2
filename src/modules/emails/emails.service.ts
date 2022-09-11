@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import mjml2html from 'mjml';
+
 import * as Eta from 'eta';
+import mjml2html from 'mjml';
 import path from 'path';
-import { mailerOptions, mailerTransporter } from '../../providers/mail';
+
 import { EmailSectionTitle, EmailSubject } from '@/utils//constants';
+
+import { mailerOptions, mailerTransporter } from '../../providers/mail';
 
 export type EmailType =
   | 'welcome-user'

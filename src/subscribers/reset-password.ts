@@ -5,9 +5,10 @@ import {
   Subscriber,
 } from '@mikro-orm/core';
 
-import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 import { EmailTypes } from '@/utils/constants';
+
 import { ResetPassword } from '../entities/reset-password.entity';
+import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 
 @Subscriber()
 export class ResetPasswordSubscriber implements EventSubscriber<ResetPassword> {

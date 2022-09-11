@@ -1,4 +1,3 @@
-import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   Entity,
   Enum,
@@ -8,7 +7,11 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+
 import { BooleanKey } from 'aws-sdk/clients/iot';
+
+import { userProfileFileSerializer } from '@/utils/serializers';
+
 import { File } from './file.entity';
 import { User } from './user.entity';
 
@@ -39,16 +42,14 @@ export class DirectMessage {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(
-    () => User,
-    { serializer: (value: User) => userProfileFileSerializer(value) }
-  )
+  @ManyToOne(() => User, {
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   sender!: User;
 
-  @ManyToOne(
-    () => User,
-    { serializer: (value: User) => userProfileFileSerializer(value) }
-  )
+  @ManyToOne(() => User, {
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   receiver!: User;
 
   @OneToOne({ nullable: true })

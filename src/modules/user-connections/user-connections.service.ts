@@ -1,14 +1,17 @@
-import { EntityRepository } from '@mikro-orm/knex';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
-import { UsersService } from '../users/users.service';
-import { UpdateConnectionDto } from './dto/update-connection.dto';
-import { UserConnection } from '../../entities/user-connection.entity';
+import { EntityRepository } from '@mikro-orm/knex';
+import { InjectRepository } from '@mikro-orm/nestjs';
+
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationAlias } from '../../entities/notification.entity';
+import { UsersService } from '../users/users.service';
+
 import { NotificationSubject } from '@/utils/types';
+
+import { NotificationAlias } from '../../entities/notification.entity';
+import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { UpdateConnectionDto } from './dto/update-connection.dto';
 
 export interface ConnectionReponse {
   connections: UserConnection[];

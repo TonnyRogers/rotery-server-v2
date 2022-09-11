@@ -1,4 +1,5 @@
 import admin, { messaging } from 'firebase-admin';
+
 import { firebaseConfig } from '../config';
 
 export interface FirebaseNotificationPayload {

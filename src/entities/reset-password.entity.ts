@@ -6,8 +6,9 @@ import {
   Property,
 } from '@mikro-orm/core';
 
-import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 import { EmailTypes } from '@/utils/constants';
+
+import { RabbitMQPublisher } from '../providers/rabbit-publisher';
 import { User } from './user.entity';
 
 @Entity()

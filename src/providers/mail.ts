@@ -1,6 +1,7 @@
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import Mailer from 'nodemailer/lib/mailer';
 import nodemailer from 'nodemailer';
+import Mailer from 'nodemailer/lib/mailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+
 import { smtp } from '../config';
 
 const { host, port, mailPassword, mailUsername } = smtp;
