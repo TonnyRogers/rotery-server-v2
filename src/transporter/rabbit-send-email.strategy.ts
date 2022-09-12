@@ -9,7 +9,7 @@ import { Channel, ConsumeMessage } from 'amqplib';
 import { rabbitmqConfig } from '../config';
 
 const tlExchange = 'TLX_send_email';
-const dlExchange = 'DLX_send_email';
+export const dlExchange = 'DLX_send_email';
 const serviceQueue = rabbitmqConfig.sendMailQueue;
 const time10sQueue = 'TTL-Retry-10S';
 const time30sQueue = 'TTL-Retry-30S';

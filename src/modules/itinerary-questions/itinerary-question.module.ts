@@ -8,6 +8,7 @@ import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { Itinerary } from '../../entities/itinerary.entity';
 import { User } from '../../entities/user.entity';
 import { ItinerariesModule } from '../itineraries/itineraries.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { UsersModule } from '../users/users.module';
 import { ItineraryQuestionsController } from './itinerary-question.controller';
 
@@ -18,6 +19,7 @@ import { ItineraryQuestionsController } from './itinerary-question.controller';
     MikroOrmModule.forFeature([ItineraryQuestion, User, Itinerary]),
     UsersModule,
     ItinerariesModule,
+    NotificationsModule,
   ],
 })
 export class ItineraryQuestionsModule {}

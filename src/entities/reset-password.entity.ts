@@ -6,9 +6,12 @@ import {
   Property,
 } from '@mikro-orm/core';
 
-import { EmailTypes } from '@/utils/constants';
+import { UserRecoverPassWordMailTemplateParams } from '@/resources/emails/types/user-recover-password';
 
-import { RabbitMQPublisher } from '../providers/rabbit-publisher';
+import {
+  RabbitMailPublisherParams,
+  RabbitMailPublisher,
+} from '../providers/rabbit-publisher';
 import { User } from './user.entity';
 
 @Entity()
@@ -45,18 +48,19 @@ export class ResetPassword {
   async afterCreate() {
     const { username } = this.user;
 
-    const payload = {
-      data: {
-        type: EmailTypes.recover,
-        payload: {
-          name: username,
-          email: this.user.email,
-          resetcode: Number(this.code),
+    const payload: RabbitMailPublisherParams<UserRecoverPassWordMailTemplateParams> =
+      {
+        data: {
+          to: this.user.email,
+          type: 'user-recover-password',
+          payload: {
+            name: username,
+            resetcode: Number(this.code),
+          },
         },
-      },
-    };
+      };
 
-    const rmqPublish = new RabbitMQPublisher();
+    const rmqPublish = new RabbitMailPublisher();
 
     await rmqPublish.toQueue(payload);
   }

@@ -3,11 +3,22 @@ import amqp, {
   ChannelWrapper,
 } from 'amqp-connection-manager';
 
+import { EmailType } from '@/modules/emails/emails.service';
+
+import { dlExchange } from '@/transporter/rabbit-send-email.strategy';
+
 import { rabbitmqConfig } from '../config';
 
-const dlExchange = 'DLX_send_email';
+export interface RabbitMailPublisherMessage<T> {
+  to: string;
+  type: EmailType;
+  payload: T;
+}
+export interface RabbitMailPublisherParams<T> {
+  data: RabbitMailPublisherMessage<T>;
+}
 
-export class RabbitMQPublisher {
+export class RabbitMailPublisher {
   private connection: AmqpConnectionManager;
   private channel: ChannelWrapper;
 
@@ -23,7 +34,7 @@ export class RabbitMQPublisher {
     }
   }
 
-  async toQueue(data: Record<any, unknown>) {
+  async toQueue(data: RabbitMailPublisherParams<any>) {
     try {
       if (!this.connection) {
         this.connect();

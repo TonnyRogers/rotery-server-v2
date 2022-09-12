@@ -6,10 +6,13 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { UsersService } from '../users/users.service';
 
 import { dayjsPlugins } from '@/providers/dayjs-config';
-import { EmailTypes } from '@/utils/constants';
+import { UserNewPassWordMailTemplateParams } from '@/resources/emails/types/user-new-password';
 
 import { ResetPassword } from '../../entities/reset-password.entity';
-import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
+import {
+  RabbitMailPublisherParams,
+  RabbitMailPublisher,
+} from '../../providers/rabbit-publisher';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
@@ -94,17 +97,18 @@ export class ResetPasswordsService {
         id: 'id' in findReset && findReset.id,
       });
 
-      const rabbitPublish = new RabbitMQPublisher();
+      const rabbitPublish = new RabbitMailPublisher();
 
-      const payload = {
-        data: {
-          type: EmailTypes.password,
-          payload: {
-            name: 'id' in findReset && findReset.user.username,
-            email: 'id' in findReset && findReset.user.email,
+      const payload: RabbitMailPublisherParams<UserNewPassWordMailTemplateParams> =
+        {
+          data: {
+            to: 'id' in findReset && findReset.user.email,
+            type: 'user-new-password',
+            payload: {
+              name: 'id' in findReset && findReset.user.username,
+            },
           },
-        },
-      };
+        };
 
       await rabbitPublish.toQueue(payload);
 

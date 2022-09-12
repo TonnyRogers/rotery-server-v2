@@ -4,6 +4,10 @@ import * as Eta from 'eta';
 import mjml2html from 'mjml';
 import path from 'path';
 
+import {
+  RabbitMailPublisher,
+  RabbitMailPublisherParams,
+} from '@/providers/rabbit-publisher';
 import { EmailSectionTitle, EmailSubject } from '@/utils//constants';
 
 import { mailerOptions, mailerTransporter } from '../../providers/mail';
@@ -42,9 +46,16 @@ export interface SendEmailParams {
   to: string;
   type: EmailType;
 }
+export interface ToQueueParams<T> {
+  to: string;
+  type: EmailType;
+  payload: T;
+}
 
 @Injectable()
 export class EmailsService {
+  private queuePublisher = new RabbitMailPublisher();
+
   private async renderContent(template = 'welcome-user', params: EmailParams) {
     try {
       const htmlRender = await Eta.renderFile(
@@ -101,5 +112,19 @@ export class EmailsService {
     } catch (error) {
       return error;
     }
+  }
+
+  async queue<T>(params: ToQueueParams<T>) {
+    const payload: RabbitMailPublisherParams<T> = {
+      data: {
+        to: params.to,
+        type: params.type,
+        payload: {
+          ...params.payload,
+        },
+      },
+    };
+
+    await this.queuePublisher.toQueue(payload);
   }
 }

@@ -10,9 +10,12 @@ import {
   Property,
 } from '@mikro-orm/core';
 
-import { EmailTypes } from '@/utils/constants';
+import { WelcomeUserMailTemplateParams } from '@/resources/emails/types/welcome-user';
 
-import { RabbitMQPublisher } from '../providers/rabbit-publisher';
+import {
+  RabbitMailPublisherParams,
+  RabbitMailPublisher,
+} from '../providers/rabbit-publisher';
 import { BankAccount } from './bank-account.entity';
 import { DirectMessage } from './direct-message.entity';
 import { ItineraryMember } from './itinerary-member.entity';
@@ -131,18 +134,18 @@ export class User {
   async afterCreate() {
     const { email, username } = this;
 
-    const payload = {
+    const payload: RabbitMailPublisherParams<WelcomeUserMailTemplateParams> = {
       data: {
-        type: EmailTypes.welcome,
+        to: email,
+        type: 'welcome-user',
         payload: {
           name: username,
-          email,
           activationCode: this.activationCode,
         },
       },
     };
 
-    const rmqPublish = new RabbitMQPublisher();
+    const rmqPublish = new RabbitMailPublisher();
 
     await rmqPublish.toQueue(payload);
   }

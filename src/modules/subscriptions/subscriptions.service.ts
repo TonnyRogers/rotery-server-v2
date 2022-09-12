@@ -15,6 +15,8 @@ import {
   Subscription,
   SubscriptionStatus,
 } from '@/entities/subscription.entity';
+import { SubscriptionPaymentUpdatesMailTemplateParams } from '@/resources/emails/types/subscription-payment-updates';
+import { WelcomeUserSubscriptionMailTemplateParams } from '@/resources/emails/types/welcome-user-subscription';
 import { axiosErrorHandler } from '@/utils/axios-error';
 import { paymentStatusColor, paymentStatusRole } from '@/utils/constants';
 import {
@@ -196,17 +198,19 @@ export class SubscriptionsService {
 
       await this.subscriptionRespository.persistAndFlush(newSubscription);
 
-      await this.emailsService.send({
-        type: 'welcome-user-subscription',
-        content: {
-          name: user.username,
-          data: {
-            [plan.name]: plan.amount,
-            Duração: `${plan.repetitions} meses`,
+      await this.emailsService.queue<WelcomeUserSubscriptionMailTemplateParams>(
+        {
+          type: 'welcome-user-subscription',
+          to: user.email,
+          payload: {
+            name: user.username,
+            data: {
+              [plan.name]: plan.amount,
+              Duração: `${plan.repetitions} meses`,
+            },
           },
         },
-        to: user.email,
-      });
+      );
 
       return response.data;
     } catch (error) {
@@ -246,22 +250,24 @@ export class SubscriptionsService {
       }
 
       if (payment) {
-        await this.emailsService.send({
-          type: 'subscription-payment-updates',
-          content: {
-            name: user.username,
-            cardBrand: payment.payment_method_id,
-            cardBrandImage: `https://rotery-filestore.nyc3.digitaloceanspaces.com/card-brands/${payment.payment_method_id}.png`,
-            cardLastNumbers: payment.card.last_four_digits,
-            paymentStatus: paymentStatusRole[payment.status],
-            paymentStatusColor: paymentStatusColor[payment.status],
-            data: {
-              [subscription.plan.name]: subscription.plan.amount,
-              Duração: `${subscription.plan.repetitions} meses`,
+        await this.emailsService.queue<SubscriptionPaymentUpdatesMailTemplateParams>(
+          {
+            type: 'subscription-payment-updates',
+            to: user.email,
+            payload: {
+              name: user.username,
+              cardBrand: payment.payment_method_id,
+              cardBrandImage: `https://rotery-filestore.nyc3.digitaloceanspaces.com/card-brands/${payment.payment_method_id}.png`,
+              cardLastNumbers: payment.card.last_four_digits,
+              paymentStatus: paymentStatusRole[payment.status],
+              paymentStatusColor: paymentStatusColor[payment.status],
+              data: {
+                [subscription.plan.name]: subscription.plan.amount,
+                Duração: `${subscription.plan.repetitions} meses`,
+              },
             },
           },
-          to: user.email,
-        });
+        );
       }
 
       return res.status(200).send();
