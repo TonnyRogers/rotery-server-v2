@@ -5,11 +5,12 @@ import {
   PaymentStatus,
 } from '@/entities/itinerary-member.entity';
 import { User } from '@/entities/user.entity';
+import { JwtStrategyValidateResponse } from '@/modules/auth/jwt.strategy';
 
 import { AppRoutes, WelcomeStepListType } from './enums';
 
 export interface RequestUser extends Request {
-  user: { userId: number };
+  user: JwtStrategyValidateResponse;
 }
 
 export interface ParamId {
@@ -55,6 +56,7 @@ export enum NotificationSubject {
   itineraryRate = 'Avaliar Roteiro',
   connectionBlock = 'Conexão Bloqueada',
   connectionUnblock = 'Conexão Desbloqueada',
+  guideActivated = 'Eba! Você foi ativado ✅🤝',
 }
 
 export type PaymentWebHookActionTypes = 'payment.updated' | 'payment.created';
@@ -477,6 +479,6 @@ export type WelcomeStepItem = {
   type: WelcomeStepListType;
   title: string;
   text: string;
-  appNavigationTarget: AppRoutes;
+  appNavigationTarget: AppRoutes | null;
   done: boolean;
 };

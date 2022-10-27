@@ -96,7 +96,7 @@ export class ChatService implements ChatServiceInterface {
       throw new UnprocessableEntityException("Can't find this user.");
     }
 
-    if (!guideUser.isHost) {
+    if (!guideUser.isGuide) {
       throw new HttpException(
         "Can't begin chat with this user.",
         HttpStatus.UNAUTHORIZED,
@@ -164,7 +164,7 @@ export class ChatService implements ChatServiceInterface {
 
     const newEndChat = await this.chatRepository.create(chatFinished);
 
-    if (authUser.isHost) {
+    if (authUser.isGuide) {
       const notificationPayload: CreateNotificationPayload = {
         alias: NotificationAlias.LOCATION_RATE,
         subject: NotificationSubject.locationRate,

@@ -4,7 +4,6 @@ import { PassportModule } from '@nestjs/passport';
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 
-import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 
 import { jwtOptions } from '../../config';
@@ -24,8 +23,9 @@ import { LocalStrategy } from './local.strategy';
       signOptions: { expiresIn: jwtOptions.expireTime },
     }),
     ProfileModule,
+    UsersModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, UsersService],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

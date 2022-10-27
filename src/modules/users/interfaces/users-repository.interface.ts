@@ -5,4 +5,5 @@ export interface UsersRepositoryInterface {
     filters: { id?: number; email?: string },
     populate?: any[],
   ): Promise<User>;
+  activateGuide(userId: number): Promise<any>;
 }

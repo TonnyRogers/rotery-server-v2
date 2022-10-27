@@ -28,6 +28,7 @@ export enum NotificationAlias {
   NEW_CONNECTION = 'new_connection',
   CONNECTION_BLOCK = 'connection_block',
   CONNECTION_UNBLOCK = 'connection_unblock',
+  GUIDE_ACTIVATED = 'guide_activated',
 }
 
 @Entity()

@@ -1,13 +1,23 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 
+import { NotificationsService } from '../notifications/notifications.service';
 import { ProfileService } from '../profiles/profile.service';
 
+import { NotificationAlias } from '@/entities/notification.entity';
 import { hashPassword } from '@/utils/password';
+import { NotificationSubject } from '@/utils/types';
 
 import { User } from '../../entities/user.entity';
+import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -27,6 +37,8 @@ export class UsersService {
     private usersRepository: EntityRepository<User>,
     @Inject(ProfileService)
     private profileService: ProfileService,
+    @Inject(NotificationsService)
+    private notificationsService: NotificationsService,
   ) {}
 
   private async validateEmail(createUserDto: CreateUserDto) {
@@ -233,5 +245,58 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async activateGuide(userId: number) {
+    const user = await this.usersRepository.findOne({ id: userId });
+
+    if (!user) {
+      throw new UnprocessableEntityException("Can't find user.");
+    }
+
+    if (!user.isGuide) {
+      throw new UnprocessableEntityException('Invalid user type.');
+    }
+
+    if (user.canRelateLocation) {
+      throw new UnprocessableEntityException('User already activated.');
+    }
+
+    await this.usersRepository.nativeUpdate(
+      {
+        id: userId,
+      },
+      { canRelateLocation: true },
+    );
+
+    const notificationPayload: CreateNotificationPayload = {
+      alias: NotificationAlias.GUIDE_ACTIVATED,
+      subject: NotificationSubject.guideActivated,
+      content: `agora pode se vincular a locais`,
+      jsonData: null,
+    };
+
+    await this.notificationsService.create(user.id, notificationPayload);
+  }
+
+  async isActiveGuide(authUserId: number) {
+    const user = await this.usersRepository.findOne({ id: authUserId });
+
+    if (!user) {
+      throw new UnprocessableEntityException("Can't find user.");
+    }
+
+    if (!user.isGuide) {
+      throw new UnprocessableEntityException('Invalid user type.');
+    }
+
+    if (user.canRelateLocation) {
+      return { isActive: true, message: 'Allowed to relate with locations.' };
+    }
+
+    return {
+      isActive: false,
+      message: 'Not allowed to relate with locations.',
+    };
   }
 }

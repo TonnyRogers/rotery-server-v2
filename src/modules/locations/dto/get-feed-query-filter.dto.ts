@@ -10,7 +10,7 @@ enum RegionOptions {
   NORTE = 'Norte',
   NORDESTE = 'Nordeste',
   SUL = 'Sul',
-  CENTRO_OESTE = 'Centro-Oeste',
+  CENTRO_OESTE = 'Centro Oeste',
   SULDESTE = 'Sudeste',
 }
 

@@ -9,7 +9,6 @@ services:
       dockerfile: Dockerfile.dev
     depends_on:
       - postgres
-      - rabbitmq
     ports:
       - 3333:3333
     volumes:
@@ -27,7 +26,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - postgres
-      - rabbitmq
     ports:
       - 3333:3333
     volumes:

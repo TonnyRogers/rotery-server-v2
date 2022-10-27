@@ -5,7 +5,13 @@ import { UsersService } from '../users/users.service';
 
 import { comparePassword } from '@/utils/password';
 
-import { User } from '../../entities/user.entity';
+import { User, UserRole } from '../../entities/user.entity';
+
+export type JWTEncryptedData = {
+  username: string;
+  sub: number;
+  role: UserRole;
+};
 
 @Injectable()
 export class AuthService {
@@ -33,7 +39,11 @@ export class AuthService {
 
   async login(user: Omit<User, 'password'>) {
     // insert things to jwt encrypt
-    const payload = { username: user.username, sub: user.id };
+    const payload: JWTEncryptedData = {
+      username: user.username,
+      sub: user.id,
+      role: user.role,
+    };
 
     return {
       access_token: this.jwtService.sign(payload),

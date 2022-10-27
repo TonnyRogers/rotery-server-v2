@@ -14,7 +14,7 @@ export const fakeUsers: User[] = [
     favoriteItineraries: undefined,
     id: 1,
     isActive: true,
-    isHost: false,
+    isGuide: false,
     itineraries: undefined,
     nextItineraries: undefined,
     notifications: undefined,
@@ -27,5 +27,6 @@ export const fakeUsers: User[] = [
     username: 'fake username',
     deviceToken: undefined,
     afterCreate: () => Promise.resolve(),
+    canRelateLocation: false,
   },
 ];

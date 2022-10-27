@@ -39,7 +39,7 @@ export class GuideUserLocationsService
       throw new UnprocessableEntityException("Can't find user.");
     }
 
-    if (!user.isHost) {
+    if (!user.isGuide) {
       throw new HttpException("Can't do this.", HttpStatus.UNAUTHORIZED);
     }
 

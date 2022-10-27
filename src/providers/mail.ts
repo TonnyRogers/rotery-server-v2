@@ -17,7 +17,7 @@ const transportOptions: SMTPTransport.Options = {
 };
 
 export const mailerOptions: Mailer.Options = {
-  from: 'Rotery App <contato@rotery.com.br>',
+  from: 'Mochilee App <contato@mochilee.com.br>',
   to: '',
   subject: '',
   text: '',

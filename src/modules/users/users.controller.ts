@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   Post,
@@ -15,6 +17,7 @@ import {
 
 import { UsersService } from './users.service';
 
+import { UserRole } from '@/entities/user.entity';
 import { RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -72,5 +75,24 @@ export class UsersController {
   @Get('activate/:code')
   async activateUser(@Param() params: { code: string }) {
     return this.userService.activate(params.code);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('activate-guide/:userId')
+  async activateGuide(
+    @Req() request: RequestUser,
+    @Param() params: { userId: number },
+  ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.userService.activateGuide(params.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('guide/is-active')
+  async isGuideActive(@Req() request: RequestUser) {
+    return this.userService.isActiveGuide(request.user.userId);
   }
 }

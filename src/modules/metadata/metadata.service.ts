@@ -95,13 +95,21 @@ export class MetadataService implements MetadataServiceInterface {
       appNavigationTarget: AppRoutes.PROFILE,
     });
 
-    if (user.isHost) {
+    if (user.isGuide) {
       stepList.push({
         title: 'Primeiro contato 🤝',
         text: 'entre num chat com um mochileiro.',
         type: WelcomeStepListType.GUIDE_FIRST_CHAT,
         done: !!chatCount,
         appNavigationTarget: AppRoutes.EXPLORE_LOCATIONS,
+      });
+
+      stepList.push({
+        title: 'Se torne um guia verificado ✅',
+        text: 'aqui faremos uma breve entrevista com você para confirmar algumas informações e validar seu fit cultural com a Mochilee, sem essa validação não é possivel se vincular a locais.',
+        type: WelcomeStepListType.GUIDE_LOCATION_RELATE_VALIDATION,
+        done: user.canRelateLocation,
+        appNavigationTarget: null,
       });
     } else {
       stepList.push({

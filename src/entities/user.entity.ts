@@ -39,12 +39,12 @@ export class User {
     username,
     email,
     password,
-    isHost,
-  }: Pick<User, 'username' | 'email' | 'password' | 'isHost'>) {
+    isGuide,
+  }: Pick<User, 'username' | 'email' | 'password' | 'isGuide'>) {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.isHost = isHost;
+    this.isGuide = isGuide;
   }
 
   @PrimaryKey()
@@ -69,7 +69,10 @@ export class User {
   isActive: boolean;
 
   @Property({ type: 'boolean', default: false })
-  isHost: boolean;
+  isGuide: boolean;
+
+  @Property({ type: 'boolean', default: false })
+  canRelateLocation: boolean;
 
   @Property({ type: 'string', nullable: true, lazy: true })
   activationCode: string;

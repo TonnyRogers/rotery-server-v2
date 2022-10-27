@@ -1,3 +1,5 @@
+import { UnprocessableEntityException } from '@nestjs/common';
+
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 
@@ -18,5 +20,14 @@ export class UsersRepository implements UsersRepositoryInterface {
     return this.userRepository.findOne(filters, {
       populate: populate,
     });
+  }
+
+  async activateGuide(userId: number): Promise<any> {
+    return await this.userRepository.nativeUpdate(
+      {
+        id: userId,
+      },
+      { canRelateLocation: true },
+    );
   }
 }

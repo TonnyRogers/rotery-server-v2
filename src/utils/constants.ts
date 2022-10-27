@@ -73,6 +73,7 @@ export const EmailHelpRequestType = {
   payment: 'problema com pagamento',
   itinerary: 'problema com roteiro',
   revenue: 'problema com faturamento',
+  guideActivation: 'ativação de guias',
   other: 'problema no app',
 };
 

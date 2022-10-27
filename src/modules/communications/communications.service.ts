@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EmailsService } from '../emails/emails.service';
 import { UsersService } from '../users/users.service';
 
+import { appConfig } from '@/config';
 import { UserRequestHelpMailTemplateParams } from '@/resources/emails/types/user-request-help';
 import { EmailHelpRequestType } from '@/utils/constants';
 
@@ -26,7 +27,7 @@ export class CommunicationsService {
     try {
       return await this.emailsService.queue<UserRequestHelpMailTemplateParams>({
         type: 'user-request-help',
-        to: 'contato@rotery.com.br',
+        to: appConfig.emailFrom,
         payload: {
           name: user.username,
           data: createHelpRequestDto.data,
