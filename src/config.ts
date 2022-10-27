@@ -28,6 +28,7 @@ const REQUIRED_ENV_VARS = [
   'PAYMENT_API_TOKEN_PROD',
   'PAYMENT_API_URL',
   'PAYMENT_PLAN_API_URL',
+  'PAYMENT_WEBHOOK',
 ];
 
 REQUIRED_ENV_VARS.forEach((envVar) => {
@@ -41,6 +42,7 @@ export const appConfig = {
   port: process.env.PORT,
   host: process.env.HOST,
   url: process.env.URL_HOST,
+  emailFrom: process.env.EMAIL_FROM,
 };
 
 export const postgresql = {
@@ -89,7 +91,7 @@ export const paymentApiOptions = {
       : process.env.PAYMENT_API_TOKEN_DEV,
   url: process.env.PAYMENT_API_URL,
   plan_url: process.env.PAYMENT_PLAN_API_URL,
-  webhook: `https://${appConfig.url}.rotery.com.br/hooks/payment`,
+  webhook: process.env.PAYMENT_WEBHOOK,
 };
 
 export const rabbitmqConfig = {
