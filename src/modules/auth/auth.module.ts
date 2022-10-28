@@ -20,7 +20,7 @@ import { LocalStrategy } from './local.strategy';
     PassportModule,
     JwtModule.register({
       secret: jwtOptions.secret,
-      signOptions: { expiresIn: jwtOptions.expireTime },
+      signOptions: { expiresIn: '1m' },
     }),
     ProfileModule,
     UsersModule,

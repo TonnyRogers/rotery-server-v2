@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
 
+import { dayjsPlugins } from '@/providers/dayjs-config';
 import { comparePassword } from '@/utils/password';
 
 import { User, UserRole } from '../../entities/user.entity';
@@ -48,6 +49,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user,
+      expires: dayjsPlugins().add(1, 'minute').valueOf(),
     };
   }
 }
