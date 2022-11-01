@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import mikroormentities from './mikro-orm-entities';
 import { FlushMode } from '@mikro-orm/core';
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
-import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+// import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 import { postgresql } from './config';
 

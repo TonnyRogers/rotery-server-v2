@@ -4,7 +4,9 @@ WORKDIR /home/app
 
 COPY package.json ./
 
-RUN yarn && yarn cache clean
+COPY yarn.lock ./
+
+RUN yarn install --frozen-lockfile && yarn cache clean
 
 COPY . .
 

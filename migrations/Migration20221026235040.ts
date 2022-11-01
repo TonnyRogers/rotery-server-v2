@@ -95,7 +95,7 @@ const baseActivities = [
 
 const dateNow = new Date(Date.now()).toISOString();
 
-export class Migration20211003223818 extends Migration {
+export class Migration20221026235040 extends Migration {
   async up(): Promise<void> {
     baseActivities.map(async (item) => {
       this.addSql(
