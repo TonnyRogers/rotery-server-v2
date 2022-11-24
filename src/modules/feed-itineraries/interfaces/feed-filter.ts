@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { IsDateString, IsString } from 'class-validator';
+
 import { QueryPagination } from '@/utils/interfaces/query-pagination';
 
 export class QueryFilter extends QueryPagination {

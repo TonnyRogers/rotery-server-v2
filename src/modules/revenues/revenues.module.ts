@@ -1,12 +1,13 @@
-import { Module } from "@nestjs/common";
-import { ItineraryMembersModule } from "../itinerary-members/itinerary-members.module";
-import { PaymentModule } from "../payments/payments.module";
-import { RevenuesController } from "./revenues.controller";
-import { RevenuesService } from "./revenues.service";
+import { Module } from '@nestjs/common';
+
+import { RevenuesService } from './revenues.service';
+
+import { TipsModule } from '../tips/tips.module';
+import { RevenuesController } from './revenues.controller';
 
 @Module({
-    controllers: [RevenuesController],
-    imports: [PaymentModule,ItineraryMembersModule],
-    providers: [RevenuesService],
+  controllers: [RevenuesController],
+  imports: [TipsModule],
+  providers: [RevenuesService],
 })
 export class RevenuesModule {}

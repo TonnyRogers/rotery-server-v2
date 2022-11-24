@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsLowercase, IsNotEmpty } from 'class-validator';
+
+import { IsLowercase, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateActivityDto {
   @ApiProperty()
@@ -10,4 +11,9 @@ export class CreateActivityDto {
   @IsNotEmpty()
   @IsLowercase()
   alias: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsLowercase()
+  icon?: string;
 }

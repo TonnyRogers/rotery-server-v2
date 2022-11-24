@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   Param,
   Post,
   Res,
@@ -9,13 +10,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 import { Response } from 'express';
+
+import { FilesServiceInterface } from './interfaces/files-service.interface';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { FilesService } from './files.service';
+import { FilesProvider } from './enums/files-provider.enums';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly fileService: FilesService) {}
+  constructor(
+    @Inject(FilesProvider.FILES_SERVICE)
+    private readonly fileService: FilesServiceInterface,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
@@ -27,7 +35,7 @@ export class FilesController {
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: 2e6, parts: 1 },
+      limits: { fileSize: 2e6, parts: 2 },
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
@@ -38,7 +46,7 @@ export class FilesController {
   @Post('avatar')
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: 2e6, parts: 1 },
+      limits: { fileSize: 2e6, parts: 2 },
     }),
   )
   uploadProfileAvatar(@UploadedFile() file: Express.Multer.File) {

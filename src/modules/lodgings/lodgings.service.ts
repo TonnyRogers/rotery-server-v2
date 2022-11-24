@@ -1,6 +1,8 @@
+import { HttpException, Injectable } from '@nestjs/common';
+
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { HttpException, Injectable } from '@nestjs/common';
+
 import { Lodging } from '../../entities/lodging.entity';
 import { CreateLodgingDto } from './dto/create-lodging.dto';
 

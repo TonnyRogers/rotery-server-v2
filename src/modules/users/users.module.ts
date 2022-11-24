@@ -1,15 +1,25 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
-import { ProfileModule } from '../profiles/profile.module';
-import { User } from '../../entities/user.entity';
-import { UsersController } from './users.controller';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
 import { UsersService } from './users.service';
 
+import { User } from '../../entities/user.entity';
+import { LocationsModule } from '../locations/locations.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { ProfileModule } from '../profiles/profile.module';
+import { usersProviders } from './providers';
+import { UsersController } from './users.controller';
+
 @Module({
-  imports: [MikroOrmModule.forFeature([User]), ProfileModule],
-  providers: [UsersService],
   controllers: [UsersController],
-  exports: [UsersService],
+  imports: [
+    MikroOrmModule.forFeature([User]),
+    ProfileModule,
+    LocationsModule,
+    NotificationsModule,
+  ],
+  providers: usersProviders,
+  exports: usersProviders,
 })
 export class UsersModule {}

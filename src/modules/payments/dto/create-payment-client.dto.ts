@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { IsNotEmpty } from 'class-validator';
+
 export class CreatePaymentCustomerDto {
   @ApiProperty()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty()

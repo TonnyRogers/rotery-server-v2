@@ -1,22 +1,24 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+
 import { EmailsService } from './emails.service';
+
+import { rabbitmqConfig } from '@/config';
+import { RabbitMailPublisherMessage } from '@/providers/rabbit-publisher';
 
 @Controller('emails')
 export class EmailsController {
   constructor(@Inject(EmailsService) private emailService: EmailsService) {}
 
-  @Get()
-  async sendMail() {
-    const defaultMailProps = {
-      mailHeader: 'Boas Vindas',
-      sectionTitle: 'Bem-vindo(a) a mais nova comunidade de viajantes!',
-      name: 'Tony Amaral',
-    };
-
-    return this.emailService.send({
-      content: defaultMailProps,
-      to: 'antoniel15975@hotmail.com',
-      type: 'welcome-user',
+  @MessagePattern(rabbitmqConfig.sendMailQueue)
+  async mailQueue(@Payload() data: RabbitMailPublisherMessage<any>) {
+    return await this.emailService.send({
+      to: data.to,
+      type: data.type,
+      content: {
+        name: data.payload.name,
+        ...data.payload,
+      },
     });
   }
 }

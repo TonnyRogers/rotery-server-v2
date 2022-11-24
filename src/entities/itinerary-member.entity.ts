@@ -1,4 +1,3 @@
-import { userProfileFileSerializer } from '@/utils/serializers';
 import {
   BigIntType,
   Entity,
@@ -7,6 +6,9 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+
+import { userProfileFileSerializer } from '@/utils/serializers';
+
 import { Itinerary } from './itinerary.entity';
 import { User } from './user.entity';
 
@@ -37,27 +39,21 @@ export class ItineraryMember {
   @Property({ type: 'boolean', default: false })
   isAccepted!: boolean;
 
-  @ManyToOne(
-    () => Itinerary, 
-    { 
-      onDelete: 'cascade', 
-      serializer: (value: Itinerary) => value.id
-    }
-  )
+  @ManyToOne(() => Itinerary, {
+    onDelete: 'cascade',
+    serializer: (value: Itinerary) => value.id,
+  })
   itinerary!: Itinerary;
 
-  @ManyToOne(
-    () => User, 
-    { 
-      onDelete: 'cascade', 
-      serializer: (value: User) => userProfileFileSerializer(value),
-    }
-  )
+  @ManyToOne(() => User, {
+    onDelete: 'cascade',
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   user!: User;
 
   @Property({ type: 'string', nullable: true, lazy: true })
   paymentId: string;
-  
+
   @Enum({ items: () => PaymentStatus, default: PaymentStatus.FREE })
   paymentStatus: PaymentStatus;
 

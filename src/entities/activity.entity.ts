@@ -2,9 +2,14 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity()
 export class Activity {
-  constructor({ alias, name }: Pick<Activity, 'name' | 'alias'>) {
+  constructor({
+    alias,
+    name,
+    icon,
+  }: Pick<Activity, 'name' | 'alias' | 'icon'>) {
     this.alias = alias;
     this.name = name;
+    this.icon = icon;
   }
 
   @PrimaryKey()
@@ -15,6 +20,9 @@ export class Activity {
 
   @Property({ nullable: false, type: 'string' })
   alias!: string;
+
+  @Property({ nullable: true, type: 'string' })
+  icon?: string;
 
   @Property()
   createdAt: Date = new Date();

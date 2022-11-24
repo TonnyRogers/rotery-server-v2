@@ -1,11 +1,14 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
+import { UsersService } from './users.service';
+
 import { Profile } from '../../entities/profile.entity';
-import { ProfileModule } from '../profiles/profile.module';
 import { User } from '../../entities/user.entity';
+import { ProfileModule } from '../profiles/profile.module';
 import { UsersController } from './users.controller';
 import { UsersModule } from './users.module';
-import { UsersService } from './users.service';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -15,7 +18,7 @@ describe('UsersController', () => {
     username: 'Bea Marques',
     email: 'beaklch@outlook.com',
     password: '112233',
-    isHost: false,
+    isGuide: false,
   };
 
   beforeEach(async () => {

@@ -9,20 +9,22 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { User } from './user.entity';
+
+import { ItineraryRepository } from '@/modules/itineraries/repositories/itineraries.repository';
+import {
+  itineraryActivityCollectionSerializer,
+  itineraryLodgingCollectionSerializer,
+  itineraryTransportCollectionSerializer,
+  userProfileFileSerializer,
+} from '@/utils/serializers';
+
 import { ItineraryActivity } from './itinerary-activity.entity';
 import { ItineraryLodging } from './itinerary-lodging.entity';
-import { ItineraryTransport } from './itinerary-transport.entity';
+import { ItineraryMember } from './itinerary-member.entity';
 import { ItineraryPhoto } from './itinerary-photo.entity';
 import { ItineraryQuestion } from './itinerary-question.entity';
-import { ItineraryMember } from './itinerary-member.entity';
-import { ItineraryRepository } from '@/modules/itineraries/repositories/itineraries.repository';
-import { 
-  itineraryActivityCollectionSerializer, 
-  itineraryLodgingCollectionSerializer, 
-  itineraryTransportCollectionSerializer, 
-  userProfileFileSerializer 
-} from '@/utils/serializers';
+import { ItineraryTransport } from './itinerary-transport.entity';
+import { User } from './user.entity';
 
 export enum ItineraryStatus {
   ACTIVE = 'active',
@@ -108,9 +110,9 @@ export class Itinerary {
   @Property({ type: 'boolean', default: false })
   requestPayment!: boolean;
 
-  @ManyToOne({ 
-    entity: () => User, 
-    onDelete: 'cascade' , 
+  @ManyToOne({
+    entity: () => User,
+    onDelete: 'cascade',
     serializer: (value: User) => userProfileFileSerializer(value),
   })
   owner!: User;
@@ -121,26 +123,30 @@ export class Itinerary {
   @OneToMany(
     () => ItineraryActivity,
     (itineraryActivity) => itineraryActivity.itinerary,
-    { serializer: 
-      (value: Collection<ItineraryActivity>) => 
-      itineraryActivityCollectionSerializer(value), 
-    }
+    {
+      serializer: (value: Collection<ItineraryActivity>) =>
+        itineraryActivityCollectionSerializer(value),
+    },
   )
   activities = new Collection<ItineraryActivity>(this);
 
   @OneToMany(
     () => ItineraryLodging,
     (itineraryLodging) => itineraryLodging.itinerary,
-    { serializer: (value: Collection<ItineraryLodging>) => 
-      itineraryLodgingCollectionSerializer(value), }
+    {
+      serializer: (value: Collection<ItineraryLodging>) =>
+        itineraryLodgingCollectionSerializer(value),
+    },
   )
   lodgings = new Collection<ItineraryLodging>(this);
 
   @OneToMany(
     () => ItineraryTransport,
     (itineraryTransport) => itineraryTransport.itinerary,
-    { serializer: (value: Collection<ItineraryTransport>) => 
-      itineraryTransportCollectionSerializer(value), }
+    {
+      serializer: (value: Collection<ItineraryTransport>) =>
+        itineraryTransportCollectionSerializer(value),
+    },
   )
   transports = new Collection<ItineraryTransport>(this);
 
@@ -176,6 +182,4 @@ export class Itinerary {
   // }
 
   [EntityRepositoryType]?: ItineraryRepository;
-
 }
-

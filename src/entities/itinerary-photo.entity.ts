@@ -1,5 +1,12 @@
+import {
+  Entity,
+  EntityRepositoryType,
+  ManyToOne,
+  PrimaryKeyType,
+} from '@mikro-orm/core';
+
 import { ItineraryPhotoRepository } from '@/modules/itineraries/repositories/itinerary-photo.repository';
-import { Entity, EntityRepositoryType, ManyToOne, PrimaryKeyType } from '@mikro-orm/core';
+
 import { File } from './file.entity';
 import { Itinerary } from './itinerary.entity';
 
@@ -10,27 +17,23 @@ export class ItineraryPhoto {
     this.file = file;
   }
 
-  @ManyToOne(
-    () => Itinerary, { 
-      onDelete: 'cascade', 
-      primary: true, 
-      serializer: (value) => value.id 
-    })
+  @ManyToOne(() => Itinerary, {
+    onDelete: 'cascade',
+    primary: true,
+    serializer: (value) => value.id,
+  })
   itinerary!: Itinerary;
 
-  @ManyToOne(
-    () => File, 
-    { 
-      onDelete: 'cascade', 
-      primary: true,
-      serializer: (value: File) => ({
-        id: value.id,
-        url: value.url,
-      }),
-    }
-  )
+  @ManyToOne(() => File, {
+    onDelete: 'cascade',
+    primary: true,
+    serializer: (value: File) => ({
+      id: value.id,
+      url: value.url,
+    }),
+  })
   file!: File;
 
-  [PrimaryKeyType]?: [number,number];
+  [PrimaryKeyType]?: [number, number];
   [EntityRepositoryType]?: ItineraryPhotoRepository;
 }

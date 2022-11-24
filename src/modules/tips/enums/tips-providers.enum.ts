@@ -1,0 +1,4 @@
+export enum TipsProvider {
+  TIPS_SERVICE = 'TIPS_SERVICE',
+  TIPS_REPOSITORY = 'TIPS_REPOSITORY',
+}

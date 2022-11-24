@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Inject,
   Param,
@@ -9,12 +8,15 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
+import { ItineraryMembersService } from './itinerary-members.service';
+
 import { ParamId, RequestUser } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AcceptMemberDto } from './dto/accept-member.dto';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { ItineraryMembersService } from './itinerary-members.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('itineraries')
@@ -120,7 +122,10 @@ export class ItineraryMembersController {
   }
 
   @Post('/member/:id/refund')
-  async refund(@Req() request: RequestUser, @Param() params: { id: string}) {
-    return this.itinerarymembersService.refundMember(request.user.userId,params.id);
+  async refund(@Req() request: RequestUser, @Param() params: { id: string }) {
+    return this.itinerarymembersService.refundMember(
+      request.user.userId,
+      params.id,
+    );
   }
 }

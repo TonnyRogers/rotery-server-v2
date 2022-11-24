@@ -9,11 +9,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
+import { ItineraryQuestionsService } from './itinerary-question.service';
+
 import { ParamId, RequestUser } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { ReplyQuestionDto } from './dto/reply-question.dto';
-import { ItineraryQuestionsService } from './itinerary-question.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('itineraries')

@@ -1,6 +1,8 @@
 import ioredis from 'ioredis';
-import { redisConfig } from '../config';
+
 import { EmailType } from '../modules/emails/emails.service';
+
+import { redisConfig } from '../config';
 
 export interface RedisPlublishPayload {
   type: EmailType;

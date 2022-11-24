@@ -4,6 +4,9 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
+  Inject,
   Param,
   Post,
   Put,
@@ -12,15 +15,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+import { UserRole } from '@/entities/user.entity';
 import { RequestUser } from '@/utils/types';
+
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersProvider } from './enums/users-provider.enum';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    @Inject(UsersProvider.USERS_SERVICE)
+    private readonly userService: UsersService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Put('device')
@@ -66,5 +76,24 @@ export class UsersController {
   @Get('activate/:code')
   async activateUser(@Param() params: { code: string }) {
     return this.userService.activate(params.code);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('activate-guide/:userId')
+  async activateGuide(
+    @Req() request: RequestUser,
+    @Param() params: { userId: number },
+  ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.userService.activateGuide(params.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('guide/is-active')
+  async isGuideActive(@Req() request: RequestUser) {
+    return this.userService.isActiveGuide(request.user.userId);
   }
 }

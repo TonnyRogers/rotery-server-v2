@@ -1,6 +1,8 @@
+import { HttpException, Injectable } from '@nestjs/common';
+
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { HttpException, Injectable } from '@nestjs/common';
+
 import { Transport } from '../../entities/transport.entity';
 import { CreateTransportDto } from './dto/create-transport.dto';
 

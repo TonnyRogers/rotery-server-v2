@@ -11,10 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
+import { UserConnectionService } from './user-connections.service';
+
 import { RequestUser } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
-import { UserConnectionService } from './user-connections.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('connections')

@@ -9,5 +9,4 @@ dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
 dayjs.locale('pt-br');
 
-
 export { dayjs as dayjsPlugins };

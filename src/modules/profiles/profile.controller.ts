@@ -7,11 +7,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
+import { ProfileService } from './profile.service';
+
 import { RequestUser } from '@/utils/types';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateProfileFileDto } from './dto/update-profile-avatar.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ProfileService } from './profile.service';
 
 @Controller('profile')
 export class ProfileController {

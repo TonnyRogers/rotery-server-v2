@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+
 import { digitalSpaces } from '../config';
 
 const spacesEndpoint = new AWS.Endpoint(digitalSpaces.endpoint);

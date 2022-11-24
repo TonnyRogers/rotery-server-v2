@@ -1,5 +1,7 @@
-import { userProfileFileSerializer } from '@/utils/serializers';
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+
+import { userProfileFileSerializer } from '@/utils/serializers';
+
 import { User } from './user.entity';
 
 @Entity()
@@ -12,22 +14,14 @@ export class UserConnection {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne(
-    () => User, 
-    { 
-      serializer: (value: User) => 
-      userProfileFileSerializer(value) 
-    }
-  )
+  @ManyToOne(() => User, {
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   owner!: User;
 
-  @ManyToOne(
-    () => User, 
-    { 
-      serializer: (value: User) => 
-      userProfileFileSerializer(value) 
-    }
-  )
+  @ManyToOne(() => User, {
+    serializer: (value: User) => userProfileFileSerializer(value),
+  })
   target!: User;
 
   @Property({ type: 'boolean', default: false })

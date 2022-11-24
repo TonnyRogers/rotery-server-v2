@@ -1,8 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class ChangeSubscriptionCardDto {    
-    @ApiProperty()
-    @IsNotEmpty()
-    card_token_id: string;
+import { IsNotEmpty } from 'class-validator';
+
+export class ChangeSubscriptionCardDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  card_token_id: string;
 }

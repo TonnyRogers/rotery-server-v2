@@ -1,22 +1,24 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
 import axios, { AxiosResponse } from 'axios';
 
-import { ProcessPaymentDto } from './dto/process-payment.dto';
-import { paymentApiOptions } from '../../config';
-import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';
-import { UpdatePaymentCustomerDto } from './dto/update-payment-client.dto copy';
+import { axiosErrorHandler } from '@/utils/axios-error';
 import {
   CreateCustomerResponse,
   PaymentDetailsReponse,
   PaymentRefundResponse,
-  ProcessPaymentType,
 } from '@/utils/types';
-import { InjectRepository } from '@mikro-orm/nestjs';
+
+import { paymentApiOptions } from '../../config';
 import { User } from '../../entities/user.entity';
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { CreatePaymentCustomerDto } from './dto/create-payment-client.dto';
+import { ProcessPaymentDto } from './dto/process-payment.dto';
 import { RefundPaymentDto } from './dto/refund-payment.dto';
-import { axiosErrorHandler } from '@/utils/axios-error';
+import { UpdatePaymentCustomerDto } from './dto/update-payment-client.dto copy';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 const api = axios.create({
   baseURL: paymentApiOptions.url,
@@ -103,25 +105,21 @@ export class PaymentService {
 
   async pay(
     processPaymentDto: ProcessPaymentDto,
-    paymentType: ProcessPaymentType,
   ): Promise<PaymentDetailsReponse> {
     try {
-      if (paymentType === ProcessPaymentType.ITINERARY) {
-        const response: AxiosResponse<PaymentDetailsReponse> = await api.post(
-          `/payments`,
-          {
-            ...processPaymentDto,
-            notification_url:
-              paymentApiOptions.webhook,
-            metadata: {
-              ...processPaymentDto?.metadata,
-              payment_validator: 'checkout',
-            }
+      const response: AxiosResponse<PaymentDetailsReponse> = await api.post(
+        `/payments`,
+        {
+          ...processPaymentDto,
+          notification_url: paymentApiOptions.webhook,
+          metadata: {
+            ...processPaymentDto?.metadata,
+            payment_validator: 'checkout',
           },
-        );
+        },
+      );
 
-        return response.data;
-      }
+      return response.data;
     } catch (error) {
       throw error;
     }

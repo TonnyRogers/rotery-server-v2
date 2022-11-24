@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2017",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -19,11 +19,11 @@
     // "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "lib": ["ESNext"],
+    "lib": ["ES2017"],
     "paths": {
       "@/*": ["src/*"],
       "@config": ["src/config"]
     }
   },
-  "include": ["src", "migrations","decs.d.ts","@types/**/*.d.ts",".eslintrc.js"]
+  "include": ["src", "migrations","seeders","test",".eslintrc.js"],
 }

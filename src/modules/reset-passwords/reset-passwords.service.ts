@@ -1,21 +1,28 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
-import { ResetPassword } from '../../entities/reset-password.entity';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
 import { UsersService } from '../users/users.service';
-import { NewPasswordDto } from './dto/new-password.dto';
-import { RabbitMQPublisher } from '../../providers/rabbit-publisher';
-import { EmailTypes } from '@/utils/constants';
+
 import { dayjsPlugins } from '@/providers/dayjs-config';
+import { UserNewPassWordMailTemplateParams } from '@/resources/emails/types/user-new-password';
+
+import { ResetPassword } from '../../entities/reset-password.entity';
+import {
+  RabbitMailPublisherParams,
+  RabbitMailPublisher,
+} from '../../providers/rabbit-publisher';
+import { UsersProvider } from '../users/enums/users-provider.enum';
+import { NewPasswordDto } from './dto/new-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class ResetPasswordsService {
   constructor(
     @InjectRepository(ResetPassword)
     private resetPasswordsRepository: EntityRepository<ResetPassword>,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}
 
@@ -91,17 +98,18 @@ export class ResetPasswordsService {
         id: 'id' in findReset && findReset.id,
       });
 
-      const rabbitPublish = new RabbitMQPublisher();
+      const rabbitPublish = new RabbitMailPublisher();
 
-      const payload = {
-        data: {
-          type: EmailTypes.password,
-          payload: {
-            name: 'id' in findReset && findReset.user.username,
-            email: 'id' in findReset && findReset.user.email,
+      const payload: RabbitMailPublisherParams<UserNewPassWordMailTemplateParams> =
+        {
+          data: {
+            to: 'id' in findReset && findReset.user.email,
+            type: 'user-new-password',
+            payload: {
+              name: 'id' in findReset && findReset.user.username,
+            },
           },
-        },
-      };
+        };
 
       await rabbitPublish.toQueue(payload);
 

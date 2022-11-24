@@ -1,9 +1,12 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { Inject, Injectable } from '@nestjs/common';
+
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
+import { ItinerariesService } from '../itineraries/itineraries.service';
+
 import { ItineraryRating } from '../../entities/itinerary-rating';
 import { CreateItineraryRatingDto } from './dto/create-itinerary-rating.dto';
-import { ItinerariesService } from '../itineraries/itineraries.service';
 
 @Injectable()
 export class ItinerariesRatingsService {

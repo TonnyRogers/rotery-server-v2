@@ -6,7 +6,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint/eslint-plugin',
-    'import',
+    'eslint-plugin-import',
     'import-helpers',
     'unused-imports',
     'prettier',
@@ -27,15 +27,15 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars':'off',
     'import-helpers/order-imports': [
       'warn',
       {
-        // example configuration
         newlinesBetween: 'always',
         // groups: ['module', '/^@shared/', ['parent', 'sibling', 'index']],
         groups: [
           '/^@nestjs/',
-          '/^(.*)typeorm(.*)/',
+          '/^(.*)mikro-orm(.*)/',
           'module',
           '/^(.*)service/',
           '/^@\\//',

@@ -1,5 +1,7 @@
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+
 import { File } from '../../entities/file.entity';
 import { ProfileController } from './profile.controller';
 

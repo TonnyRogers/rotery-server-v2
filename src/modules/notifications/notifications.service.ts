@@ -1,14 +1,16 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
+
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
 import { Notification } from '../../entities/notification.entity';
-import { CreateNotificationPayload } from './interfaces/create-notification';
+import { User } from '../../entities/user.entity';
 import {
   FirebaseNotificationPayload,
   sendToUser,
 } from '../../providers/firebase';
+import { CreateNotificationPayload } from './interfaces/create-notification';
 import { NotificationsGateway } from './notifications.gateway';
-import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class NotificationsService {

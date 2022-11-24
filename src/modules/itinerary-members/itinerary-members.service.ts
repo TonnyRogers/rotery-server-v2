@@ -1,34 +1,48 @@
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
+
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
-import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
-import {
-  ItineraryMember,
-  PaymentStatus,
-} from '../../entities/itinerary-member.entity';
+import { Response } from 'express';
+
+import { EmailsService } from '../emails/emails.service';
 import { ItinerariesService } from '../itineraries/itineraries.service';
-import { UsersService } from '../users/users.service';
-import { AcceptMemberDto } from './dto/accept-member.dto';
-import { CreateMemberDto } from './dto/create-member.dto';
-import { DemoteMemberDto } from './dto/demote-member.dto';
-import { PromoteMemberDto } from './dto/promote-member.dto';
-import { RefuseMemberDto } from './dto/refuse-member.dto';
-import { AppColors, itineraryRelations, paymentStatusColor, paymentStatusRole } from '@/utils/constants';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationAlias } from '../../entities/notification.entity';
+import { PaymentService } from '../payments/payments.service';
+import { UsersService } from '../users/users.service';
+
+import { dayjsPlugins } from '@/providers/dayjs-config';
+import {
+  itineraryRelations,
+  paymentStatusColor,
+  paymentStatusRole,
+} from '@/utils/constants';
 import {
   MemberWithPaymentResponse,
   NotificationSubject,
   PaymentDetailsReponse,
   PaymentRefundResponse,
-  ProcessPaymentType,
 } from '@/utils/types';
-import { PaymentService } from '../payments/payments.service';
-import { Response } from 'express';
+
+import {
+  ItineraryMember,
+  PaymentStatus,
+} from '../../entities/itinerary-member.entity';
+import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
+import { NotificationAlias } from '../../entities/notification.entity';
+import { UsersProvider } from '../users/enums/users-provider.enum';
+import { AcceptMemberDto } from './dto/accept-member.dto';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
-import { EmailsService } from '../emails/emails.service';
-import { dayjsPlugins } from '@/providers/dayjs-config';
+import { CreateMemberDto } from './dto/create-member.dto';
+import { DemoteMemberDto } from './dto/demote-member.dto';
+import { PromoteMemberDto } from './dto/promote-member.dto';
+import { RefuseMemberDto } from './dto/refuse-member.dto';
 
 @Injectable()
 export class ItineraryMembersService {
@@ -39,7 +53,7 @@ export class ItineraryMembersService {
     private itineraryRepository: EntityRepository<Itinerary>,
     @Inject(forwardRef(() => ItinerariesService))
     private itinerariesService: ItinerariesService,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,
@@ -50,25 +64,34 @@ export class ItineraryMembersService {
   ) {}
 
   async paymentRefund(itineraryMember: ItineraryMember) {
-    if(itineraryMember.itinerary.requestPayment) {
+    if (itineraryMember.itinerary.requestPayment) {
+      const payment = await this.paymentService.getPaymentDetails(
+        Number(itineraryMember.paymentId),
+      );
 
-      const payment = await this.paymentService.getPaymentDetails(Number(itineraryMember.paymentId));
-
-      if(payment && payment.status === 'in_process') {
-        await this.paymentService.updatePayment(payment.id,{ status: "cancelled" });
+      if (payment && payment.status === 'in_process') {
+        await this.paymentService.updatePayment(payment.id, {
+          status: 'cancelled',
+        });
         return;
       }
 
-      if(itineraryMember.itinerary.status === ItineraryStatus.ACTIVE) { 
-        const paymentRefund = await this.paymentService.refundPayment(Number(itineraryMember.paymentId), undefined);
+      if (itineraryMember.itinerary.status === ItineraryStatus.ACTIVE) {
+        const paymentRefund = await this.paymentService.refundPayment(
+          Number(itineraryMember.paymentId),
+          undefined,
+        );
 
-        if(!paymentRefund.id) {
-          throw new HttpException('Error on refund payment.',HttpStatus.BAD_REQUEST); 
+        if (!paymentRefund.id) {
+          throw new HttpException(
+            'Error on refund payment.',
+            HttpStatus.BAD_REQUEST,
+          );
         }
       }
     }
   }
- 
+
   async findOne(itineraryMemberId: string) {
     try {
       return this.itineraryMemberRepository.findOneOrFail(
@@ -78,7 +101,7 @@ export class ItineraryMembersService {
           deletedAt: null,
         },
         {
-          populate: ['user.profile.file']
+          populate: ['user.profile.file'],
         },
       );
     } catch (error) {
@@ -153,12 +176,15 @@ export class ItineraryMembersService {
     payment?: PaymentDetailsReponse,
   ) {
     try {
-      const member = await this.itineraryMemberRepository.findOne({
-        id: itineraryMemberId,
-        deletedAt: null,
-      },{
-        populate: ['user','user.email','itinerary.owner']
-      });
+      const member = await this.itineraryMemberRepository.findOne(
+        {
+          id: itineraryMemberId,
+          deletedAt: null,
+        },
+        {
+          populate: ['user', 'user.email', 'itinerary.owner'],
+        },
+      );
 
       member.paymentStatus = status;
 
@@ -190,13 +216,24 @@ export class ItineraryMembersService {
           cardLastNumbers: payment.card.last_four_digits,
           data: {
             Nome: member.itinerary.name,
-            Ida: dayjsPlugins(member.itinerary.begin).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + '(Horário de Brasília)',
-            Volta: dayjsPlugins(member.itinerary.end).subtract(3,'hours').format('DD [de] MMMM [de] YYYY [as] HH:mm') + '(Horário de Brasília)',
+            Ida:
+              dayjsPlugins(member.itinerary.begin)
+                .subtract(3, 'hours')
+                .format('DD [de] MMMM [de] YYYY [as] HH:mm') +
+              '(Horário de Brasília)',
+            Volta:
+              dayjsPlugins(member.itinerary.end)
+                .subtract(3, 'hours')
+                .format('DD [de] MMMM [de] YYYY [as] HH:mm') +
+              '(Horário de Brasília)',
             Local: member.itinerary.location,
             Host: member.itinerary.owner.username,
-            Total: status === PaymentStatus.REFUNDED ? payment.transaction_amount_refunded :payment.transaction_amount,
-          }
-        }
+            Total:
+              status === PaymentStatus.REFUNDED
+                ? payment.transaction_amount_refunded
+                : payment.transaction_amount,
+          },
+        },
       });
 
       return res.status(200).send();
@@ -207,17 +244,20 @@ export class ItineraryMembersService {
 
   async itineraries(authUserId: number) {
     try {
-      const memberItineraries = await this.itineraryRepository.find(
-        { members: { user: authUserId, deletedAt: null }, deletedAt: null },
+      const memberItineraries = await this.itineraryRepository.find({
+        members: { user: authUserId, deletedAt: null },
+        deletedAt: null,
+      });
+
+      await this.itineraryRepository.populate(
+        memberItineraries,
+        itineraryRelations,
+        {
+          where: { members: { deletedAt: null } },
+        },
       );
 
-      await this.itineraryRepository.
-        populate(memberItineraries, itineraryRelations, {
-           where: { members: { deletedAt : null } } 
-        });
-
       return memberItineraries;
-
     } catch (error) {
       throw new HttpException("Can't find member itineraries", 400);
     }
@@ -273,7 +313,7 @@ export class ItineraryMembersService {
           user: refuseMemberDto.userId,
           deletedAt: null,
         },
-        { populate: ['itinerary.owner', 'user','paymentId'] },
+        { populate: ['itinerary.owner', 'user', 'paymentId'] },
       );
 
       await this.paymentRefund(member);
@@ -313,7 +353,7 @@ export class ItineraryMembersService {
           user: promoteMemberDto.userId,
           deletedAt: null,
         },
-        { populate:['itinerary.owner', 'user'] },
+        { populate: ['itinerary.owner', 'user'] },
       );
 
       member.isAdmin = true;
@@ -351,7 +391,7 @@ export class ItineraryMembersService {
           itinerary: { id: itineraryId, owner: authUserId, deletedAt: null },
           deletedAt: null,
         },
-        { populate:['itinerary.owner', 'user'] },
+        { populate: ['itinerary.owner', 'user'] },
       );
 
       member.isAdmin = false;
@@ -380,13 +420,16 @@ export class ItineraryMembersService {
   async leave(authUserId: number, itineraryId: number) {
     try {
       const itineraryMember =
-        await this.itineraryMemberRepository.findOneOrFail({
-          itinerary: { id: itineraryId, deletedAt: null },
-          deletedAt: null,
-          user: authUserId,
-        }, { populate: ['paymentId','itinerary'] });
+        await this.itineraryMemberRepository.findOneOrFail(
+          {
+            itinerary: { id: itineraryId, deletedAt: null },
+            deletedAt: null,
+            user: authUserId,
+          },
+          { populate: ['paymentId', 'itinerary'] },
+        );
 
-        await this.paymentRefund(itineraryMember);
+      await this.paymentRefund(itineraryMember);
 
       itineraryMember.deletedAt = new Date(Date.now());
       return await this.itineraryMemberRepository.flush();
@@ -422,17 +465,14 @@ export class ItineraryMembersService {
       }
 
       const user = await this.usersService.findOneWithEmail({ id: authUserId });
-      const paymentResponse = await this.paymentService.pay(
-        {
-          ...createMemberWithPaymentDto.payment,
-          metadata: {
-            itineraryId: itinerary.id,
-            itineraryName: itinerary.name,
-            itineraryBegin: itinerary.begin,
-          },
+      const paymentResponse = await this.paymentService.pay({
+        ...createMemberWithPaymentDto.payment,
+        metadata: {
+          itineraryId: itinerary.id,
+          itineraryName: itinerary.name,
+          itineraryBegin: itinerary.begin,
         },
-        ProcessPaymentType.ITINERARY,
-      );
+      });
 
       if (paymentResponse.status !== 'rejected') {
         const newMember = new ItineraryMember({
@@ -442,7 +482,9 @@ export class ItineraryMembersService {
 
         newMember.paymentStatus = PaymentStatus.PENDING;
         newMember.paymentId = String(paymentResponse.id);
-        newMember.paymentAmount = String(createMemberWithPaymentDto.payment.transaction_amount);
+        newMember.paymentAmount = String(
+          createMemberWithPaymentDto.payment.transaction_amount,
+        );
 
         await this.itineraryMemberRepository.persistAndFlush(newMember);
 
@@ -472,7 +514,7 @@ export class ItineraryMembersService {
           user: authUserId,
           $not: { paymentId: null },
         },
-        { populate: ['paymentId','user'] },
+        { populate: ['paymentId', 'user'] },
       );
 
       const memberWithPayment: MemberWithPaymentResponse[] = [];
@@ -483,7 +525,7 @@ export class ItineraryMembersService {
             Number(item.paymentId),
           );
 
-          if(payment) {
+          if (payment) {
             memberWithPayment.push({
               ...item,
               payment,
@@ -501,7 +543,10 @@ export class ItineraryMembersService {
     }
   }
 
-  async refundMember(authUserId: number,itineraryMemberId: string): Promise<PaymentRefundResponse> {
+  async refundMember(
+    authUserId: number,
+    itineraryMemberId: string,
+  ): Promise<PaymentRefundResponse> {
     try {
       const member = await this.itineraryMemberRepository.findOne(
         {
@@ -510,17 +555,24 @@ export class ItineraryMembersService {
         { populate: ['paymentId', 'itinerary'] },
       );
 
-      if (member.itinerary.status !== ItineraryStatus.ACTIVE || member.user.id !== authUserId) {
+      if (
+        member.itinerary.status !== ItineraryStatus.ACTIVE ||
+        member.user.id !== authUserId
+      ) {
         throw new HttpException(
           "Can't refund this itinerary.",
           HttpStatus.UNAUTHORIZED,
         );
       }
 
-      const payment = await this.paymentService.getPaymentDetails(Number(member.paymentId));
+      const payment = await this.paymentService.getPaymentDetails(
+        Number(member.paymentId),
+      );
 
-      if(payment && payment.status === 'in_process') {
-        await this.paymentService.updatePayment(payment.id,{ status: "cancelled" });
+      if (payment && payment.status === 'in_process') {
+        await this.paymentService.updatePayment(payment.id, {
+          status: 'cancelled',
+        });
         return;
       }
 
@@ -539,24 +591,35 @@ export class ItineraryMembersService {
 
   async findAllWithMemberPaymentId(authUserId: number) {
     try {
-      const members = await this.itineraryMemberRepository.find({
-        itinerary: { owner: authUserId },
-        $not: { paymentId: null }
-      },{ populate: [
-        'paymentId',
-        'user.profile.file',
-        'itinerary.lodgings',
-        'itinerary.activities',
-        'itinerary.transports',
-      ] });
+      const members = await this.itineraryMemberRepository.find(
+        {
+          itinerary: { owner: authUserId },
+          $not: { paymentId: null },
+        },
+        {
+          populate: [
+            'paymentId',
+            'user.profile.file',
+            'itinerary.lodgings',
+            'itinerary.activities',
+            'itinerary.transports',
+          ],
+        },
+      );
 
       let total = 0;
 
       const revenues = members.map((item) => {
         let amount = 0;
-        item.itinerary.lodgings.getItems().forEach((lodging) => amount += Number(lodging.price));
-        item.itinerary.activities.getItems().forEach((activity) => amount += Number(activity.price));
-        item.itinerary.transports.getItems().forEach((transport) => amount += Number(transport.price));
+        item.itinerary.lodgings
+          .getItems()
+          .forEach((lodging) => (amount += Number(lodging.price)));
+        item.itinerary.activities
+          .getItems()
+          .forEach((activity) => (amount += Number(activity.price)));
+        item.itinerary.transports
+          .getItems()
+          .forEach((transport) => (amount += Number(transport.price)));
 
         total += item.paymentStatus === PaymentStatus.PAID ? amount : 0;
 
@@ -574,12 +637,12 @@ export class ItineraryMembersService {
           paymentStatus: item.paymentStatus,
           amount,
           createdAt: item.createdAt,
-        }
-      }); 
+        };
+      });
 
       return {
         revenues,
-        total
+        total,
       };
     } catch (error) {
       throw error;

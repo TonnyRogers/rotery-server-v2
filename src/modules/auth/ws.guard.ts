@@ -5,8 +5,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+
 import jwt from 'jsonwebtoken';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class WsJwtGuard implements CanActivate {

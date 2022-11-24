@@ -1,8 +1,11 @@
-import { EntityRepository } from '@mikro-orm/postgresql';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { User } from '../../entities/user.entity';
+
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+
 import { ItinerariesService } from '../itineraries/itineraries.service';
+
+import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class FavoriteItinerariesService {
@@ -36,7 +39,7 @@ export class FavoriteItinerariesService {
               deletedAt: null,
               members: { deletedAt: null },
             },
-          }
+          },
         },
       );
 
@@ -62,9 +65,10 @@ export class FavoriteItinerariesService {
 
   async remove(authUserId: number, itineraryId: number) {
     try {
-      const user = await this.userRepository.findOneOrFail({ id: authUserId }, { populate: [
-        'favoriteItineraries',
-      ] });
+      const user = await this.userRepository.findOneOrFail(
+        { id: authUserId },
+        { populate: ['favoriteItineraries'] },
+      );
       const itinerary = await this.itinerariesService.show(itineraryId);
 
       user.favoriteItineraries.remove(itinerary);

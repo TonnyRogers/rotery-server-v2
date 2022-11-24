@@ -1,6 +1,7 @@
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import Mailer from 'nodemailer/lib/mailer';
 import nodemailer from 'nodemailer';
+import Mailer from 'nodemailer/lib/mailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+
 import { smtp } from '../config';
 
 const { host, port, mailPassword, mailUsername } = smtp;
@@ -16,7 +17,7 @@ const transportOptions: SMTPTransport.Options = {
 };
 
 export const mailerOptions: Mailer.Options = {
-  from: 'Rotery App <contato@rotery.com.br>',
+  from: 'Mochilee App <contato@mochilee.com.br>',
   to: '',
   subject: '',
   text: '',

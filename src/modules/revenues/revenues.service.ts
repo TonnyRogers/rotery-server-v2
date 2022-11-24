@@ -1,23 +1,32 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { FindAllMemberRevenuesResponse } from "@/utils/types";
-import { ItineraryMembersService } from "../itinerary-members/itinerary-members.service";
-import { PaymentService } from "../payments/payments.service";
+import { Inject, Injectable } from '@nestjs/common';
 
+import { TipsServiceInterface } from '../tips/interface/tips-service.interface';
+
+import { TipPaymentStatus } from '@/entities/tip.entity';
+
+import { TipsProvider } from '../tips/enums/tips-providers.enum';
 
 @Injectable()
 export class RevenuesService {
-    constructor(
-        @Inject(PaymentService)
-        private paymentService: PaymentService,
-        @Inject(ItineraryMembersService)
-        private itineraryMemberService: ItineraryMembersService,
-    ) {}
+  constructor(
+    @Inject(TipsProvider.TIPS_SERVICE)
+    private tipsService: TipsServiceInterface,
+  ) {}
 
-    async listRevenues(authUserId: number): Promise<FindAllMemberRevenuesResponse> {
-        try {
-            return await this.itineraryMemberService.findAllWithMemberPaymentId(authUserId); 
-        } catch (error) {
-            throw error;
-        }
-    }
+  async listRevenues(authUserId: number): Promise<any> {
+    const tips = await this.tipsService.getByCollector(authUserId);
+
+    const tipAmount = tips.reduce(
+      (acc, curr) =>
+        curr.paymentStatus === TipPaymentStatus.PAID && !curr.paidAt
+          ? (acc += Number(curr.paymentAmount))
+          : (acc += 0),
+      0,
+    );
+
+    return {
+      revenues: tips,
+      total: tipAmount,
+    };
+  }
 }

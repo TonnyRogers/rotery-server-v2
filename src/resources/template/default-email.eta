@@ -13,7 +13,7 @@
       </mj-section>
       <mj-section background-color="#FFF" border-radius="0 0 10px 10px">
         <mj-column>
-          <mj-image width="200px" height="200px" src="https://rotery-filestore.nyc3.digitaloceanspaces.com/Rotery-H.png" />
+          <mj-image width="200px" height="200px" src="https://rotery-filestore.nyc3.digitaloceanspaces.com/mochilee-vertical.png" />
           <%~ it.body %>
         </mj-column>
       </mj-section>
@@ -26,7 +26,7 @@
         <mj-column >
           <mj-social>
           	<mj-social-element name="instagram" href="https://www.instagram.com/roteryapp/">
-              @roteryapp
+              @mochileeapp
             </mj-social-element>	
             <mj-social-element src="https://rotery-filestore.nyc3.digitaloceanspaces.com/favicon.ico" href="https://www.instagram.com/roterybr/">
               Visite nosso site
