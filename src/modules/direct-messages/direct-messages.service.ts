@@ -6,6 +6,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { UsersService } from '../users/users.service';
 
 import { DirectMessage } from '../../entities/direct-message.entity';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateDirectMessageDto } from './dto/create-message.dto';
 
 const messagePopulate: any[] = [
@@ -19,7 +20,7 @@ export class DirectMessagesService {
   constructor(
     @InjectRepository(DirectMessage)
     private directMessageRepository: EntityRepository<DirectMessage>,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}
 

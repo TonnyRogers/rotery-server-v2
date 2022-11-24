@@ -26,6 +26,7 @@ import { NotificationSubject } from '@/utils/types';
 
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
 import { ItineraryRepository } from './repositories/itineraries.repository';
@@ -42,7 +43,7 @@ export class ItinerariesService {
     private readonly itineraryTransportRepository: ItineraryTransportRepository,
     private readonly itineraryPhotoRepository: ItineraryPhotoRepository,
     private itineraryRepository: ItineraryRepository,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private readonly usersService: UsersService,
     @Inject(NotificationsService)
     private readonly notificationsService: NotificationsService,

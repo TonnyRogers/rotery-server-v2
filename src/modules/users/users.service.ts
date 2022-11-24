@@ -16,7 +16,7 @@ import { NotificationAlias } from '@/entities/notification.entity';
 import { hashPassword } from '@/utils/password';
 import { NotificationSubject } from '@/utils/types';
 
-import { User } from '../../entities/user.entity';
+import { User, UserRole } from '../../entities/user.entity';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -72,6 +72,7 @@ export class UsersService {
       return await this.usersRepository.find(
         {
           username: { $like: '%' + (username || '') + '%' },
+          role: { $eq: UserRole.USER },
         },
         { populate: ['profile.file'] },
       );
@@ -120,21 +121,6 @@ export class UsersService {
         { id, isActive: true },
         { populate: ['deviceToken'] },
       );
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async findAndValidate(options: FindAllAttrs): Promise<User> {
-    try {
-      const findOptions = {};
-
-      Object.entries(options).forEach(([key, value]) => {
-        if (value !== undefined || value !== null) {
-          findOptions[key] = value;
-        }
-      });
-      return await this.usersRepository.findOne(findOptions);
     } catch (error) {
       throw error;
     }

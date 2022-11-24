@@ -7,13 +7,14 @@ import { UsersService } from '../users/users.service';
 
 import { BankAccount } from '@/entities/bank-account.entity';
 
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateBankAccountDto } from './dto/create-bank-account.dto';
 import { UpdateBankAccountDto } from './dto/update-bank-account.dto';
 
 @Injectable()
 export class BankAccountsService {
   constructor(
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
     @InjectRepository(BankAccount)
     private bankAccountRepository: EntityRepository<BankAccount>,

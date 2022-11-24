@@ -13,7 +13,7 @@ export const itineraryRelations: any = [
 ];
 
 export const EmailSubject = {
-  'welcome-user': 'Bem vindo a Rotery',
+  'welcome-user': 'Bem vindo a Mochilee',
   'user-recover-password': 'Recuperação de senha',
   'user-new-password': 'Senha atualizada',
   'user-request-help': 'Ajuda Solicitada 🖐',

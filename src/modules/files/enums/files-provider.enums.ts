@@ -1,0 +1,4 @@
+export enum FilesProvider {
+  FILES_SERVICE = 'FILES_SERVICE',
+  FILES_REPOSITORY = 'FILES_REPOSITORY',
+}

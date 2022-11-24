@@ -2,14 +2,20 @@ import {
   Body,
   Controller,
   Delete,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 
 import { LocationDetailingServiceInterface } from './interfaces/location-detailings-service.interface';
+
+import { UserRole } from '@/entities/user.entity';
+import { RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLocationDetailingsDto } from './dto/create-location-detailings.dto';
@@ -27,9 +33,14 @@ export class LocationDetailingController {
   @UseGuards(JwtAuthGuard)
   @Post(':locationId')
   async newLocationDetailing(
+    @Req() request: RequestUser,
     @Param() params: { locationId: number },
     @Body() createLocationDetailingDto: CreateLocationDetailingsDto,
   ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
     return this.locationDetailingsService.add(
       params.locationId,
       createLocationDetailingDto,
@@ -39,9 +50,14 @@ export class LocationDetailingController {
   @UseGuards(JwtAuthGuard)
   @Put(':locationId')
   async updateLocationDetailing(
+    @Req() request: RequestUser,
     @Param() params: { locationId: number },
     @Body() updateLocationDetailingDto: UpdateLocationDetailingsDto,
   ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
     return this.locationDetailingsService.update(
       params.locationId,
       updateLocationDetailingDto,
@@ -51,9 +67,14 @@ export class LocationDetailingController {
   @UseGuards(JwtAuthGuard)
   @Delete(':locationId')
   async removeLocationDetailing(
+    @Req() request: RequestUser,
     @Param() params: { locationId: number },
     @Body() deleteLocationDetailingDto: DeleteLocationDetailingsDto,
   ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
     return this.locationDetailingsService.remove(
       params.locationId,
       deleteLocationDetailingDto,

@@ -5,7 +5,11 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 
 import { User } from '@/entities/user.entity';
 
-import { UsersRepositoryInterface } from './interfaces/users-repository.interface';
+import {
+  UsersRepositoryInterface,
+  FindAndValidateUserRepositoryFilter,
+  FindUserRepositoryFilter,
+} from './interfaces/users-repository.interface';
 
 export class UsersRepository implements UsersRepositoryInterface {
   constructor(
@@ -14,12 +18,18 @@ export class UsersRepository implements UsersRepositoryInterface {
   ) {}
 
   async findOne(
-    filters: { id?: number; email?: string },
+    filters: FindUserRepositoryFilter,
     populate: any[] = ['profile.file'],
   ): Promise<User> {
     return this.userRepository.findOne(filters, {
       populate: populate,
     });
+  }
+
+  async update(id: number, payload: Partial<User>): Promise<User> {
+    await this.userRepository.nativeUpdate({ id }, payload);
+
+    return this.userRepository.findOne({ id });
   }
 
   async activateGuide(userId: number): Promise<any> {
@@ -29,5 +39,41 @@ export class UsersRepository implements UsersRepositoryInterface {
       },
       { canRelateLocation: true },
     );
+  }
+
+  async findAndValidate(
+    filters: FindAndValidateUserRepositoryFilter,
+  ): Promise<User> {
+    const findOptions = {};
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined || value !== null) {
+        findOptions[key] = value;
+      }
+    });
+
+    return await this.userRepository.findOne(findOptions, {
+      populate: ['password'],
+    });
+  }
+
+  async getDeviceToken(id: number): Promise<User> {
+    const queryBuilder = this.userRepository.createQueryBuilder();
+
+    return await queryBuilder
+      .select(['id', 'device_token'])
+      .where({ id: id })
+      .execute('get');
+  }
+
+  async setDeviceToken(id: number, deviceToken: string | null): Promise<void> {
+    const queryBuilder = this.userRepository.createQueryBuilder();
+
+    await queryBuilder
+      .update({ deviceToken: deviceToken })
+      .where({
+        id,
+      })
+      .execute();
   }
 }

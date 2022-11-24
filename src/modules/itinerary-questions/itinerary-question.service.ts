@@ -11,6 +11,7 @@ import { NotificationSubject } from '@/utils/types';
 
 import { ItineraryQuestion } from '../../entities/itinerary-question.entity';
 import { NotificationAlias } from '../../entities/notification.entity';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { ReplyQuestionDto } from './dto/reply-question.dto';
 
@@ -19,7 +20,7 @@ export class ItineraryQuestionsService {
   constructor(
     @Inject(ItinerariesService)
     private itinerariesService: ItinerariesService,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,

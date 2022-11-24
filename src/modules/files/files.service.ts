@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 
 import { EntityRepository } from '@mikro-orm/knex';
 import { InjectRepository } from '@mikro-orm/nestjs';
@@ -6,26 +6,27 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { S3 } from 'aws-sdk';
 import fs from 'fs';
 
+import {
+  FilePathOption,
+  FilesServiceInterface,
+} from './interfaces/files-service.interface';
+
 import { digitalSpaces } from '../../config';
 import { File } from '../../entities/file.entity';
 import { s3 } from '../../providers/spaces';
-
-export type FilePathOption = 'upload' | 'upload/avatar';
+import { FilesProvider } from './enums/files-provider.enums';
+import { FilesRepositoryInterface } from './interfaces/files-repository';
 
 @Injectable()
-export class FilesService {
+export class FilesService implements FilesServiceInterface {
   constructor(
-    @InjectRepository(File)
-    private filesRepository: EntityRepository<File>,
+    @Inject(FilesProvider.FILES_REPOSITORY)
+    private readonly filesRepository: FilesRepositoryInterface,
   ) {}
 
   async findOne(id: number): Promise<string> {
-    try {
-      const file = await this.filesRepository.findOneOrFail({ id });
-      return file.url;
-    } catch (error) {
-      throw new HttpException('File not found.', 404);
-    }
+    const file = await this.filesRepository.findOne(id);
+    return file.url;
   }
 
   async uploadImage(
@@ -44,46 +45,44 @@ export class FilesService {
         subtype: extname,
       };
 
-      if (process.env.NODE_ENV === 'production') {
-        const options: S3.PutObjectRequest = {
-          Bucket: digitalSpaces.bucket,
-          ACL: 'public-read',
-          Key: `${filePathOption}/${fileName}`,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-        };
+      // if (process.env.NODE_ENV === 'production') {
+      const options: S3.PutObjectRequest = {
+        Bucket: digitalSpaces.bucket,
+        ACL: 'public-read',
+        Key: `${filePathOption}/${fileName}`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
 
-        const uploadResponse = s3.putObject(options, (err, data) => {
-          if (err) {
-            throw new HttpException('Error on upload file.', 400);
-          }
+      const uploadResponse = s3.putObject(options, (err, data) => {
+        if (err) {
+          throw new HttpException('Error on upload file.', 400);
+        }
 
-          return data;
-        });
+        return data;
+      });
 
-        const {
-          path,
-          endpoint: { host, protocol },
-        } = uploadResponse.httpRequest;
+      const {
+        path,
+        endpoint: { host, protocol },
+      } = uploadResponse.httpRequest;
 
-        const fileUrl = `${protocol}//${host}${path}`;
+      const fileUrl = `${protocol}//${host}${path}`;
 
-        newFilePayload.url = fileUrl;
-      } else {
-        fs.writeFile(`./tmp/${fileName}`, file.buffer, (err) => {
-          if (err) {
-            throw new HttpException('Error on write local file.', 400);
-          }
-        });
+      newFilePayload.url = fileUrl;
+      // } else {
+      //   fs.writeFile(`./tmp/${fileName}`, file.buffer, (err) => {
+      //     if (err) {
+      //       throw new HttpException('Error on write local file.', 400);
+      //     }
+      //   });
 
-        newFilePayload.url = `./tmp/${fileName}`;
-      }
+      //   newFilePayload.url = `./tmp/${fileName}`;
+      // }
 
       const newFile = new File(newFilePayload);
 
-      await this.filesRepository.persistAndFlush(newFile);
-
-      return newFile;
+      return await this.filesRepository.insert(newFile);
     } catch (error) {
       throw new HttpException('Error on upload file.', 400);
     }

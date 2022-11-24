@@ -13,6 +13,15 @@ export interface RequestUser extends Request {
   user: JwtStrategyValidateResponse;
 }
 
+export interface RequestAuthHeaders extends Request {
+  headers: {
+    authorization: string;
+  };
+  cookies: {
+    rfh: string;
+  };
+}
+
 export interface ParamId {
   id: number;
 }

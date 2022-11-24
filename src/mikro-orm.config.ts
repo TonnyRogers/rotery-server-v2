@@ -25,6 +25,13 @@ export default {
   forceUtcTimezone: true,
   timezone: 'UTC',
   logger: logger.log.bind(logger),
+  seeder: {
+    path: './seeders',
+    defaultSeeder: 'DatabaseSeeder',
+    glob: '!(*.d).{js,ts}',
+    emit: 'ts',
+    fileName: (className: string) => className,
+  },
   // cache: {
   //   enabled: false,
   // },

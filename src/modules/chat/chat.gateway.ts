@@ -75,8 +75,8 @@ export class ChatSocketGateway {
       }
 
       const lastMessage = await this.chatService.lastChat(
-        data.receiver.id,
         userId,
+        data.receiver.id,
       );
 
       const newMessage = await this.chatService.create(
@@ -84,7 +84,7 @@ export class ChatSocketGateway {
         data.receiver.id,
         {
           ...data,
-          jsonData: lastMessage.jsonData,
+          jsonData: lastMessage?.jsonData,
         },
       );
 

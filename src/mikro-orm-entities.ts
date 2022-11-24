@@ -3,6 +3,7 @@ import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { Activity } from './entities/activity.entity';
 import { BankAccount } from './entities/bank-account.entity';
 import { Chat } from './entities/chat.entity';
+import { ContentList } from './entities/content-list.entity';
 import { DirectMessage } from './entities/direct-message.entity';
 import { File } from './entities/file.entity';
 import { GuideUserLocation } from './entities/guide-user-location.entity';
@@ -25,6 +26,7 @@ import { Lodging } from './entities/lodging.entity';
 import { Notification } from './entities/notification.entity';
 import { Plan } from './entities/plan.entity';
 import { Profile } from './entities/profile.entity';
+import { RefreshToken } from './entities/refresh-token.entity';
 import { ResetPassword } from './entities/reset-password.entity';
 import { Subscription } from './entities/subscription.entity';
 import { Tip } from './entities/tip.entity';
@@ -67,5 +69,7 @@ export default {
     LocationRating,
     GuideUserLocation,
     Tip,
+    RefreshToken,
+    ContentList,
   ],
 } as MikroOrmModuleOptions;

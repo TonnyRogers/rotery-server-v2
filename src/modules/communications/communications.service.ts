@@ -7,6 +7,7 @@ import { appConfig } from '@/config';
 import { UserRequestHelpMailTemplateParams } from '@/resources/emails/types/user-request-help';
 import { EmailHelpRequestType } from '@/utils/constants';
 
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateHelpRequestDto } from './dto/create-help-request.dto';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class CommunicationsService {
   constructor(
     @Inject(EmailsService)
     private emailsService: EmailsService,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}
 

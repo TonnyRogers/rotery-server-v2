@@ -11,6 +11,7 @@ import { NotificationSubject } from '@/utils/types';
 import { NotificationAlias } from '../../entities/notification.entity';
 import { UserConnection } from '../../entities/user-connection.entity';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
 
 export interface ConnectionReponse {
@@ -24,12 +25,10 @@ export class UserConnectionService {
   constructor(
     @InjectRepository(UserConnection)
     private userConnectionRepository: EntityRepository<UserConnection>,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private userService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,
-    @Inject(NotificationsGateway)
-    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async connect(authUserId: number, targetId: number): Promise<UserConnection> {

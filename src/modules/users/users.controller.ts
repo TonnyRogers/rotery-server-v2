@@ -23,11 +23,12 @@ import { RequestUser } from '@/utils/types';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersProvider } from './enums/users-provider.enum';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private readonly userService: UsersService,
   ) {}
 

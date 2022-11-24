@@ -13,6 +13,7 @@ import { GuideUserLocation } from '@/entities/guide-user-location.entity';
 
 import { LocationsProvider } from '../locations/enums/locations-provider.enum';
 import { LocationsRepositoryInterface } from '../locations/interfaces/repository-interface';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { GuideUserLocationsProvider } from './enums/guide-user-locations-provider';
 import { GuideUserLocationsRepositoryInterface } from './interfaces/guide-user-locations-repository.interface';
 
@@ -25,7 +26,7 @@ export class GuideUserLocationsService
     private readonly guideUserLocationRepository: GuideUserLocationsRepositoryInterface,
     @Inject(LocationsProvider.LOCATION_REPOSITORY)
     private readonly locationRepository: LocationsRepositoryInterface,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private readonly userService: UsersService,
   ) {}
 

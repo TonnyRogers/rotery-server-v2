@@ -1,0 +1,4 @@
+export enum ContentProvider {
+  CONTENT_SERVICE = 'CONTENT_SERVICE',
+  CONTENT_REPOSITORY = 'CONTENT_REPOSITORY',
+}

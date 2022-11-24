@@ -4,28 +4,26 @@ import { PassportModule } from '@nestjs/passport';
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 
-import { AuthService } from './auth.service';
+import { RefreshToken } from '@/entities/refresh-token.entity';
 
 import { jwtOptions } from '../../config';
 import { User } from '../../entities/user.entity';
 import { ProfileModule } from '../profiles/profile.module';
-import { UsersModule } from '../users/users.module';
-import { JwtStrategy } from './jwt.strategy';
-import { LocalStrategy } from './local.strategy';
+import { AuthController } from './auth.controller';
+import { authProvider } from './providers';
 
 @Module({
+  controllers: [AuthController],
   imports: [
-    UsersModule,
-    MikroOrmModule.forFeature([User]),
+    MikroOrmModule.forFeature([User, RefreshToken]),
     PassportModule,
     JwtModule.register({
       secret: jwtOptions.secret,
-      signOptions: { expiresIn: '1m' },
+      signOptions: { expiresIn: jwtOptions.expireTime },
     }),
     ProfileModule,
-    UsersModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService],
+  providers: authProvider,
+  exports: authProvider,
 })
 export class AuthModule {}

@@ -11,6 +11,7 @@ import { LocationRating } from '@/entities/location-rating';
 
 import { LocationsProvider } from '../locations/enums/locations-provider.enum';
 import { LocationsRepositoryInterface } from '../locations/interfaces/repository-interface';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateLocationRatingDto } from './dto/create-location-ratings.dto';
 import { FindLocationRatingsDto } from './dto/find-location-ratings.dto';
 import { UpdateLocationRatingDto } from './dto/update-location-ratings.dto';
@@ -22,7 +23,7 @@ export class LocationRatingsService implements LocationRatingsServiceInterface {
   constructor(
     @Inject(LocationRatingsProvider.LOCATION_RATINGS_REPOSITORY)
     private readonly locationRatingsRepository: LocationRatingsRepositoryInterface,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private readonly usersService: UsersService,
     @Inject(LocationsProvider.LOCATION_REPOSITORY)
     private readonly locationsRespository: LocationsRepositoryInterface,

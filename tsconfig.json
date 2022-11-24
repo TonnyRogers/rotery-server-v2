@@ -25,5 +25,5 @@
       "@config": ["src/config"]
     }
   },
-  "include": ["src", "migrations","test",".eslintrc.js"],
+  "include": ["src", "migrations","seeders","test",".eslintrc.js"],
 }

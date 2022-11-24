@@ -4,6 +4,7 @@ import { UsersService } from '../users/users.service';
 import { UserRatingsRepositoryInterface } from './interfaces/user-ratings-service.interface';
 
 import { UserRating } from '../../entities/user-rating';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateUserRatingDto } from './dto/create-user-rating.dto';
 import { UserRatingsProvider } from './enums/user-ratings-providers.enum';
 import { UserRatingsServiceInterface } from './interfaces/user-ratings-repository.interface';
@@ -13,7 +14,7 @@ export class UserRatingsService implements UserRatingsServiceInterface {
   constructor(
     @Inject(UserRatingsProvider.USER_RATINGS_REPOSITORY)
     private userRatingsRepository: UserRatingsRepositoryInterface,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}
 

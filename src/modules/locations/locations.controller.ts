@@ -3,11 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
@@ -18,7 +21,8 @@ import {
 } from './interfaces/service-interface';
 
 import { Location } from '@/entities/location.entity';
-import { ParamId } from '@/utils/types';
+import { UserRole } from '@/entities/user.entity';
+import { ParamId, RequestUser } from '@/utils/types';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLocationDto } from './dto/create-location.dto';
@@ -43,7 +47,13 @@ export class LocationsController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: Location, isArray: false })
   @Post()
-  createLocation(@Body() createLocationDto: CreateLocationDto) {
+  createLocation(
+    @Req() request: RequestUser,
+    @Body() createLocationDto: CreateLocationDto,
+  ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     return this.locationsService.add(createLocationDto);
   }
 
@@ -51,15 +61,22 @@ export class LocationsController {
   @ApiOkResponse({ type: Location, isArray: false })
   @Put(':id')
   updateLocation(
+    @Req() request: RequestUser,
     @Param() param: ParamId,
     @Body() updateLocationDto: UpdateLocationDto,
   ) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     return this.locationsService.update(param.id, updateLocationDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  removeLocation(@Param() param: ParamId) {
+  removeLocation(@Req() request: RequestUser, @Param() param: ParamId) {
+    if (request.user.role !== UserRole.MASTER) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
     return this.locationsService.remove(param.id);
   }
 

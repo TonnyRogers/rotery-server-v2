@@ -230,11 +230,18 @@ export class ChatService implements ChatServiceInterface {
       type: ChatType.END,
     });
 
+    if (!lastChaAsOwner && !lastChatAsTarget) {
+      return {
+        allowed: true,
+        message: 'First Chat',
+      };
+    }
+
     const todayMonth = dayjsPlugins().month() + 1;
 
     if (
-      dayjsPlugins(lastChaAsOwner.createdAt).month() === todayMonth ||
-      dayjsPlugins(lastChatAsTarget.createdAt).month() === todayMonth
+      dayjsPlugins(lastChaAsOwner?.createdAt).month() === todayMonth ||
+      dayjsPlugins(lastChatAsTarget?.createdAt).month() === todayMonth
     ) {
       return {
         allowed: false,

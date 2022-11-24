@@ -27,6 +27,7 @@ import {
   SearchSubscriptionResult,
 } from '@/utils/types';
 
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { ChangeSubscriptionCardDto } from './dto/change-subscription-card.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { CreateSubscriptionDto } from './dto/create-subscriptions.dto';
@@ -60,7 +61,7 @@ export class SubscriptionsService {
     private planRespository: EntityRepository<Plan>,
     @InjectRepository(Subscription)
     private subscriptionRespository: EntityRepository<Subscription>,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
     @Inject(SubscriptionsGateway)
     private subscriptionGateway: SubscriptionsGateway,

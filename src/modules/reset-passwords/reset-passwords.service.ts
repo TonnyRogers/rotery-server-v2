@@ -13,6 +13,7 @@ import {
   RabbitMailPublisherParams,
   RabbitMailPublisher,
 } from '../../providers/rabbit-publisher';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
@@ -21,7 +22,7 @@ export class ResetPasswordsService {
   constructor(
     @InjectRepository(ResetPassword)
     private resetPasswordsRepository: EntityRepository<ResetPassword>,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}
 

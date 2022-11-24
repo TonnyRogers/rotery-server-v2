@@ -36,6 +36,7 @@ import {
 } from '../../entities/itinerary-member.entity';
 import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { NotificationAlias } from '../../entities/notification.entity';
+import { UsersProvider } from '../users/enums/users-provider.enum';
 import { AcceptMemberDto } from './dto/accept-member.dto';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -52,7 +53,7 @@ export class ItineraryMembersService {
     private itineraryRepository: EntityRepository<Itinerary>,
     @Inject(forwardRef(() => ItinerariesService))
     private itinerariesService: ItinerariesService,
-    @Inject(UsersService)
+    @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
     @Inject(NotificationsService)
     private notificationsService: NotificationsService,

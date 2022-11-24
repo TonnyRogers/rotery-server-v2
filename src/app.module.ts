@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BankAccountsModule } from './modules/bank-accounts/bank-accounts.module';
 import { ChatSocketModule } from './modules/chat/chat.module';
 import { CommunicationsModule } from './modules/communications/communications.module';
+import { ContentModule } from './modules/content/content.module';
 import { DirectMessagesModule } from './modules/direct-messages/direct-messages.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { FavoriteItinerariesModule } from './modules/favorite-itineraries/favorite-itineraries.module';
@@ -52,14 +53,8 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     ActivitiesModule,
     LodgingsModule,
     TransportsModule,
-    ItinerariesModule,
-    ItineraryQuestionsModule,
-    ItineraryMembersModule,
-    FeedItinerariesModule,
-    FavoriteItinerariesModule,
     NotificationsModule,
     UserRatingsModule,
-    ItinerariesRatingsModule,
     EmailsModule,
     ResetPasswordsModule,
     ChatSocketModule,
@@ -76,6 +71,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
     GuideUserLocationsModule,
     MetadataModule,
     TipsModule,
+    ContentModule,
     // ClientsModule.register([
     // {
     //   name: 'send_email',
