@@ -39,18 +39,6 @@ async function sendToUser(notification: FirebaseNotificationPayload) {
     data: {
       ...notification.data,
     },
-    apns: {
-      payload: {
-        aps: {
-          contentAvailable: true,
-        },
-      },
-      headers: {
-        'apns-push-type': 'background',
-        'apns-priority': '5',
-        'apns-topic': 'com.rotery.rotery',
-      },
-    },
     android: {
       priority: 'high',
       notification: {
