@@ -705,6 +705,7 @@ export class ContentSeeder extends Seeder {
       externalUrl:
         'https://images.ctfassets.net/hrltx12pl8hq/a2hkMAaruSQ8haQZ4rBL9/8ff4a6f289b9ca3f4e6474f29793a74a/nature-image-for-website.jpg',
       isAnimation: false,
+      withInfo: true,
       type: ContentType.WELCOME_SEASON_BANNER,
     });
   }
