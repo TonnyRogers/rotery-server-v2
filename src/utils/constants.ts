@@ -117,11 +117,12 @@ export const paymentStatusRole = {
 export const detailingText = {
   [LocationDetailingType.ANIMAL_PRESENCE]: '*V* animais por perto',
   [LocationDetailingType.CHILDREN_ACCESS]: '*V* crianças',
-  [LocationDetailingType.DURATION]: 'Aproximadamente *Q* de *M*',
+  [LocationDetailingType.DURATION]: 'Aproximadamente *Q**M* de caminhada',
   [LocationDetailingType.FOOD_PROXIMITY]: '*V* local para refeição (*Q**M*)',
   [LocationDetailingType.GUIDE_REQUESTED]: 'Guia *V*',
   [LocationDetailingType.MOBILE_SIGNAL]: '*V* sinal de celular por perto',
-  [LocationDetailingType.MOBILITY_ACCESS]: '*V* acesso para cadeirantes',
+  [LocationDetailingType.MOBILITY_ACCESS]:
+    '*V* acesso para mobilidade reduzida',
   [LocationDetailingType.WEEKLY_PRESENCE]: 'Maior movimento durante *M*',
 };
 
