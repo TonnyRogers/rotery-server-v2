@@ -277,7 +277,9 @@ export class LocationsService implements LocationsServiceInterface {
       this.locationsLodgingRepository.insertJoinTable(lodgingEntityList, {
         location: id,
       }),
-      this.locationsPhotoRepository.insertJoinTable(photoEntityList, undefined),
+      this.locationsPhotoRepository.insertJoinTable(photoEntityList, {
+        location: id,
+      }),
       this.locationsTransportRepository.insertJoinTable(transportEntityList, {
         location: id,
       }),

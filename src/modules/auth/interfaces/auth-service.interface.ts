@@ -5,7 +5,6 @@ import { User } from '@/entities/user.entity';
 export type LoginResponse = {
   access_token: string;
   user: Omit<User, 'password'>;
-  expires: number;
 };
 
 export interface AuthServiceInterface {
