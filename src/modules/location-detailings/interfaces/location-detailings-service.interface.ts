@@ -8,7 +8,7 @@ export interface LocationDetailingServiceInterface {
   add(
     locationId: number,
     createLocationDetailingDto: CreateLocationDetailingsDto,
-  ): Promise<LocationDetailing>;
+  ): Promise<LocationDetailing[]>;
   remove(locationId: number, query: DeleteLocationDetailingsDto): Promise<void>;
   update(
     locationId: number,

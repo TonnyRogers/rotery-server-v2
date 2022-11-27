@@ -30,18 +30,26 @@ export class LocationDetailingService
   async add(
     locationId: number,
     createLocationDetailingDto: CreateLocationDetailingsDto,
-  ): Promise<LocationDetailing> {
+  ): Promise<LocationDetailing[]> {
     const location = await this.locationsRepository.findOne({ id: locationId });
 
     if (!location)
       throw new UnprocessableEntityException(location, 'Location not found.');
 
-    const newLocationDetailing = new LocationDetailing({
-      ...createLocationDetailingDto,
-      location,
+    const newLocationDetailingList: LocationDetailing[] = [];
+
+    createLocationDetailingDto.detailings.forEach((item) => {
+      newLocationDetailingList.push(
+        new LocationDetailing({
+          ...item,
+          location,
+        }),
+      );
     });
 
-    return await this.locationDetailingsRepository.create(newLocationDetailing);
+    return await this.locationDetailingsRepository.create(
+      newLocationDetailingList,
+    );
   }
 
   async remove(locationId: number, query: DeleteLocationDetailingsDto) {

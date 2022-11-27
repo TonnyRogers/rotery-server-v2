@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import {
   LocationDetailingLevel,
@@ -8,6 +14,13 @@ import {
 } from '@/entities/location-detailing.entity';
 
 export class CreateLocationDetailingsDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  detailings: DetailingDto[];
+}
+
+export class DetailingDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(LocationDetailingType)

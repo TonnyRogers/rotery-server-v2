@@ -19,19 +19,25 @@ export class LocationDetailingRepository
     private readonly locationDetailingsRepository: EntityRepository<LocationDetailing>,
   ) {}
 
-  async create(entity: LocationDetailing): Promise<LocationDetailing> {
-    if (
-      await this.locationDetailingsRepository.count({
-        location: entity.location.id,
-        type: entity.type,
-      })
-    ) {
-      throw new UnprocessableEntityException('This detailing already exists.');
+  async create(entity: LocationDetailing[]): Promise<LocationDetailing[]> {
+    const queryBuilder = this.locationDetailingsRepository.createQueryBuilder();
+    for (const entityItem of entity) {
+      if (
+        await this.locationDetailingsRepository.count({
+          location: entityItem.location.id,
+          type: entityItem.type,
+        })
+      ) {
+        throw new UnprocessableEntityException(
+          'This detailing already exists.',
+        );
+      }
     }
 
-    const locationDetailing = this.locationDetailingsRepository.create(entity);
-    await this.locationDetailingsRepository.persistAndFlush(locationDetailing);
-    return locationDetailing;
+    await queryBuilder.insert(entity).execute();
+    return await this.locationDetailingsRepository.find({
+      location: entity[0].location.id,
+    });
   }
 
   async update(
@@ -48,14 +54,14 @@ export class LocationDetailingRepository
 
     await this.locationDetailingsRepository.removeAndFlush(locationDetailing);
 
-    const updateLocationDetailing = await this.create(
+    const updateLocationDetailing = await this.create([
       new LocationDetailing({
         ...dto,
         location: locationDetailing.location,
       }),
-    );
+    ]);
 
-    return updateLocationDetailing;
+    return updateLocationDetailing[0];
   }
 
   async delete(filters: {

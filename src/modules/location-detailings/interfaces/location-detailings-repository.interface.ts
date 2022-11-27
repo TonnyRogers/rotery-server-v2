@@ -6,7 +6,7 @@ import {
 import { UpdateLocationDetailingsDto } from '../dto/update-location-detailings.dto';
 
 export interface LocationDetailingRepositoryInterface {
-  create(entity: LocationDetailing): Promise<LocationDetailing>;
+  create(entity: LocationDetailing[]): Promise<LocationDetailing[]>;
   update(
     locationId: number,
     dto: UpdateLocationDetailingsDto,

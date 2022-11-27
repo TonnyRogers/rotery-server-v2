@@ -1,3 +1,3 @@
-import { CreateLocationDetailingsDto } from './create-location-detailings.dto';
+import { DetailingDto } from './create-location-detailings.dto';
 
-export class UpdateLocationDetailingsDto extends CreateLocationDetailingsDto {}
+export class UpdateLocationDetailingsDto extends DetailingDto {}
