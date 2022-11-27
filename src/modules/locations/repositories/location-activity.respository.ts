@@ -20,10 +20,12 @@ export class LocationActivityRepository
     data: EntityData<LocationActivity>[],
     deleteWhere?: FilterQuery<LocationActivity>,
   ): Promise<void> {
-    const queryBuilder =
+    const deleteQueryBuilder =
+      this.locationActivityRepository.createQueryBuilder('la');
+    const insertQueryBuilder =
       this.locationActivityRepository.createQueryBuilder('la');
 
-    deleteWhere && (await queryBuilder.delete(deleteWhere).execute());
+    deleteWhere && (await deleteQueryBuilder.delete(deleteWhere).execute());
 
     if (!data?.length) return;
 
@@ -34,9 +36,9 @@ export class LocationActivityRepository
     }
 
     try {
-      await queryBuilder.insert(insertDataList).execute();
+      await insertQueryBuilder.insert(insertDataList).execute();
     } catch (error) {
-      throw new UnprocessableEntityException();
+      throw new UnprocessableEntityException(error);
     }
   }
 }

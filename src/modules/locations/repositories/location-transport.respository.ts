@@ -20,10 +20,12 @@ export class LocationTransportRepository
     data: EntityData<LocationTransport>[],
     deleteWhere?: FilterQuery<LocationTransport>,
   ): Promise<void> {
-    const queryBuilder =
+    const deleteQueryBuilder =
+      this.locationTransportRepository.createQueryBuilder('lt');
+    const insertQueryBuilder =
       this.locationTransportRepository.createQueryBuilder('lt');
 
-    deleteWhere && (await queryBuilder.delete(deleteWhere).execute());
+    deleteWhere && (await deleteQueryBuilder.delete(deleteWhere).execute());
 
     if (!data?.length) return;
 
@@ -34,9 +36,9 @@ export class LocationTransportRepository
     }
 
     try {
-      await queryBuilder.insert(insertDataList).execute();
+      await insertQueryBuilder.insert(insertDataList).execute();
     } catch (error) {
-      throw new UnprocessableEntityException();
+      throw new UnprocessableEntityException(error);
     }
   }
 }

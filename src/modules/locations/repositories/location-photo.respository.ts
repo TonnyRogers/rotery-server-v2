@@ -20,9 +20,12 @@ export class LocationPhotoRepository
     data: EntityData<LocationPhoto>[],
     deleteWhere?: FilterQuery<LocationPhoto>,
   ): Promise<void> {
-    const queryBuilder = this.locationPhotoRepository.createQueryBuilder('lp');
+    const deleteQueryBuilder =
+      this.locationPhotoRepository.createQueryBuilder('lp');
+    const insertQueryBuilder =
+      this.locationPhotoRepository.createQueryBuilder('lp');
 
-    deleteWhere && (await queryBuilder.delete(deleteWhere).execute());
+    deleteWhere && (await deleteQueryBuilder.delete(deleteWhere).execute());
 
     if (!data?.length) return;
 
@@ -33,9 +36,9 @@ export class LocationPhotoRepository
     }
 
     try {
-      await queryBuilder.insert(insertDataList).execute();
+      await insertQueryBuilder.insert(insertDataList).execute();
     } catch (error) {
-      throw new UnprocessableEntityException();
+      throw new UnprocessableEntityException(error);
     }
   }
 }

@@ -102,7 +102,6 @@ export class AuthService implements AuthServiceInterface {
     return {
       access_token: encoded,
       user,
-      expires: dayjsPlugins().add(1, 'minute').valueOf(),
     };
   }
 
@@ -140,7 +139,6 @@ export class AuthService implements AuthServiceInterface {
 
     return {
       access_token: encoded,
-      expires: dayjsPlugins().add(1, 'minute').valueOf(),
     };
   }
 
