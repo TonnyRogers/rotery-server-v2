@@ -1,20 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { EmailsService } from '../emails/emails.service';
+import { EmailsServiceInterface } from '../emails/interfaces/emails-service.interface';
 import { UsersService } from '../users/users.service';
 
 import { appConfig } from '@/config';
 import { UserRequestHelpMailTemplateParams } from '@/resources/emails/types/user-request-help';
 import { EmailHelpRequestType } from '@/utils/constants';
 
+import { EmailsProviders } from '../emails/enums/providers.enum';
 import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateHelpRequestDto } from './dto/create-help-request.dto';
 
 @Injectable()
 export class CommunicationsService {
   constructor(
-    @Inject(EmailsService)
-    private emailsService: EmailsService,
+    @Inject(EmailsProviders.EMAILS_SERVICE)
+    private emailsService: EmailsServiceInterface,
     @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
   ) {}

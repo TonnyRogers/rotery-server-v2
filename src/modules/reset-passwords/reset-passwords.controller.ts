@@ -8,16 +8,17 @@ import {
   Put,
 } from '@nestjs/common';
 
-import { ResetPasswordsService } from './reset-passwords.service';
+import { ResetPasswordServiceInterface } from './interfaces/reset-password-service.interface';
 
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordProviders } from './enums/providers.enum';
 
 @Controller('users')
 export class ResetPasswordsController {
   constructor(
-    @Inject(ResetPasswordsService)
-    private resetPasswordsService: ResetPasswordsService,
+    @Inject(ResetPasswordProviders.RESET_PASSWORD_SERVICE)
+    private resetPasswordsService: ResetPasswordServiceInterface,
   ) {}
 
   @Post('reset-password')

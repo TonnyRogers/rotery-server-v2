@@ -1,34 +1,39 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
-
+import { EmailsServiceInterface } from '../emails/interfaces/emails-service.interface';
 import { UsersService } from '../users/users.service';
+import { ResetPasswordServiceInterface } from './interfaces/reset-password-service.interface';
 
 import { dayjsPlugins } from '@/providers/dayjs-config';
 import { UserNewPassWordMailTemplateParams } from '@/resources/emails/types/user-new-password';
+import { UserRecoverPassWordMailTemplateParams } from '@/resources/emails/types/user-recover-password';
 
 import { ResetPassword } from '../../entities/reset-password.entity';
 import {
   RabbitMailPublisherParams,
   RabbitMailPublisher,
 } from '../../providers/rabbit-publisher';
+import { EmailsProviders } from '../emails/enums/providers.enum';
 import { UsersProvider } from '../users/enums/users-provider.enum';
 import { NewPasswordDto } from './dto/new-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordProviders } from './enums/providers.enum';
+import { ResetPasswordRepositoryInterface } from './interfaces/reset-password-repository.interface';
 
 @Injectable()
-export class ResetPasswordsService {
+export class ResetPasswordsService implements ResetPasswordServiceInterface {
   constructor(
-    @InjectRepository(ResetPassword)
-    private resetPasswordsRepository: EntityRepository<ResetPassword>,
+    @Inject(ResetPasswordProviders.RESET_PASSWORD_REPOSITORY)
+    private resetPasswordsRepository: ResetPasswordRepositoryInterface,
     @Inject(UsersProvider.USERS_SERVICE)
     private usersService: UsersService,
+    @Inject(EmailsProviders.EMAILS_SERVICE)
+    private emailsService: EmailsServiceInterface,
   ) {}
 
   async create(resetPasswordDto: ResetPasswordDto) {
     try {
-      const user = await this.usersService.findOne({
+      const user = await this.usersService.findOneWithEmail({
         email: resetPasswordDto.email,
       });
 
@@ -38,16 +43,27 @@ export class ResetPasswordsService {
         });
 
         if (reset) {
-          await this.resetPasswordsRepository.removeAndFlush(reset);
+          await this.resetPasswordsRepository.delete({ id: reset.id });
         }
+
+        const code = String(Math.floor(100000 + Math.random() * 900000));
 
         const newReset = new ResetPassword({
           user: user,
-          code: String(Math.floor(100000 + Math.random() * 900000)),
+          code,
           dateLimit: dayjsPlugins().add(1, 'hour').toDate(),
         });
 
-        await this.resetPasswordsRepository.persistAndFlush(newReset);
+        await this.resetPasswordsRepository.create(newReset);
+
+        await this.emailsService.queue<UserRecoverPassWordMailTemplateParams>({
+          to: user.email,
+          type: 'user-recover-password',
+          payload: {
+            name: user.username,
+            resetcode: Number(code),
+          },
+        });
       }
     } catch (error) {
       throw error;
@@ -94,7 +110,7 @@ export class ResetPasswordsService {
         newPasswordDto.password,
       );
 
-      await this.resetPasswordsRepository.nativeDelete({
+      await this.resetPasswordsRepository.delete({
         id: 'id' in findReset && findReset.id,
       });
 

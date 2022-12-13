@@ -16,6 +16,7 @@ import {
   locationTransportCollectionSerializer,
 } from '@/utils/serializers';
 
+import { GuideUserLocation } from './guide-user-location.entity';
 import { LocationActivity } from './location-activity.entity';
 import { LocationDetailing } from './location-detailing.entity';
 import { LocationLodging } from './location-lodging.entity';
@@ -129,6 +130,9 @@ export class Location {
 
   @OneToMany(() => LocationPhoto, (locationPhoto) => locationPhoto.location)
   photos = new Collection<LocationPhoto>(this);
+
+  @OneToMany(() => GuideUserLocation, (guideUser) => guideUser.location)
+  guides = new Collection<GuideUserLocation>(this);
 
   @Property({ persist: false })
   get ratingAvg() {

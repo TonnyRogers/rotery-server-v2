@@ -21,6 +21,7 @@ const populateRelations: any = [
   'photos.file',
   'lodgings.lodging',
   'ratings.owner.profile.file',
+  'guides',
 ];
 export class LocationsRepository implements LocationsRepositoryInterface {
   constructor(

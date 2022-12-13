@@ -20,6 +20,10 @@ admin.initializeApp({
 });
 
 async function sendMessage(message: messaging.Message) {
+  if (!message['token']) {
+    return;
+  }
+
   try {
     const messageId = await admin.messaging().send(message);
     return messageId;

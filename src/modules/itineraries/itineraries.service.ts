@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { DirectMessagesService } from '../direct-messages/direct-messages.service';
-import { EmailsService } from '../emails/emails.service';
+import { EmailsServiceInterface } from '../emails/interfaces/emails-service.interface';
 import { ItineraryMembersService } from '../itinerary-members/itinerary-members.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
@@ -25,6 +25,7 @@ import { itineraryRelations } from '@/utils/constants';
 import { NotificationSubject } from '@/utils/types';
 
 import { CreateDirectMessageDto } from '../direct-messages/dto/create-message.dto';
+import { EmailsProviders } from '../emails/enums/providers.enum';
 import { CreateNotificationPayload } from '../notifications/interfaces/create-notification';
 import { UsersProvider } from '../users/enums/users-provider.enum';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
@@ -51,8 +52,8 @@ export class ItinerariesService {
     private readonly directMessagesService: DirectMessagesService,
     @Inject(SubscriptionsService)
     private readonly subscriptionsService: SubscriptionsService,
-    @Inject(EmailsService)
-    private readonly emailsService: EmailsService,
+    @Inject(EmailsProviders.EMAILS_SERVICE)
+    private readonly emailsService: EmailsServiceInterface,
     @Inject(forwardRef(() => ItineraryMembersService))
     private readonly itineraryMemberService: ItineraryMembersService,
   ) {}

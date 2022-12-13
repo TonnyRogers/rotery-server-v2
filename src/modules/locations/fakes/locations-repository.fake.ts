@@ -1,4 +1,5 @@
 import { Location, LocationType } from '@/entities/location.entity';
+import { User } from '@/entities/user.entity';
 
 export const fakeLocations: Location[] = [
   {
@@ -18,5 +19,11 @@ export const fakeLocations: Location[] = [
     transports: undefined,
     ratings: undefined,
     ratingAvg: undefined,
+    guides: [
+      {
+        location: {} as Location,
+        user: {} as User,
+      },
+    ] as any,
   },
 ];

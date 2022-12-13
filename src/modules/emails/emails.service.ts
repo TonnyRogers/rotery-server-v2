@@ -5,6 +5,13 @@ import mjml2html from 'mjml';
 import path from 'path';
 
 import {
+  EmailParams,
+  EmailsServiceInterface,
+  SendEmailParams,
+  ToQueueParams,
+} from './interfaces/emails-service.interface';
+
+import {
   RabbitMailPublisher,
   RabbitMailPublisherParams,
 } from '@/providers/rabbit-publisher';
@@ -12,48 +19,8 @@ import { EmailSectionTitle, EmailSubject } from '@/utils//constants';
 
 import { mailerOptions, mailerTransporter } from '../../providers/mail';
 
-export type EmailType =
-  | 'welcome-user'
-  | 'user-recover-password'
-  | 'user-request-help'
-  | 'itinerary-payment-updates'
-  | 'itinerary-finish'
-  | 'welcome-user-subscription'
-  | 'subscription-payment-updates'
-  | 'user-new-password';
-
-export interface EmailParams {
-  mailHeader?: string;
-  sectionTitle?: string;
-  name: string;
-  resetcode?: number;
-  activationCode?: number;
-  type?: string;
-  message?: string;
-  data?: Record<string, any>;
-  userEmail?: string;
-  paymentStatusColor?: string;
-  paymentStatus?: string;
-  itineraryName?: string;
-  itineraryDescription?: string;
-  cardBrandImage?: string;
-  cardBrand?: string;
-  cardLastNumbers?: string;
-}
-
-export interface SendEmailParams {
-  content: EmailParams;
-  to: string;
-  type: EmailType;
-}
-export interface ToQueueParams<T> {
-  to: string;
-  type: EmailType;
-  payload: T;
-}
-
 @Injectable()
-export class EmailsService {
+export class EmailsService implements EmailsServiceInterface {
   private queuePublisher = new RabbitMailPublisher();
 
   private async renderContent(template = 'welcome-user', params: EmailParams) {

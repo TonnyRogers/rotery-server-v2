@@ -1,17 +1,5 @@
-import {
-  AfterCreate,
-  Entity,
-  OneToOne,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
+import { Entity, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 
-import { UserRecoverPassWordMailTemplateParams } from '@/resources/emails/types/user-recover-password';
-
-import {
-  RabbitMailPublisherParams,
-  RabbitMailPublisher,
-} from '../providers/rabbit-publisher';
 import { User } from './user.entity';
 
 @Entity()
@@ -43,25 +31,4 @@ export class ResetPassword {
 
   @Property()
   updatedAt: Date = new Date();
-
-  @AfterCreate()
-  async afterCreate() {
-    const { username } = this.user;
-
-    const payload: RabbitMailPublisherParams<UserRecoverPassWordMailTemplateParams> =
-      {
-        data: {
-          to: this.user.email,
-          type: 'user-recover-password',
-          payload: {
-            name: username,
-            resetcode: Number(this.code),
-          },
-        },
-      };
-
-    const rmqPublish = new RabbitMailPublisher();
-
-    await rmqPublish.toQueue(payload);
-  }
 }

@@ -3,7 +3,7 @@ import amqp, {
   ChannelWrapper,
 } from 'amqp-connection-manager';
 
-import { EmailType } from '@/modules/emails/emails.service';
+import { EmailType } from '@/modules/emails/interfaces/emails-service.interface';
 
 import { dlExchange } from '@/transporter/rabbit-send-email.strategy';
 

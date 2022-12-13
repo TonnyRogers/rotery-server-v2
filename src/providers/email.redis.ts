@@ -1,6 +1,6 @@
 import ioredis from 'ioredis';
 
-import { EmailType } from '../modules/emails/emails.service';
+import { EmailType } from '@/modules/emails/interfaces/emails-service.interface';
 
 import { redisConfig } from '../config';
 

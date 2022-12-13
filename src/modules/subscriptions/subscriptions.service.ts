@@ -6,7 +6,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import axios, { AxiosResponse } from 'axios';
 import { Response } from 'express';
 
-import { EmailsService } from '../emails/emails.service';
+import { EmailsServiceInterface } from '../emails/interfaces/emails-service.interface';
 import { UsersService } from '../users/users.service';
 
 import { paymentApiOptions } from '@/config';
@@ -27,6 +27,7 @@ import {
   SearchSubscriptionResult,
 } from '@/utils/types';
 
+import { EmailsProviders } from '../emails/enums/providers.enum';
 import { UsersProvider } from '../users/enums/users-provider.enum';
 import { ChangeSubscriptionCardDto } from './dto/change-subscription-card.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
@@ -65,8 +66,8 @@ export class SubscriptionsService {
     private usersService: UsersService,
     @Inject(SubscriptionsGateway)
     private subscriptionGateway: SubscriptionsGateway,
-    @Inject(EmailsService)
-    private emailsService: EmailsService,
+    @Inject(EmailsProviders.EMAILS_SERVICE)
+    private emailsService: EmailsServiceInterface,
   ) {}
 
   async createPlan(createPlanDto: CreatePlanDto) {

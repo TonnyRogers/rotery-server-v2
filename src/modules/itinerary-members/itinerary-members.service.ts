@@ -11,7 +11,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 
 import { Response } from 'express';
 
-import { EmailsService } from '../emails/emails.service';
+import { EmailsServiceInterface } from '../emails/interfaces/emails-service.interface';
 import { ItinerariesService } from '../itineraries/itineraries.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PaymentService } from '../payments/payments.service';
@@ -36,6 +36,7 @@ import {
 } from '../../entities/itinerary-member.entity';
 import { Itinerary, ItineraryStatus } from '../../entities/itinerary.entity';
 import { NotificationAlias } from '../../entities/notification.entity';
+import { EmailsProviders } from '../emails/enums/providers.enum';
 import { UsersProvider } from '../users/enums/users-provider.enum';
 import { AcceptMemberDto } from './dto/accept-member.dto';
 import { CreateMemberWithPaymentDto } from './dto/create-member-with-payment.dto copy';
@@ -59,8 +60,8 @@ export class ItineraryMembersService {
     private notificationsService: NotificationsService,
     @Inject(PaymentService)
     private paymentService: PaymentService,
-    @Inject(EmailsService)
-    private emailsService: EmailsService,
+    @Inject(EmailsProviders.EMAILS_SERVICE)
+    private emailsService: EmailsServiceInterface,
   ) {}
 
   async paymentRefund(itineraryMember: ItineraryMember) {
